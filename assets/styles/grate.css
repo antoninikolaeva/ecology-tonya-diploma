@@ -1,0 +1,18 @@
+.grate-input-group {
+    margin: 3px 10px 0;
+}
+
+.grate-input-title, .grate-input-value {
+    white-space: normal;
+    min-width: 350px;
+    max-width: 350px;
+}
+
+.grate-input-value {
+    text-align: center;
+    vertical-align: middle;
+}
+
+.grate-counting-btn {
+    margin: 10px;
+}
