@@ -9,7 +9,8 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'js/[name].bundle.js'
+        filename: 'js/[name].bundle.js',
+        publicPath: '/',
     },
     devtool: 'source-map',
     resolve: {
@@ -22,6 +23,17 @@ module.exports = {
                 loader: 'ts-loader'
             },
             { test: /\.css$/, use: ['style-loader', 'css-loader'] },
+            {
+                test: /\.(png|svg|jpg|gif|mp3|aac|ogg|ttf)$/,
+                use: [
+                    {
+                        loader: 'file-loader',
+                        options: {
+                            outputPath: 'assets'
+                        }
+                    }
+                ]
+            },
             { enforce: "pre", test: /\.js$/, loader: "source-map-loader" }
         ]
     },

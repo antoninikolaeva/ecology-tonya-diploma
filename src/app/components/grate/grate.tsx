@@ -10,17 +10,20 @@ interface Props {
 }
 
 interface State {
-    beta: number;
-    hp: number;
+    beta: number; 
+    hp: number; 
     sourceOfWater: SourceOfWasteWater;
     amountOfCrusher: number;
     suitableGrateItems: GrateProperties[];
     suitableRodThickness: number[]; 
-    amountOfGrate: number;
+    amountOfGrate: number; // N
     grateTypeOne: boolean;
     grateTypeTwo: boolean;
     grateTypeThree: boolean;
     validateErrors: any[];
+    amountOfSection: number; // n1
+    widthOfGrate: number; // B1
+    commonLengthOfChamberGrate: number; // L
 }
 
 enum SourceOfWasteWater {
@@ -38,6 +41,11 @@ export class GrateComponent extends React.Component<Props, State> {
     private amountOfDwellersRef: HTMLInputElement;
     private currentWidthSection: number;
     private currentRodThickness: number;
+    private currentGrate: GrateProperties;
+    private sizeOfInputChannelPart: number; // l1
+    private sizeOfOutputChannelPart: number; //l2
+    private lengthOfIncreaseChannelPart: number; //l
+    private standardWidthsOfChannel: number[] = [0.4, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2];
 
     constructor(props: Props, context: any) {
         super(props, context);
@@ -53,6 +61,9 @@ export class GrateComponent extends React.Component<Props, State> {
             grateTypeTwo: false,
             grateTypeThree: false,
             validateErrors: [],
+            amountOfSection: undefined,
+            widthOfGrate: undefined,
+            commonLengthOfChamberGrate: undefined,
         }
     }
 
@@ -67,6 +78,7 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private checkAllInputForCounting = (): any[] => {
+        const {grateTypeOne, grateTypeTwo} = this.state;
         const allError = [];
         if (!parseFloat(this.qmaxRef.value)) {
             allError.push(<Alert variant={'danger'}>Максимальный секундный расход, не введен</Alert>);
@@ -89,29 +101,42 @@ export class GrateComponent extends React.Component<Props, State> {
         if (parseFloat(this.alphaRef.value) < 60 || parseFloat(this.alphaRef.value) > 70) {
             allError.push(<Alert variant={'danger'}>Угол наклона решетки к горизонту, введен не верно, выход за рамки диапазона</Alert>);
         }
-        if (!parseFloat(this.kstRef.value)) {
-            allError.push(<Alert variant={'danger'}>
-                Коэффициент, учитывающий стеснение потока механическими граблями, диапазон, не введен
-            </Alert>);
-        }
-        if (parseFloat(this.kstRef.value) < 1.05 || parseFloat(this.kstRef.value) > 1.1) {
-            allError.push(<Alert variant={'danger'}>
-                Коэффициент, учитывающий стеснение потока механическими граблями, диапазон, введен не верно, выход за рамки диапазона
-            </Alert>);
+        if (grateTypeOne) {
+            if (!parseFloat(this.kstRef.value)) {
+                allError.push(<Alert variant={'danger'}>
+                    Коэффициент, учитывающий стеснение потока механическими граблями, диапазон, не введен
+                </Alert>);
+            }
+            if (parseFloat(this.kstRef.value) < 1.05 || parseFloat(this.kstRef.value) > 1.1) {
+                allError.push(<Alert variant={'danger'}>
+                    Коэффициент, учитывающий стеснение потока механическими граблями, диапазон, введен не верно, выход за рамки диапазона
+                </Alert>);
+            }
         }
         return allError;
     }
 
     private grateCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const {grateTypeOne, grateTypeTwo, grateTypeThree, suitableRodThickness} = this.state;
         const errors = this.checkAllInputForCounting();
         if(errors.length > 0 ) {
             this.setState({validateErrors: errors});
             return;
         }
         // to do check to number value > 0
-        const n = (parseFloat(this.kstRef.value) * parseFloat(this.qmaxRef.value)) /
+        let n;
+        let n1;
+        let b1;
+        if (grateTypeOne) {
+            n = (parseFloat(this.kstRef.value) * parseFloat(this.qmaxRef.value)) /
             (Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value)) *
             parseFloat(this.vpRef.value) * this.currentWidthSection);
+        }
+        if (grateTypeTwo) {
+            n = (1 * parseFloat(this.qmaxRef.value)) /
+            (Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value)) *
+            parseFloat(this.vpRef.value) * this.currentWidthSection);
+        }
         const bp =  this.currentRodThickness * (n - 1) + this.currentWidthSection * n;
 
         let amountOfGrate = 1;
@@ -129,20 +154,37 @@ export class GrateComponent extends React.Component<Props, State> {
                 amountOfGrate++;
             }
         }
-        this.setState({suitableGrateItems: suitableGrates, amountOfGrate, validateErrors: []});
+        if (grateTypeTwo) {
+            n1 = n / amountOfGrate;
+            b1 = bp / amountOfGrate;
+        }
+        this.setState({
+            suitableGrateItems: suitableGrates,
+            amountOfGrate,
+            validateErrors: [],
+            amountOfSection: n1,
+            widthOfGrate: b1
+        });
     }
 
     private checkWaterSpeed = (event: React.ChangeEvent<HTMLSelectElement> | string) => {
-        const {suitableGrateItems, amountOfGrate, beta} = this.state;
-        let currentGrate;
+        const {suitableGrateItems, amountOfGrate, beta, grateTypeTwo, grateTypeOne, amountOfSection} = this.state;
         if (typeof event === 'string') {
-            currentGrate = suitableGrateItems.find(grate => grate.mark === event);
+            this.currentGrate = suitableGrateItems.find(grate => grate.mark === event);
         } else {
-            currentGrate = suitableGrateItems.find(grate => grate.mark === event.target.value);
+            this.currentGrate = suitableGrateItems.find(grate => grate.mark === event.target.value);
         }
-        const checkVp = (parseFloat(this.kstRef.value) * parseFloat(this.qmaxRef.value)) /
+        let checkVp;
+        if (grateTypeOne) {
+            checkVp = (parseFloat(this.kstRef.value) * parseFloat(this.qmaxRef.value)) /
             (Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value)) *
-            currentGrate.numberOfSection * this.currentWidthSection * amountOfGrate);
+            this.currentGrate.numberOfSection * this.currentWidthSection * amountOfGrate);
+        }
+        if (grateTypeTwo) {
+            checkVp = (1 * parseFloat(this.qmaxRef.value)) /
+            (Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value)) *
+            amountOfSection * this.currentWidthSection * amountOfGrate);
+        }
         if (!(checkVp >= 0.8) && !(checkVp <= 1)) {
             alert('К сожалению, выбранная марка решетки не подходит для заданных параметров.' +
              'Пожалуйста, выберите другую марку решетки или иные' +
@@ -184,14 +226,39 @@ export class GrateComponent extends React.Component<Props, State> {
     private selectWidthSection = (event: React.ChangeEvent<HTMLSelectElement>) => {
         this.currentWidthSection = parseFloat(event.target.value);
         const suitableGrateProps = gratePropsTable.filter(
-                prop => prop.widthSection === parseFloat(event.target.value)
+                prop => prop.widthSection === this.currentWidthSection
             );
         const rodThicknessArray = suitableGrateProps.map(prop => prop.rodThickness);
         this.setState({suitableRodThickness: this.getUniqueValuesArray(rodThicknessArray)});
     }
 
+    private selectTypeOfGrate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const {widthOfGrate} = this.state;
+        const typeOfGrate = event.target.value;
+        const fi = 20;
+        let A;
+        for (let index = 0; index < this.standardWidthsOfChannel.length; index++) {
+            if (this.standardWidthsOfChannel[index] > widthOfGrate) {
+                A = this.standardWidthsOfChannel[index-1];
+                break;
+            }
+        }
+        this.sizeOfInputChannelPart = (widthOfGrate - A) / (2 * Math.tan(fi * Math.PI / 180));
+        this.sizeOfOutputChannelPart = 0.5 * this.sizeOfInputChannelPart;
+        if (typeOfGrate === 'vertical') {
+            this.lengthOfIncreaseChannelPart = 1.8 * A;
+        } else {
+            this.lengthOfIncreaseChannelPart = (1.8 * A) +
+                Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value) /
+                Math.tan(parseFloat(this.alphaRef.value) * Math.PI / 180));
+        }
+        this.setState({commonLengthOfChamberGrate:
+            this.sizeOfInputChannelPart + this.sizeOfOutputChannelPart + this.lengthOfIncreaseChannelPart
+        });
+    }
+
     private renderListOfMarks = () => {
-        const { suitableGrateItems, amountOfGrate, hp } = this.state;
+        const { suitableGrateItems, amountOfGrate } = this.state;
         return <div>
             <InputGroup className={'grate-input-group'}>
                 <InputGroup.Prepend>
@@ -229,33 +296,80 @@ export class GrateComponent extends React.Component<Props, State> {
                     }
                 </select>
             </InputGroup>
-
-            {
-                hp ? <div>
-                        <InputGroup className={'grate-input-group'}>
-                            <InputGroup.Prepend>
-                                <InputGroup.Text className={'grate-input-title'}>
-                                    {'Величина уступа в месте установки решетки, м'}
-                                </InputGroup.Text>
-                            </InputGroup.Prepend>
-                            <Form.Label className={'grate-input-value'}>
-                                {hp.toFixed(2)}
-                            </Form.Label>
-                        </InputGroup> 
-                        <InputGroup className={'grate-input-group'}>
-                            <InputGroup.Prepend>
-                                <InputGroup.Text className={'grate-input-title'}>
-                                    {'Количество технической воды, подводимой к дробилками, м3/ч'}
-                                </InputGroup.Text>
-                            </InputGroup.Prepend>
-                            <Form.Label className={'grate-input-value'}>
-                                {(40 * hp).toFixed(2)}
-                            </Form.Label>
-                        </InputGroup>
-                    </div>:
-                null
-            }
+            {this.renderLedgeOfDrillInstallation()}
         </div>
+    }
+
+    private renderLedgeOfDrillInstallation = () => {
+        const {hp, grateTypeOne, grateTypeTwo} = this.state;
+        return (
+            hp ? 
+                <div>
+                    <InputGroup className={'grate-input-group'}>
+                        <InputGroup.Prepend>
+                            <InputGroup.Text className={'grate-input-title'}>
+                                {'Величина уступа в месте установки решетки, м'}
+                            </InputGroup.Text>
+                        </InputGroup.Prepend>
+                        <Form.Label className={'grate-input-value'}>
+                            {hp.toFixed(2)}
+                        </Form.Label>
+                    </InputGroup>
+                    {
+                        grateTypeOne ?  
+                            <InputGroup className={'grate-input-group'}>
+                                <InputGroup.Prepend>
+                                    <InputGroup.Text className={'grate-input-title'}>
+                                        {'Количество технической воды, подводимой к дробилками, м3/ч'}
+                                    </InputGroup.Text>
+                                </InputGroup.Prepend>
+                                <Form.Label className={'grate-input-value'}>
+                                    {(40 * hp).toFixed(2)}
+                                </Form.Label>
+                            </InputGroup> :
+                            null
+                    }
+                    {
+                        grateTypeTwo ? 
+                            this.renderSelectOfGateTypes() :
+                            null
+                    }
+                </div>:
+                null
+        );
+    }
+
+    private renderSelectOfGateTypes = () => {
+        const {commonLengthOfChamberGrate} = this.state;
+        return (
+            <div>
+                <InputGroup className={'grate-input-group'}>
+                    <InputGroup.Prepend>
+                        <InputGroup.Text className={'grate-input-title'}>{'Выбор типа решетки'}</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <select className={'grate-input-value'}
+                        onChange={(event) => {this.selectTypeOfGrate(event)}}>
+                        <option value={'vertical'}>Вертикальные решетки</option>
+                        <option value={'incline'}>Наклонные решетки</option>
+                    </select>
+                </InputGroup>
+                {
+                    commonLengthOfChamberGrate ? 
+                        <InputGroup className={'grate-input-group'}>
+                            <InputGroup.Prepend>
+                                <InputGroup.Text className={'grate-input-title'}>{'Длины и размеры:'}</InputGroup.Text>
+                            </InputGroup.Prepend>
+                            <Form.Label className={'grate-input-value'}>
+                                l1: {this.sizeOfInputChannelPart}
+                                l2: {this.sizeOfOutputChannelPart}
+                                l: {this.lengthOfIncreaseChannelPart}
+                                L: {commonLengthOfChamberGrate}
+                            </Form.Label>
+                        </InputGroup> :
+                        null
+                }
+            </div>
+        );
     }
 
     private renderListOfWidthSection = () => {
@@ -395,6 +509,14 @@ export class GrateComponent extends React.Component<Props, State> {
         </div>
     }
 
+    private renderCountingButton = () => {
+        return <Button variant={'outline-primary'}
+            className={'grate-counting-btn'}
+            onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {this.grateCounting(event)}}>
+            Подобрать марку решеток
+        </Button>
+    }
+
     private renderFirstTypeOfGrate = () => {
         const { suitableGrateItems, validateErrors } = this.state;
         return <div>
@@ -404,11 +526,7 @@ export class GrateComponent extends React.Component<Props, State> {
                 'Введите значение Kst...',
                 (ref: HTMLInputElement) => this.kstRef = ref)}
             {this.renderListOfWidthSection()}
-            <Button variant={'outline-primary'}
-                className={'grate-counting-btn'}
-                onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {this.grateCounting(event)}}>
-                Подобрать марку решеток
-            </Button>
+            {this.renderCountingButton()}
             {
                 suitableGrateItems.length > 0 ?
                     this.renderListOfMarks() :
@@ -423,9 +541,31 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderSecondTypeOfGrate = () => {
+        const { suitableGrateItems, validateErrors } = this.state;
+        this.currentWidthSection = 0.016;
         return <div>
             {this.renderCommonInputData()}
             {this.renderCommonFirstAndSecondInputData()}
+            <InputGroup className={'grate-input-group'}>
+                <InputGroup.Prepend>
+                    <InputGroup.Text className={'grate-input-title'}>{'Толщина стержней решетки, м'}</InputGroup.Text>
+                </InputGroup.Prepend>
+                <select className={'grate-input-value'}
+                    onChange={(event => {this.currentRodThickness = parseFloat(event.target.value)})}>
+                    {this.renderRodThickness(this.currentWidthSection)}
+                </select>
+            </InputGroup>
+            {this.renderCountingButton()}
+            {
+                suitableGrateItems.length > 0 ?
+                    this.renderListOfMarks() :
+                    undefined
+            }
+            {
+                validateErrors.length > 0 ?
+                    this.renderValidateErrors() :
+                    null
+            }
         </div>;
     }
 
