@@ -1,10 +1,15 @@
 import * as React from 'react';
-import { gratePropsTable, GrateProperties, HammerCrusherProperties, hammerCrushersProps } from './grate-resources';
-import { Nav, InputGroup, DropdownButton, Dropdown } from 'react-bootstrap';
+import { 
+    gratePropsTable,
+    GrateProperties,
+    hammerCrushersProps,
+    GrateCrusher,
+    GrateCrushers
+} from './grate-resources';
+import { Nav, InputGroup } from 'react-bootstrap';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
-import { AlertProps } from 'react-bootstrap';
 
 interface Props {
 }
@@ -24,6 +29,9 @@ interface State {
     amountOfSection: number; // n1
     widthOfGrate: number; // B1
     commonLengthOfChamberGrate: number; // L
+    amountOfWasteInHour: number; 
+    checkGrateCrusherSpeed: number;
+    amountOfGrateCrusher: number;
 }
 
 enum SourceOfWasteWater {
@@ -42,10 +50,14 @@ export class GrateComponent extends React.Component<Props, State> {
     private currentWidthSection: number;
     private currentRodThickness: number;
     private currentGrate: GrateProperties;
+    private currentStandardWidthOfChannel: number;
     private sizeOfInputChannelPart: number; // l1
     private sizeOfOutputChannelPart: number; //l2
     private lengthOfIncreaseChannelPart: number; //l
     private standardWidthsOfChannel: number[] = [0.4, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2];
+    private amountOfWasteFixed: number = 8;
+    private currentGrateCrusher: GrateCrusher;
+    
 
     constructor(props: Props, context: any) {
         super(props, context);
@@ -64,6 +76,9 @@ export class GrateComponent extends React.Component<Props, State> {
             amountOfSection: undefined,
             widthOfGrate: undefined,
             commonLengthOfChamberGrate: undefined,
+            amountOfWasteInHour: undefined,
+            checkGrateCrusherSpeed: undefined,
+            amountOfGrateCrusher: undefined,
         }
     }
 
@@ -215,11 +230,10 @@ export class GrateComponent extends React.Component<Props, State> {
         if (sourceOfWater === SourceOfWasteWater.manufacture) {
             potb = 750 * parseFloat(this.amountOfWasteRef.value) * k / 24;
         } else if (sourceOfWater === SourceOfWasteWater.city) {
-            const qotb = 8;
-            const wotb = qotb * parseFloat(this.amountOfDwellersRef.value) / 365000;
+            const wotb = this.amountOfWasteFixed * parseFloat(this.amountOfDwellersRef.value) / 365000;
             potb = 750 * wotb * k / 24;
         }
-        const amountOfCrusher = (potb / performanceOfCrusher) > 1 ? Math.floor(potb / performanceOfCrusher) : 1;
+        const amountOfCrusher = (potb / performanceOfCrusher) > 1 ? Math.ceil(potb / performanceOfCrusher) : 1;
         this.setState({amountOfCrusher});
     }
 
@@ -236,50 +250,57 @@ export class GrateComponent extends React.Component<Props, State> {
         const {widthOfGrate} = this.state;
         const typeOfGrate = event.target.value;
         const fi = 20;
-        let A;
-        for (let index = 0; index < this.standardWidthsOfChannel.length; index++) {
-            if (this.standardWidthsOfChannel[index] > widthOfGrate) {
-                A = this.standardWidthsOfChannel[index-1];
-                break;
-            }
-        }
-        this.sizeOfInputChannelPart = (widthOfGrate - A) / (2 * Math.tan(fi * Math.PI / 180));
+        this.sizeOfInputChannelPart = (widthOfGrate - this.currentStandardWidthOfChannel) /
+            (2 * Math.tan(fi * Math.PI / 180));
         this.sizeOfOutputChannelPart = 0.5 * this.sizeOfInputChannelPart;
         if (typeOfGrate === 'vertical') {
-            this.lengthOfIncreaseChannelPart = 1.8 * A;
+            this.lengthOfIncreaseChannelPart = 1.8 * this.currentStandardWidthOfChannel;
         } else {
-            this.lengthOfIncreaseChannelPart = (1.8 * A) +
+            this.lengthOfIncreaseChannelPart = (1.8 * this.currentStandardWidthOfChannel) +
                 Math.sqrt(parseFloat(this.qmaxRef.value) / parseFloat(this.vkRef.value) /
                 Math.tan(parseFloat(this.alphaRef.value) * Math.PI / 180));
         }
+
+        const k = 2;
+        const wotb = this.amountOfWasteFixed * parseFloat(this.amountOfDwellersRef.value) / 365000;
+        const potb = 750 * wotb * k / 24;
         this.setState({commonLengthOfChamberGrate:
-            this.sizeOfInputChannelPart + this.sizeOfOutputChannelPart + this.lengthOfIncreaseChannelPart
+            this.sizeOfInputChannelPart + this.sizeOfOutputChannelPart + this.lengthOfIncreaseChannelPart,
+            amountOfWasteInHour: potb
         });
+    }
+
+    private selectGrateCrusher = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        if (!this.qmaxRef.value) {
+            return;
+        }
+        if (!event.target.value) {
+            return;
+        }
+        this.currentGrateCrusher = GrateCrushers.find(grateCrusher => grateCrusher.mark === event.target.value);
+        let N = 1; // amount of grateCrusher
+        while (1) {
+            if ((N * this.currentGrateCrusher.maxPerformance) > parseFloat(this.qmaxRef.value)) {
+                break;
+            }
+            N++;
+        }
+        const v = parseFloat(this.qmaxRef.value) / (N * this.currentGrateCrusher.squareHeliumHole);
+        if (v > this.currentGrateCrusher.speedOfMoveInSectionMin && v < this.currentGrateCrusher.speedOfMoveInSectionMax) {
+            this.setState({checkGrateCrusherSpeed: v, amountOfGrateCrusher: N});
+        } else {
+            this.setState({checkGrateCrusherSpeed: parseFloat(v.toFixed(3)), amountOfGrateCrusher: N});
+            alert('Проверка прошла неудачно - данный тип решетки-дробилки ' +
+                'не подходит, либо скорость близка к нужному значению, ' +
+                'но таковой не является');
+        }
     }
 
     private renderListOfMarks = () => {
         const { suitableGrateItems, amountOfGrate } = this.state;
         return <div>
-            <InputGroup className={'grate-input-group'}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text className={'grate-input-title'}>
-                        {'Количество рабочих решеток, шт'}
-                    </InputGroup.Text>
-                </InputGroup.Prepend>
-                <Form.Label className={'grate-input-value'}>
-                    {amountOfGrate}
-                </Form.Label>
-            </InputGroup>
-            <InputGroup className={'grate-input-group'}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text className={'grate-input-title'}>
-                        {'Количество резервных решеток, шт'}
-                    </InputGroup.Text>
-                </InputGroup.Prepend>
-                <Form.Label className={'grate-input-value'}>
-                    {amountOfGrate > 3 ? 2 : 1}
-                </Form.Label>
-            </InputGroup>
+            {this.labelTemplate('Количество рабочих решеток, шт', amountOfGrate)}
+            {this.labelTemplate('Количество резервных решеток, шт', amountOfGrate > 3 ? 2 : 1)}
 
             <InputGroup className={'grate-input-group'}>
                 <InputGroup.Prepend>
@@ -305,28 +326,10 @@ export class GrateComponent extends React.Component<Props, State> {
         return (
             hp ? 
                 <div>
-                    <InputGroup className={'grate-input-group'}>
-                        <InputGroup.Prepend>
-                            <InputGroup.Text className={'grate-input-title'}>
-                                {'Величина уступа в месте установки решетки, м'}
-                            </InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <Form.Label className={'grate-input-value'}>
-                            {hp.toFixed(2)}
-                        </Form.Label>
-                    </InputGroup>
+                    {this.labelTemplate('Величина уступа в месте установки решетки, м', hp.toFixed(4))}
                     {
-                        grateTypeOne ?  
-                            <InputGroup className={'grate-input-group'}>
-                                <InputGroup.Prepend>
-                                    <InputGroup.Text className={'grate-input-title'}>
-                                        {'Количество технической воды, подводимой к дробилками, м3/ч'}
-                                    </InputGroup.Text>
-                                </InputGroup.Prepend>
-                                <Form.Label className={'grate-input-value'}>
-                                    {(40 * hp).toFixed(2)}
-                                </Form.Label>
-                            </InputGroup> :
+                        grateTypeOne ?
+                            this.labelTemplate('Количество технической воды, подводимой к дробилками, м3/ч', (40 * hp).toFixed(4)) :
                             null
                     }
                     {
@@ -340,9 +343,20 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderSelectOfGateTypes = () => {
-        const {commonLengthOfChamberGrate} = this.state;
+        const {commonLengthOfChamberGrate, amountOfWasteInHour} = this.state;
         return (
             <div>
+                <InputGroup className={'grate-input-group'}>
+                    <InputGroup.Prepend>
+                        <InputGroup.Text className={'grate-input-title'}>{'Выбор стандартной ширины канала'}</InputGroup.Text>
+                    </InputGroup.Prepend>
+                    <select className={'grate-input-value'}
+                        onChange={(event) => {this.currentStandardWidthOfChannel = parseFloat(event.target.value)}}>
+                        {this.standardWidthsOfChannel.map((width, index) => {
+                            return <option key={index} value={width}>{width}</option>
+                        })}
+                    </select>
+                </InputGroup>
                 <InputGroup className={'grate-input-group'}>
                     <InputGroup.Prepend>
                         <InputGroup.Text className={'grate-input-title'}>{'Выбор типа решетки'}</InputGroup.Text>
@@ -354,18 +368,17 @@ export class GrateComponent extends React.Component<Props, State> {
                     </select>
                 </InputGroup>
                 {
-                    commonLengthOfChamberGrate ? 
-                        <InputGroup className={'grate-input-group'}>
-                            <InputGroup.Prepend>
-                                <InputGroup.Text className={'grate-input-title'}>{'Длины и размеры:'}</InputGroup.Text>
-                            </InputGroup.Prepend>
-                            <Form.Label className={'grate-input-value'}>
-                                l1: {this.sizeOfInputChannelPart}
-                                l2: {this.sizeOfOutputChannelPart}
-                                l: {this.lengthOfIncreaseChannelPart}
-                                L: {commonLengthOfChamberGrate}
-                            </Form.Label>
-                        </InputGroup> :
+                    commonLengthOfChamberGrate ? <div>
+                            {this.labelTemplate('Длина входной части канала, м', this.sizeOfInputChannelPart.toFixed(4))}
+                            {this.labelTemplate('Длина выходной части канала, м', this.sizeOfOutputChannelPart.toFixed(4))}
+                            {this.labelTemplate('Длина расширенной части канала, м', this.lengthOfIncreaseChannelPart.toFixed(4))}
+                            {this.labelTemplate('Общая длина камеры решетки, м', commonLengthOfChamberGrate.toFixed(4))}
+                        </div> :
+                        null
+                }
+                {
+                    amountOfWasteInHour ? 
+                        this.labelTemplate('Количество отходов в час', amountOfWasteInHour) :
                         null
                 }
             </div>
@@ -433,57 +446,7 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderCommonFirstAndSecondInputData = () => {
-        const {sourceOfWater, amountOfCrusher} = this.state;
         return <div>
-            <InputGroup className={'grate-input-group'}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text className={'grate-input-title'}>{'Источник сточных вод'}</InputGroup.Text>
-                </InputGroup.Prepend>
-                <select className={'grate-input-value'}
-                    onChange={(event) => this.setState({sourceOfWater: parseFloat(event.target.value)})}>
-                    <option value={SourceOfWasteWater.manufacture}>Производсвенный сток</option>
-                    <option value={SourceOfWasteWater.city}>Городской сток</option>
-                </select>
-            </InputGroup>
-
-            {
-                sourceOfWater === SourceOfWasteWater.manufacture ?
-                    this.inputTemplate('Количество образующихся отбросов, м3/сут',
-                        'Введите значение Wотб...',
-                        (ref: HTMLInputElement) => this.amountOfWasteRef = ref) :
-                    this.inputTemplate('Приведенное население, чел',
-                        'Введите значение Nпр...',
-                        (ref: HTMLInputElement) => this.amountOfDwellersRef = ref)
-            }
-
-            <InputGroup className={'grate-input-group'}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text className={'grate-input-title'}>{'Выбор молотковых дробилок'}</InputGroup.Text>
-                </InputGroup.Prepend>
-                <select className={'grate-input-value'}
-                    onChange={(event) => {this.selectHammerCrusher(event)}}>
-                    {hammerCrushersProps.map(crusher => {
-                        return <option value={crusher.performance}>{crusher.mark}</option>
-                    })}
-                </select>
-            </InputGroup>
-
-            {
-                amountOfCrusher ?
-                    <InputGroup className={'grate-input-group'}>
-                        <InputGroup.Prepend>
-                            <InputGroup.Text className={'grate-input-title'}>
-                                {'Количество молотковых дробилок необходимых для очистки, шт'}
-                            </InputGroup.Text>
-                        </InputGroup.Prepend>
-                        <Form.Label className={'grate-input-value'}>
-                            {amountOfCrusher}
-                        </Form.Label>
-                    </InputGroup>
-                     :
-                    null
-            }
-
             {this.inputTemplate('Скрость течения воды в канале, м/с, диапазон [0.6 - 0.8]',
                 'Введите значение Vk...',
                 (ref: HTMLInputElement) => this.vkRef = ref)}
@@ -518,9 +481,44 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderFirstTypeOfGrate = () => {
-        const { suitableGrateItems, validateErrors } = this.state;
+        const { suitableGrateItems, validateErrors, sourceOfWater, amountOfCrusher } = this.state;
         return <div>
             {this.renderCommonInputData()}
+            <InputGroup className={'grate-input-group'}>
+                <InputGroup.Prepend>
+                    <InputGroup.Text className={'grate-input-title'}>{'Источник сточных вод'}</InputGroup.Text>
+                </InputGroup.Prepend>
+                <select className={'grate-input-value'}
+                    onChange={(event) => this.setState({sourceOfWater: parseFloat(event.target.value)})}>
+                    <option value={SourceOfWasteWater.manufacture}>Производсвенный сток</option>
+                    <option value={SourceOfWasteWater.city}>Городской сток</option>
+                </select>
+            </InputGroup>
+            {
+                sourceOfWater === SourceOfWasteWater.manufacture ?
+                    this.inputTemplate('Количество образующихся отбросов, м3/сут',
+                        'Введите значение Wотб...',
+                        (ref: HTMLInputElement) => this.amountOfWasteRef = ref) :
+                    this.inputTemplate('Приведенное население, чел',
+                        'Введите значение Nпр...',
+                        (ref: HTMLInputElement) => this.amountOfDwellersRef = ref)
+            }
+            <InputGroup className={'grate-input-group'}>
+                <InputGroup.Prepend>
+                    <InputGroup.Text className={'grate-input-title'}>{'Выбор молотковых дробилок'}</InputGroup.Text>
+                </InputGroup.Prepend>
+                <select className={'grate-input-value'}
+                    onChange={(event) => {this.selectHammerCrusher(event)}}>
+                    {hammerCrushersProps.map(crusher => {
+                        return <option value={crusher.performance}>{crusher.mark}</option>
+                    })}
+                </select>
+            </InputGroup>
+            {
+                amountOfCrusher ?
+                    this.labelTemplate('Количество молотковых дробилок необходимых для очистки, шт', amountOfCrusher) :
+                    null
+            }
             {this.renderCommonFirstAndSecondInputData()}
             {this.inputTemplate('Коэффициент, учитывающий стеснение потока механическими граблями, диапазон [1.05 - 1.1]',
                 'Введите значение Kst...',
@@ -545,6 +543,9 @@ export class GrateComponent extends React.Component<Props, State> {
         this.currentWidthSection = 0.016;
         return <div>
             {this.renderCommonInputData()}
+            {this.inputTemplate('Приведенное население, чел',
+                        'Введите значение Nпр...',
+                        (ref: HTMLInputElement) => this.amountOfDwellersRef = ref)}
             {this.renderCommonFirstAndSecondInputData()}
             <InputGroup className={'grate-input-group'}>
                 <InputGroup.Prepend>
@@ -570,8 +571,30 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderThirdTypeOfGrate = () => {
+        const {amountOfGrateCrusher, checkGrateCrusherSpeed} = this.state;
         return <div>
             {this.renderCommonInputData()}
+            <InputGroup className={'grate-input-group'}>
+                <InputGroup.Prepend>
+                    <InputGroup.Text className={'grate-input-title'}>{'Толщина стержней решетки, м'}</InputGroup.Text>
+                </InputGroup.Prepend>
+                <select className={'grate-input-value'}
+                    onChange={event => this.selectGrateCrusher(event)}>
+                    {GrateCrushers.map((grateCrusher, index) => {
+                        return <option key={index} value={grateCrusher.mark}>{grateCrusher.mark}</option>
+                    })}
+                </select>
+            </InputGroup>
+            {
+                checkGrateCrusherSpeed ? 
+                    <div>
+                        {this.labelTemplate('Количество решеток дробилок необходимых для очистки, шт',
+                            amountOfGrateCrusher)}
+                        {this.labelTemplate('Проверка дробилки, скорость должна входить в диапазон [1 - 1.2], м/с',
+                            checkGrateCrusherSpeed)}
+                    </div> :
+                    null
+            }
         </div>;
     }
 
@@ -593,6 +616,19 @@ export class GrateComponent extends React.Component<Props, State> {
             </InputGroup.Prepend>
             <input className={'grate-input-value'} type={'text'} placeholder={palceholder} ref={inputRef}/>
         </InputGroup>;
+    }
+
+    private labelTemplate = (title: string, value: string | number) => {
+        return <InputGroup className={'grate-input-group'}>
+            <InputGroup.Prepend>
+                <InputGroup.Text className={'grate-input-title'}>
+                    {title}
+                </InputGroup.Text>
+            </InputGroup.Prepend>
+            <Form.Label className={'grate-input-value'}>
+                {value}
+            </Form.Label>
+        </InputGroup> 
     }
 
     render() {

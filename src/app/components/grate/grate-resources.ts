@@ -18,6 +18,14 @@ export interface HammerCrusherProperties {
     power: number;
 }
 
+export interface GrateCrusher {
+    mark: string;
+    maxPerformance: number;
+    squareHeliumHole: number;
+    speedOfMoveInSectionMin: number;
+    speedOfMoveInSectionMax: number;
+}
+
 export const gratePropsTable: GrateProperties[] = [
     {mark: 'МГ5Т', size: { width: 2, height: 3 },      square: 6, widthSection: 0.016, rodThickness: 0.008, numberOfSection: 84},
     {mark: 'МГ6Т', size: { width: 2, height: 2 },      square: 4, widthSection: 0.016 , rodThickness: 0.008, numberOfSection: 84},
@@ -46,3 +54,12 @@ export const hammerCrushersProps: HammerCrusherProperties[] = [
     {mark: 'Д-3б', performance: 600, rotationFrequency: 1450, mass: 623, power: 22},
     {mark: 'ДК-1,0', performance: 1000, rotationFrequency: 1450, mass: 2000, power: 75},
 ];
+
+const transferToMeterInSec = 1 / 3600;
+export const GrateCrushers: GrateCrusher[] = [
+    {mark: 'РД-100', maxPerformance: 30 * transferToMeterInSec, squareHeliumHole: 0.00764, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2},
+    {mark: 'РД-200', maxPerformance: 60 * transferToMeterInSec, squareHeliumHole: 0.019, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2},
+    {mark: 'РД-400', maxPerformance: 420 * transferToMeterInSec, squareHeliumHole: 0.119, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2},
+    {mark: 'РД-600', maxPerformance: 2000 * transferToMeterInSec, squareHeliumHole: 0.455, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2},
+]
+
