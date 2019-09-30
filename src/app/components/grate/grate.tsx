@@ -1,84 +1,80 @@
 import * as React from 'react';
-import { 
-    gratePropsTable,
-    GrateProperties,
-    hammerCrushersProps,
-    GrateCrusher,
-    GrateCrushers
-} from './grate-resources';
 import { Nav, InputGroup } from 'react-bootstrap';
 import { Form } from 'react-bootstrap';
 import { Button } from 'react-bootstrap';
 import { Alert } from 'react-bootstrap';
 
+import {
+    getUniqueWidthSection,
+    getUniqueRodThickness,
+    onlySecondConsts,
+} from './grate.service';
+import { 
+    grates,
+    Grate,
+    hammerCrushers,
+    HammerCrusher,
+    GrateCrusher,
+    grateCrushers,
+    TypeOfGrates,
+    SourceOfWasteWater,
+    FormOfRods,
+} from './grate-resources';
+
 interface Props {
 }
 
 interface State {
-    beta: number; 
-    hp: number; 
-    sourceOfWater: SourceOfWasteWater;
-    amountOfCrusher: number;
-    suitableGrateItems: GrateProperties[];
-    suitableRodThickness: number[]; 
-    amountOfGrate: number; // N
     grateTypeOne: boolean;
     grateTypeTwo: boolean;
     grateTypeThree: boolean;
-    validateErrors: any[];
-    amountOfSection: number; // n1
-    widthOfGrate: number; // B1
-    commonLengthOfChamberGrate: number; // L
-    amountOfWasteInHour: number; 
-    checkGrateCrusherSpeed: number;
-    amountOfGrateCrusher: number;
+    amountOfWasteWater: number;
+    amountOfDwellers: number;
+    sourceOfWasteWater: SourceOfWasteWater;
+    hammerCrusher: HammerCrusher;
+    currentWidthSection: number;
+    currentRodThickness: number;
+    currentSuitableGrate: Grate;
+    currentTypeOfGrates: TypeOfGrates;
+    currentStandardWidthOfChannel: number;
+    maxSecondFlow: number;
+    currentTypeOfGrateCrusher: GrateCrusher;
 }
 
-enum SourceOfWasteWater {
-    manufacture,
-    city
-};
-
 export class GrateComponent extends React.Component<Props, State> {
-    private qmaxRef: HTMLInputElement;
-    private vkRef: HTMLInputElement;
-    private kstRef: HTMLInputElement;
-    private vpRef: HTMLInputElement;
-    private alphaRef: HTMLInputElement;
-    private amountOfWasteRef: HTMLInputElement;
-    private amountOfDwellersRef: HTMLInputElement;
-    private currentWidthSection: number;
-    private currentRodThickness: number;
-    private currentGrate: GrateProperties;
-    private currentStandardWidthOfChannel: number;
-    private sizeOfInputChannelPart: number; // l1
-    private sizeOfOutputChannelPart: number; //l2
-    private lengthOfIncreaseChannelPart: number; //l
-    private standardWidthsOfChannel: number[] = [0.4, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2];
-    private amountOfWasteFixed: number = 8;
-    private currentGrateCrusher: GrateCrusher;
+    private amountOfHammerCrusher: number = undefined;
+    private speedOfWaterInChannel: number = undefined;
+    private speedOfWaterInSection: number = undefined;
+    private formOfRod: FormOfRods = FormOfRods.prizma;
+    private inclineAngle: number = undefined;
+    private flowRestrictionRake: number = undefined;
+    private amountOfWorkingGrate: number = undefined;
+    private amountOfAdditionalGrate: number = undefined;
+    private valueOfLedge: number = undefined;
+    private amountOfTechnicalWater: number = undefined;
+    private sizeOfInputChannelPart: number = undefined;
+    private sizeOfOutputChannelPart: number = undefined;
+    private lengthOfIncreaseChannelPart: number = undefined;
+    private commonLengthOfChamberGrate: number = undefined;
     
-
     constructor(props: Props, context: any) {
         super(props, context);
+        const defaultWidthSection = getUniqueWidthSection()[0];
         this.state = {
-            beta: 2.42,
-            hp: undefined,
-            sourceOfWater: SourceOfWasteWater.manufacture,
-            amountOfCrusher: undefined,
-            suitableGrateItems: [],
-            suitableRodThickness: [],
-            amountOfGrate: 1,
             grateTypeOne: true,
             grateTypeTwo: false,
             grateTypeThree: false,
-            validateErrors: [],
-            amountOfSection: undefined,
-            widthOfGrate: undefined,
-            commonLengthOfChamberGrate: undefined,
-            amountOfWasteInHour: undefined,
-            checkGrateCrusherSpeed: undefined,
-            amountOfGrateCrusher: undefined,
+            amountOfWasteWater: undefined,
+            amountOfDwellers: undefined,
+            sourceOfWasteWater: SourceOfWasteWater.manufacture,
+            hammerCrusher: hammerCrushers[0],
+            currentWidthSection: defaultWidthSection,
+            currentRodThickness: getUniqueRodThickness(defaultWidthSection)[0],
+            currentSuitableGrate: undefined,
+            currentTypeOfGrates: TypeOfGrates.vertical,
+            currentStandardWidthOfChannel: onlySecondConsts.standardWidthsOfChannel[0],
+            maxSecondFlow: undefined,
+            currentTypeOfGrateCrusher: grateCrushers[0],
         }
     }
 
@@ -211,11 +207,6 @@ export class GrateComponent extends React.Component<Props, State> {
         const P = 3;
         const hp = dzeta * Math.pow(checkVp, 2) / (2 * g) * P;
         this.setState({hp});
-    }
-
-    private getUniqueValuesArray = (array: number[]) => {
-        return array.filter(
-            (value, index, self) => self.indexOf(value) === index);
     }
 
     private selectHammerCrusher = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -439,10 +430,19 @@ export class GrateComponent extends React.Component<Props, State> {
     }
 
     private renderCommonInputData = () => {
-        return this.inputTemplate(
-            'Максимальный секундный расход, м3/с',
-            'Введите значение qmax...',
-            (ref: HTMLInputElement) => this.qmaxRef = ref);
+        return <InputGroup className={'grate-input-group'}>
+            <InputGroup.Prepend>
+                <InputGroup.Text className={'grate-input-title'}>
+                    Максимальный секундный расход, м3/с<
+                </InputGroup.Text>
+            </InputGroup.Prepend>
+            <input className={'grate-input-value'}
+                type={'text'}
+                placeholder={'Введите значение qmax...'}
+                onChange={(event) => this.setState({
+                    maxSecondFlow: parseFloat(event.target.value)
+                })}/>
+        </InputGroup>; 
     }
 
     private renderCommonFirstAndSecondInputData = () => {
