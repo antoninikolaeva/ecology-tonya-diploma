@@ -1,24 +1,24 @@
 import { grates } from "./grate-resources";
 
-export const commonConsts = {
+export const commonConst = {
     g: 9.80666,
     p: 3,
     k: 2,
     hoursInDay: 24,
-    pOtbFirst: 750,
-    pOtbSecond: 365000,
-    fi: 20,
+    manufacture: 750,
+    city: 365000,
+    pfi: 20,
     increaseChannelPort: 1.8,
     amountOfWasteWater: 40,
-};
-
-export const onlyFirstConsts = {
-
-};
-
-export const onlySecondConsts = {
-    standardWidthsOfChannel: [0.4, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2],
     amountOfWasteFixed: 8,
+};
+
+export const onlyFirstConst = {
+
+};
+
+export const onlySecondConst = {
+    standardWidthsOfChannel: [0.4, 0.8, 1, 1.2, 1.4, 1.6, 1.8, 2],
 }
 
 export function transferRadiansToDegrees(radians: number): number {
@@ -38,6 +38,16 @@ export function getUniqueRodThickness(currentWidthSection: number): number[] {
     });
     const currentRodThickness = currentGrates.map(grate => grate.rodThickness);
     return getUniqueValuesArray(currentRodThickness);
+}
+
+export function checkIsNumber(value: number | string): boolean {
+    if (typeof value === 'number') {
+        return true;
+    } else {
+        const regExp = /[^\D]/g;
+        const isSymbols = regExp.test(value);
+        return isSymbols;
+    }
 }
 
 function getUniqueValuesArray(array: number[]) {
