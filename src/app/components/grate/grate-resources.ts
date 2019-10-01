@@ -41,6 +41,15 @@ export enum FormOfRods {
     prizmaWithCircleEdge = 1.83,
 }
 
+export interface CheckObject {
+    speedOfWaterInChannel: number;
+    speedOfWaterInSection: number;
+    inclineAngle: number;
+    maxSecondFlow: number;
+    grateTypeOne: boolean;
+    flowRestrictionRake: number;
+}
+
 export const grates: Grate[] = [
     {mark: 'МГ5Т', size: { width: 2, height: 3 },      square: 6, widthSection: 0.016, rodThickness: 0.008, numberOfSection: 84},
     {mark: 'МГ6Т', size: { width: 2, height: 2 },      square: 4, widthSection: 0.016 , rodThickness: 0.008, numberOfSection: 84},
