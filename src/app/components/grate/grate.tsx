@@ -10,6 +10,7 @@ import {
     checkIsNumber,
     transferRadiansToDegrees,
     OutputError,
+    InputTemplate,
 } from './grate.service';
 import { 
     grates,
@@ -45,9 +46,11 @@ interface State {
     validateErrors: any[];
     checkWaterError: boolean;
     checkGrateCrusherError: boolean;
+    dailyFlow: number;
 }
 
 export class GrateComponent extends React.Component<Props, State> {
+    // Инициализация всех использемых локальных переменных
     private speedOfWaterInChannel: number = undefined;
     private speedOfWaterInSection: number = undefined;
     private formOfRod: FormOfRods = FormOfRods.prizma;
@@ -59,14 +62,15 @@ export class GrateComponent extends React.Component<Props, State> {
     private currentHammerCrusher: HammerCrusher = hammerCrushers[0];
     private suitableGrates: Grate[] = [];
     private currentSuitableGrate: Grate = undefined;
-    private amountOfSectionInEachGrate: number= undefined;
-    private widthOfGrateCounted: number= undefined;
     private sizeOfInputChannelPart: number = undefined;
     private sizeOfOutputChannelPart: number = undefined;
     private lengthOfIncreaseChannelPart: number = undefined;
     private checkGrateCrusherSpeed: number = undefined;
     private amountGrateOfCrushers: number = undefined;
+    private limitedStandardWidthOfChannel: number[] = [];
+    private checkSpeedOfWater: number = undefined;
 
+    // Инициализация всех использемых переменных в state
     constructor(props: Props, context: any) {
         super(props, context);
         this.state = {
@@ -87,9 +91,11 @@ export class GrateComponent extends React.Component<Props, State> {
             validateErrors: [],
             checkWaterError: false,
             checkGrateCrusherError: false,
+            dailyFlow: undefined,
         }
     }
 
+    // Инициализация всех использемых локальных переменных в состояние по умолчанию
     private defaultLocalSettings = () => {
         this.speedOfWaterInChannel = undefined;
         this.speedOfWaterInSection = undefined;
@@ -102,15 +108,16 @@ export class GrateComponent extends React.Component<Props, State> {
         this.currentHammerCrusher = hammerCrushers[0];
         this.suitableGrates = [];
         this.currentSuitableGrate = undefined;
-        this.amountOfSectionInEachGrate = undefined;
-        this.widthOfGrateCounted = undefined;
         this.sizeOfInputChannelPart = undefined;
         this.sizeOfOutputChannelPart = undefined;
         this.lengthOfIncreaseChannelPart = undefined;
         this.checkGrateCrusherSpeed = undefined;
         this.amountGrateOfCrushers = undefined;
+        this.limitedStandardWidthOfChannel = [];
+        this.checkSpeedOfWater = undefined;
     }
 
+    // Инициализация всех использемых переменных в state в состояние по умолчанию
     private defaultStateSettings = () => {
         this.setState({
             sourceOfWasteWater: SourceOfWasteWater.manufacture,
@@ -130,6 +137,7 @@ export class GrateComponent extends React.Component<Props, State> {
         });
     }
 
+    // Проверка входных данных для их последующей валидации
     private createFinalCheckObject = (): CheckObject => {
         const {
             grateTypeOne,
@@ -146,25 +154,30 @@ export class GrateComponent extends React.Component<Props, State> {
         return check;
     }
 
-    private inputAmountOfWasteWater = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const {sourceOfWasteWater} = this.state;
-        if(!checkIsNumber(event.target.value)) {
-           return; // to do Error notification 
-        }
-        const amountOfWasteWater = parseFloat(event.target.value);
-        let amountOfWaste
+    // Динамический расчет количества загрязнений и количества молотковых дробилок
+    private inputAmountOfWasteWater = (value: string) => {
+        const {sourceOfWasteWater, dailyFlow} = this.state;
+        // amountOfWasteWater - переменная используемая как для производства так и для городских стоков
+        // определяет либо количество отбросов, либо норму водоотведения
+        const amountOfWasteWater = parseFloat(value);
+        let amountOfWaste;
         if (sourceOfWasteWater === SourceOfWasteWater.manufacture) {
             amountOfWaste = _.WOTB_MANUFACTURE * amountOfWasteWater * _.K /
                 _.HOURS_IN_DAY;
         } else {
-            amountOfWaste = _.QOTB * amountOfWasteWater / _.WOTB_CITY;
+            const amountOfDwellers = _.TRANSFORM_LITER_TO_VOLUME_METER * dailyFlow / amountOfWasteWater;
+            amountOfWaste = _.QOTB * amountOfDwellers / _.WOTB_CITY;
         }
-        const amountOfHammerCrushers = (amountOfWaste / this.currentHammerCrusher.performance) > 1 ?
+        let amountOfHammerCrushers = (amountOfWaste / this.currentHammerCrusher.performance) > 1 ?
             Math.ceil(amountOfWaste / this.currentHammerCrusher.performance) :
             1;
+        if(amountOfWaste === 0) {
+            amountOfHammerCrushers = 0;
+        }
         this.setState({amountOfWaste, amountOfHammerCrushers});
     }
 
+    // Выбор решеток дробилок из списка
     private selectHammerCrusher = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const {amountOfWaste} = this.state;
         if(!checkIsNumber(event.target.value)) {
@@ -177,6 +190,7 @@ export class GrateComponent extends React.Component<Props, State> {
         this.setState({amountOfHammerCrushers});
     }
 
+    // Выбор ширины прозоров
     private selectWidthSection = (event: React.ChangeEvent<HTMLSelectElement>) => {
         if (!checkIsNumber(event.target.value)) {
             return;
@@ -187,6 +201,10 @@ export class GrateComponent extends React.Component<Props, State> {
         this.setState({listOfRodThickness});
     }
 
+    // Основной расчет по нажатию на кнопку Подобрать марку решетки,
+    // производит расчет и делает выбор всех удовлетворяемых решеток. 
+    // Возможны ситуации когда для заданных параметров нет удовлетворительных
+    // решеток, тогда нужно менять какие-либо параметры.
     private grateCounting = () => {
         const {grateTypeOne, grateTypeTwo, maxSecondFlow} = this.state;
         const errors = checkAllInputForCounting(this.createFinalCheckObject());
@@ -224,52 +242,65 @@ export class GrateComponent extends React.Component<Props, State> {
                 amountOfSuitableGrates++;
             }
         }
-        this.currentSuitableGrate = this.suitableGrates[0];
-        if (grateTypeTwo) {
-            this.amountOfSectionInEachGrate = amountOfSection / amountOfSuitableGrates;
-            this.widthOfGrateCounted = commonWidthOfGrate / amountOfSuitableGrates;
+        this.suitableGrates = this.suitableGrates.filter(grate => this.checkWaterSpeedCounting(grate, amountOfSuitableGrates));
+        if (this.suitableGrates.length === 0) {
+            this.setState({amountOfSuitableGrates, validateErrors: [], checkWaterError: true});
+            return;
         }
-        this.checkWaterSpeedCounting(this.currentSuitableGrate, amountOfSuitableGrates);
-        this.setState({
-            amountOfSuitableGrates,
-            validateErrors: [],
-        });
+        this.currentSuitableGrate = this.suitableGrates[0];
+        this.limitedStandardWidthOfChannel = _.STANDARD_WIDTH_OF_CHANNEL.filter(
+            width => width < this.currentSuitableGrate.size.width * amountOfSuitableGrates);
+        this.countingLedgeInstallationPlace();
+        this.setState({amountOfSuitableGrates, validateErrors: [], checkWaterError: false});
     }
 
-    private checkWaterSpeed = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    // Выбор и переасчет текущих удовлетворяемых решеток
+    private selectFromSuitableGrate = (event: React.ChangeEvent<HTMLSelectElement>) => {
+        const {amountOfSuitableGrates} = this.state;
         const currentGrateMark = event.target.value;
         this.currentSuitableGrate = this.suitableGrates.find(grate => grate.mark === currentGrateMark);
         this.checkWaterSpeedCounting(this.currentSuitableGrate);
+        this.limitedStandardWidthOfChannel = _.STANDARD_WIDTH_OF_CHANNEL.filter(
+            width => width < this.currentSuitableGrate.size.width * amountOfSuitableGrates);
+        this.countingLedgeInstallationPlace();
     }
 
-    private checkWaterSpeedCounting = (currentSuitableGrate: Grate, amountOfSuitableGratesDefault?: number) => {
-        const {amountOfSuitableGrates, grateTypeTwo, grateTypeOne, maxSecondFlow} = this.state;
-        const amountOfSuitableGratesReal = amountOfSuitableGrates && !amountOfSuitableGratesDefault ?
-            amountOfSuitableGrates :
-            amountOfSuitableGratesDefault;
-        let checkSpeedOfWater;
+    // Проверка решеток на удовлетворяемость всем заданным требованиям
+    private checkWaterSpeedCounting = (currentSuitableGrate: Grate, amountOfSuitableGratesAfterCount?: number): boolean => {
+        const {amountOfSuitableGrates, grateTypeTwo, grateTypeOne, maxSecondFlow, currentTypeOfGrates} = this.state;
+        const amountOfSuitableGratesReal = (amountOfSuitableGrates && amountOfSuitableGratesAfterCount) ?
+            amountOfSuitableGratesAfterCount : (amountOfSuitableGrates && !amountOfSuitableGratesAfterCount) ?
+            amountOfSuitableGrates : !amountOfSuitableGrates && amountOfSuitableGratesAfterCount ?
+            amountOfSuitableGratesAfterCount : undefined;
         if (grateTypeOne) {
-            checkSpeedOfWater = (this.flowRestrictionRake * maxSecondFlow) /
+            this.checkSpeedOfWater = (this.flowRestrictionRake * maxSecondFlow) /
                 (Math.sqrt(maxSecondFlow / this.speedOfWaterInChannel) *
                 currentSuitableGrate.numberOfSection * this.currentWidthSection *
                 amountOfSuitableGratesReal);
         }
         if (grateTypeTwo) {
-            checkSpeedOfWater = (_.FLOW_RESTRICTION_RAKE * maxSecondFlow) /
+            this.checkSpeedOfWater = (_.FLOW_RESTRICTION_RAKE * maxSecondFlow) /
                 (Math.sqrt(maxSecondFlow / this.speedOfWaterInChannel) *
-                this.amountOfSectionInEachGrate * this.currentWidthSection *
+                this.currentSuitableGrate.numberOfSection * this.currentWidthSection *
                 amountOfSuitableGratesReal);
         }
-        if (!(checkSpeedOfWater >= _.MIN_CHECK_SPEED_WATER) && !(checkSpeedOfWater <= _.MAX_CHECK_SPEED_WATER)) {
-            this.setState({checkWaterError: true});
-            return;
+        if (_.MIN_CHECK_SPEED_WATER >= this.checkSpeedOfWater || _.MAX_CHECK_SPEED_WATER <= this.checkSpeedOfWater) {
+            return false;
         }
-        const dzeta = this.formOfRod * Math.sin(transferRadiansToDegrees(this.inclineAngle)) *
-            Math.pow(this.currentRodThickness / this.currentWidthSection, (4 / 3));
-        const valueOfLedgeInstallationPlace = dzeta * Math.pow(checkSpeedOfWater, 2) / (2 * _.G) * _.P;
-        this.setState({valueOfLedgeInstallationPlace, checkWaterError: false});
+        return true;
     };
 
+    // Расчет величины уступа в месте установки решетки
+    private countingLedgeInstallationPlace = () => {
+        const {currentTypeOfGrates} = this.state;
+        const dzeta = this.formOfRod * Math.sin(transferRadiansToDegrees(this.inclineAngle)) *
+            Math.pow(this.currentRodThickness / this.currentWidthSection, (4 / 3));
+        const valueOfLedgeInstallationPlace = dzeta * Math.pow(this.checkSpeedOfWater, 2) / (2 * _.G) * _.P;
+        this.countingLengths(this.limitedStandardWidthOfChannel[0], currentTypeOfGrates);
+        this.setState({valueOfLedgeInstallationPlace});
+    }
+
+    // Выбор стандартной ширины канала подводящего воду к решеткам
     private selectStandardWidthOfChannel = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const {currentTypeOfGrates} = this.state;
         if (!checkIsNumber(event.target.value)) {
@@ -279,15 +310,17 @@ export class GrateComponent extends React.Component<Props, State> {
         this.countingLengths(standardWidthChannel, currentTypeOfGrates);
     }
 
+    // Выбор типа решетки
     private selectTypeOfGrate = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const {currentStandardWidthOfChannel,} = this.state;
         const typeOfGrate = parseFloat(event.target.value);
         this.countingLengths(currentStandardWidthOfChannel, typeOfGrate);
     }
 
+    // Расчет все длин 
     private countingLengths = (currentStandardWidthOfChannel: number, typeOfGrate: number) => {
         const {maxSecondFlow} = this.state;
-        this.sizeOfInputChannelPart = (this.widthOfGrateCounted - currentStandardWidthOfChannel) /
+        this.sizeOfInputChannelPart = (this.currentSuitableGrate.size.width - currentStandardWidthOfChannel) /
             (2 * transferRadiansToDegrees(_.PFI));
         this.sizeOfOutputChannelPart = 0.5 * this.sizeOfInputChannelPart;
         if (typeOfGrate === TypeOfGrates.vertical) {
@@ -302,6 +335,7 @@ export class GrateComponent extends React.Component<Props, State> {
         });
     }
 
+    // Выбор решеток дробилок из списка
     private selectGrateCrusher = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const {maxSecondFlow} = this.state;
         const markOfGrateCrusher = event.target.value;
@@ -310,6 +344,7 @@ export class GrateComponent extends React.Component<Props, State> {
         this.setState({currentGrateCrusher});
     }
 
+    // Расчет решеток дробилок
     private countingGrateCrusher = (maxSecondFlow: number, currentGrateCrusher: GrateCrusher) => {
         this.amountGrateOfCrushers = 1;
         while (1) {
@@ -328,12 +363,10 @@ export class GrateComponent extends React.Component<Props, State> {
         }
     }
 
-    private inputMaxSecondFlow = (event: React.ChangeEvent<HTMLInputElement>) => {
+    // Ввод максимального секундного расхода
+    private inputMaxSecondFlow = (value: string) => {
         const {grateTypeThree, currentGrateCrusher} = this.state;
-        if (!checkIsNumber(event.target.value)) {
-            return;
-        }
-        const maxSecondFlow = parseFloat(event.target.value);
+        const maxSecondFlow = parseFloat(value);
         if (grateTypeThree) {
             this.countingGrateCrusher(maxSecondFlow, currentGrateCrusher);
             this.setState({maxSecondFlow});
@@ -342,277 +375,237 @@ export class GrateComponent extends React.Component<Props, State> {
         }
     }
 
-    private renderCommonInputData = () => {
-        return (
-            this.selectAndInputTemplate('Максимальный секундный расход, м3/с',
-                <input className={'grate-input-value'} type={'text'} placeholder={'Введите значение qmax...'}
-                    onChange={(event) => this.inputMaxSecondFlow(event)}/>
-            )
-        ); 
+    // Ввод суточного расхода сточной воды
+    private inputDailyFlow = (value: string) => {
+        const dailyFlow = parseFloat(value);
+        let amountOfHammerCrushers;
+        if (dailyFlow === 0) {
+            amountOfHammerCrushers = 0;
+        }
+        this.setState({dailyFlow, amountOfHammerCrushers});
     }
 
+    // Отрисовка ввода максимального секундного расхода
+    private renderCommonInputData = () => {
+        return <InputTemplate title={'Максимальный секундный расход, м3/с'}
+            placeholder={'Введите значение qmax...'} onChange={this.inputMaxSecondFlow} />;
+    }
+
+    // Отрисовка ввода максимального секундного расхода
+    private renderDailyFlow = () => {
+        return <InputTemplate title={'Суточный расход сточных вод, м3/сут'}
+            placeholder={'Введите значение Q...'} onChange={this.inputDailyFlow} />;
+    }
+
+    // Отрисовка общих данных для первого и второго расчета
     private renderCommonFirstAndSecondInputData = () => {
         return <div>
-            {this.selectAndInputTemplate('Скрость течения воды в канале, м/с, диапазон [0.6 - 0.8]',
-                <input className={'grate-input-value'} type={'text'} placeholder={'Введите значение Vk...'}
-                    onChange={(event) => {
-                        if (!checkIsNumber(event.target.value)) return;
-                        this.speedOfWaterInChannel = parseFloat(event.target.value);
-                    }}/>
-            )}
-            {this.selectAndInputTemplate('Скорость движения воды в прозорах решетки, м/с, диапазон [0.8 - 1]',
-                <input className={'grate-input-value'} type={'text'} placeholder={'Введите значение Vp...'}
-                    onChange={(event) => {
-                        if (!checkIsNumber(event.target.value)) return;
-                        this.speedOfWaterInSection = parseFloat(event.target.value);
-                    }}/>
-            )}
-            {this.selectAndInputTemplate('Выбор формы стержней',
+            <InputTemplate title={'Скрость течения воды в канале, м/с, диапазон [0.6 - 0.8]'}
+                placeholder={'Введите значение Vk...'} onChange={(value) => {this.speedOfWaterInChannel = parseFloat(value)}} />
+            <InputTemplate title={'Скорость движения воды в прозорах решетки, м/с, диапазон [0.8 - 1]'}
+                placeholder={'Введите значение Vp...'} onChange={(value) => {this.speedOfWaterInSection = parseFloat(value)}} />
+            {selectTemplate('Выбор формы стержней',
                 <select className={'grate-input-value'}
                     onChange={(event) => this.formOfRod = parseFloat(event.target.value)}>
                     <option value={FormOfRods.prizma}>Прямоугольная форма</option>
                     <option value={FormOfRods.prizmaWithCircleEdge}>Прямоугольная форма с закругленной лобовой частью</option>
                     <option value={FormOfRods.circle}>Круглая форма</option>
                 </select>)}
-            {this.selectAndInputTemplate('Угол наклона решетки к горизонту, диапазон [60 - 70]',
-                <input className={'grate-input-value'} type={'text'} placeholder={'Введите значение α...'}
-                    onChange={(event) => {
-                        if (!checkIsNumber(event.target.value)) return;
-                        this.inclineAngle = parseFloat(event.target.value);
-                }}/>
-            )}
+            <InputTemplate title={'Угол наклона решетки к горизонту, диапазон [60 - 70]'}
+                placeholder={'Введите значение α...'} onChange={(value) => {this.inclineAngle = parseFloat(value)}} />
         </div>;
     }
 
+    // Отрисовка кнопки расчета
     private renderCountingButton = () => {
-        return <Button variant={'outline-primary'}
-            className={'grate-counting-btn'}
+        return <Button variant={'outline-primary'} className={'grate-counting-btn'}
             onClick={() => this.grateCounting()}>
             Подобрать марку решеток
         </Button>
     }
 
+    // Отрисовка кнопки очистки
+    private resetData = () => {
+        return <Button variant={'outline-danger'} className={'grate-counting-btn'}
+            onClick={() => this.clearDataToDefault()}>
+            Очистить входные данные
+        </Button>
+    }
+
+    // Отрисовка выбора источника грязной воды
     private renderSourceOfWasteWater = () => {
         const {sourceOfWasteWater} = this.state;
         return <div>
-            {this.selectAndInputTemplate('Источник сточных вод',
+            {selectTemplate('Источник сточных вод',
                 <select className={'grate-input-value'}
-                    onChange={(event) => this.setState({sourceOfWasteWater: parseFloat(event.target.value)})}>
+                    onChange={(event) => {
+                        this.setState({sourceOfWasteWater: parseFloat(event.target.value),
+                            amountOfWaste: 0, dailyFlow: 0, amountOfHammerCrushers: 0});
+                    }}>
                     <option value={SourceOfWasteWater.manufacture}>Производсвенный сток</option>
                     <option value={SourceOfWasteWater.city}>Городской сток</option>
                 </select>)}
-            {
-                sourceOfWasteWater === SourceOfWasteWater.city ?
-                    this.selectAndInputTemplate('Приведенное население, чел',
-                        <input className={'grate-input-value'} type={'text'}
-                        placeholder={'Введите значение Nпр...'} onChange={(event) => this.inputAmountOfWasteWater(event)}/>) :
-                    this.selectAndInputTemplate('Количество образующихся отбросов, м3/сут',
-                    <input className={'grate-input-value'} type={'text'}
-                        placeholder={'Введите значение Wотб...'} onChange={(event) => this.inputAmountOfWasteWater(event)}/>)
-            }
+            {sourceOfWasteWater === SourceOfWasteWater.city ? 
+                this.renderDailyFlow() :
+                <InputTemplate title={'Количество образующихся отбросов, м3/сут'} placeholder={'Введите значение Wотб...'}
+                    onChange={this.inputAmountOfWasteWater} />}
         </div>;
     }
 
+    // Отрисовка вывода общих результатов первого и второго расчетов
+    private commonResultFirstAndSecondCounting = () => {
+        const {
+            amountOfSuitableGrates,
+            valueOfLedgeInstallationPlace,
+            amountOfWaste,
+            commonLengthOfChamberGrate
+        } = this.state;
+        return (
+            amountOfSuitableGrates > 0 ?
+            <div>
+                {labelTemplate('Количество рабочих решеток, шт', amountOfSuitableGrates)}
+                {labelTemplate('Количество резервных решеток, шт',
+                    amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1)}
+                {selectTemplate('Выбор решетки',
+                    <select className={'grate-input-value'} onChange={(event) => {this.selectFromSuitableGrate(event)}}>
+                        {this.suitableGrates.map((item, index) => {
+                            return <option key={index} value={item.mark}>{item.mark}</option>
+                        })}
+                    </select>)}
+                {valueOfLedgeInstallationPlace ?
+                    <div>
+                        {labelTemplate('Величина уступа в месте установки решетки, м', valueOfLedgeInstallationPlace.toFixed(3))}
+                        {labelTemplate('Количество технической воды, подводимой к дробилками, м3/ч',
+                            (_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3))}
+                        {selectTemplate('Выбор стандартной ширины канала, м',
+                            <select className={'grate-input-value'} onChange={(event) => this.selectStandardWidthOfChannel(event)}>
+                                {this.limitedStandardWidthOfChannel.map((width, index) => {
+                                    return <option key={index} value={width}>{width}</option>
+                                })}
+                            </select>)}
+                        {selectTemplate('Выбор типа решетки',
+                            <select className={'grate-input-value'} onChange={(event) => {this.selectTypeOfGrate(event)}}>
+                                <option value={'vertical'}>Вертикальные решетки</option>
+                                <option value={'incline'}>Наклонные решетки</option>
+                            </select>)}
+                        {commonLengthOfChamberGrate ?
+                                <div>
+                                    {labelTemplate('Длина входной части канала, м', this.sizeOfInputChannelPart.toFixed(3))}
+                                    {labelTemplate('Длина выходной части канала, м', this.sizeOfOutputChannelPart.toFixed(3))}
+                                    {labelTemplate('Длина расширенной части канала, м', this.lengthOfIncreaseChannelPart.toFixed(3))}
+                                    {labelTemplate('Общая длина камеры решетки, м', commonLengthOfChamberGrate.toFixed(3))}
+                                </div> : null}
+                        {amountOfWaste ? labelTemplate('Количество отходов, кг/ч', amountOfWaste) : null}
+                    </div> :
+                    null
+                }
+            </div> : null
+        );
+    }
+
+    // Отрисовка первого расчета
     private renderFirstTypeOfGrate = () => {
         const {
             validateErrors,
             listOfRodThickness,
             amountOfHammerCrushers,
-            amountOfSuitableGrates,
-            valueOfLedgeInstallationPlace,
+            dailyFlow,
             checkWaterError,
         } = this.state;
         return <div>
             {this.renderCommonInputData()}
             {this.renderSourceOfWasteWater()}
-            {this.selectAndInputTemplate('Выбор молотковых дробилок',
-                <select className={'grate-input-value'}
-                    onChange={(event) => {this.selectHammerCrusher(event)}}>
+            {dailyFlow ? <InputTemplate title={'Норма водоотведения, л/(чел*сут)'} placeholder={'Введите значение a...'} onChange={this.inputAmountOfWasteWater} /> : null}
+            {selectTemplate('Выбор молотковых дробилок',
+                <select className={'grate-input-value'} onChange={(event) => {this.selectHammerCrusher(event)}}>
                     {hammerCrushers.map((crusher, index) => {
                         return <option key={index} value={crusher.performance}>{crusher.mark}</option>;
                     })}
                 </select>)}
-            {
-                amountOfHammerCrushers ?
-                    this.labelTemplate('Количество молотковых дробилок необходимых для очистки, шт',
-                        amountOfHammerCrushers) :
-                    null
-            }
+            {amountOfHammerCrushers ?
+                labelTemplate('Количество молотковых дробилок необходимых для очистки, шт', amountOfHammerCrushers) : null}
             {this.renderCommonFirstAndSecondInputData()}
-            {this.selectAndInputTemplate('Коэффициент, учитывающий стеснение потока механическими граблями, диапазон [1.05 - 1.1]',
-                <input className={'grate-input-value'} type={'text'} placeholder={'Введите значение Kst...'}
-                    onChange={(event) => {
-                        if (!checkIsNumber(event.target.value)) return;
-                        this.flowRestrictionRake = parseFloat(event.target.value);
-                    }}/>
-                )}
-            {this.selectAndInputTemplate('Ширина прозоров решетки, м',
-                <select className={'grate-input-value'}
-                    onChange={(event) => { this.selectWidthSection(event) }}>
+            <InputTemplate title={'Коэффициент, учитывающий стеснение потока механическими граблями, диапазон [1.05 - 1.1]'}
+                placeholder={'Введите значение Kst...'} onChange={(value) => {this.flowRestrictionRake = parseFloat(value)}} />
+            {selectTemplate('Ширина прозоров решетки, м',
+                <select className={'grate-input-value'} onChange={(event) => { this.selectWidthSection(event) }}>
                     {this.listOfWidthSection.map((section, index) => {
-                            return <option key={index}value={section}>{section}</option>;
-                        })}
+                        return <option key={index}value={section}>{section}</option>;
+                    })}
                 </select>)}
-            {this.selectAndInputTemplate('Толщина стержней решетки, м',
-                <select className={'grate-input-value'}
-                    onChange={(event => {this.currentRodThickness = parseFloat(event.target.value)})}>
+            {selectTemplate('Толщина стержней решетки, м',
+                <select className={'grate-input-value'} onChange={(event => {this.currentRodThickness = parseFloat(event.target.value)})}>
                     {listOfRodThickness.map((rodThickness, index) => {
                         return <option key={index} value={rodThickness}>{rodThickness}</option>;
                     })}
                 </select>)}
             {this.renderCountingButton()}
-            {
-                amountOfSuitableGrates > 0 ?
-                    <div>
-                        {this.labelTemplate('Количество рабочих решеток, шт', amountOfSuitableGrates)}
-                        {this.labelTemplate('Количество резервных решеток, шт',
-                            amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1)}
-            
-                        {this.selectAndInputTemplate('Выбор решетки',
-                            <select className={'grate-input-value'}
-                                onChange={(event) => {this.checkWaterSpeed(event)}}>
-                                {this.suitableGrates.map((item, index) => {
-                                        return <option key={index} value={item.mark}>{item.mark}</option>
-                                    })}
-                            </select>)}
-                        {
-                            checkWaterError ? 
-                                <OutputError errorMessage={'К сожалению, выбранная марка решетки не подходит для заданных параметров.' +
-                                    'Пожалуйста, выберите другую марку решетки или иные' +
-                                    'входные данные (ширину прозоров и/или толщину стержней).'} /> :
-                                null
-                        }
-                        {valueOfLedgeInstallationPlace ?
-                            <div>
-                                {this.labelTemplate('Величина уступа в месте установки решетки, м', valueOfLedgeInstallationPlace.toFixed(3))}
-                                {this.labelTemplate('Количество технической воды, подводимой к дробилками, м3/ч',
-                                    (_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3))}
-                            </div> :
-                            null
-                        }
-                    </div> :
-                    undefined
-            }
-            {
-                validateErrors.length > 0 ?
-                    this.renderValidateErrors() :
-                    null
-            }
+             {checkWaterError ? 
+                <OutputError errorMessage={'К сожалению, для заданных параметров не подходит ни одна решетка.' +
+                    'Пожалуйста, выберите иные входные данные (ширину прозоров и/или толщину стержней).'} /> :
+                null}
+            {this.resetData()}
+            {this.commonResultFirstAndSecondCounting()}
+            {validateErrors.length > 0 ? this.renderValidateErrors() : null}
         </div>;
     }
 
+    // Отрисовка второго расчета
     private renderSecondTypeOfGrate = () => {
         const {
-            amountOfWaste,
             listOfRodThickness,
-            amountOfSuitableGrates,
-            valueOfLedgeInstallationPlace,
-            commonLengthOfChamberGrate,
-            validateErrors
+            validateErrors,
+            dailyFlow,
+            checkWaterError,
         } = this.state;
         this.currentWidthSection = _.FIXED_WIDTH_SECTION;
         return <div>
             {this.renderCommonInputData()}
             {this.renderSourceOfWasteWater()}
+            {dailyFlow ? <InputTemplate title={'Норма водоотведения, л/(чел*сут)'} placeholder={'Введите значение a...'} onChange={this.inputAmountOfWasteWater} /> : null}
             {this.renderCommonFirstAndSecondInputData()}
-            {this.selectAndInputTemplate('Толщина стержней решетки, м',
-                <select className={'grate-input-value'}
-                    onChange={(event => {this.currentRodThickness = parseFloat(event.target.value)})}>
+            {selectTemplate('Толщина стержней решетки, м',
+                <select className={'grate-input-value'} onChange={(event => {this.currentRodThickness = parseFloat(event.target.value)})}>
                     {listOfRodThickness.map((rodThickness, index) => {
                         return <option key={index} value={rodThickness}>{rodThickness}</option>;
                     })}
                 </select>)}
             {this.renderCountingButton()}
-            {
-                amountOfSuitableGrates > 0 ?
-                    <div>
-                        {this.labelTemplate('Количество рабочих решеток, шт', amountOfSuitableGrates)}
-                        {this.labelTemplate('Количество резервных решеток, шт',
-                            amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1)}
-                        {this.selectAndInputTemplate('Выбор решетки',
-                            <select className={'grate-input-value'}
-                                onChange={(event) => {this.checkWaterSpeed(event)}}>
-                                {this.suitableGrates.map((item, index) => {
-                                        return <option key={index} value={item.mark}>{item.mark}</option>
-                                    })}
-                            </select>)}
-                        {valueOfLedgeInstallationPlace ?
-                            <div>
-                                {this.labelTemplate('Величина уступа в месте установки решетки, м', valueOfLedgeInstallationPlace.toFixed(3))}
-                                {this.selectAndInputTemplate('Выбор стандартной ширины канала, м',
-                                    <select className={'grate-input-value'}
-                                        onChange={(event) => this.selectStandardWidthOfChannel(event)}>
-                                        {_.STANDARD_WIDTH_OF_CHANNEL.map((width, index) => {
-                                            return <option key={index} value={width}>{width}</option>
-                                        })}
-                                    </select>)}
-                                {this.selectAndInputTemplate('Выбор типа решетки',
-                                        <select className={'grate-input-value'}
-                                        onChange={(event) => {this.selectTypeOfGrate(event)}}>
-                                            <option value={'vertical'}>Вертикальные решетки</option>
-                                            <option value={'incline'}>Наклонные решетки</option>
-                                        </select>)}
-                                {
-                                    commonLengthOfChamberGrate ?
-                                        <div>
-                                            {this.labelTemplate('Длина входной части канала, м', this.sizeOfInputChannelPart.toFixed(3))}
-                                            {this.labelTemplate('Длина выходной части канала, м', this.sizeOfOutputChannelPart.toFixed(3))}
-                                            {this.labelTemplate('Длина расширенной части канала, м', this.lengthOfIncreaseChannelPart.toFixed(3))}
-                                            {this.labelTemplate('Общая длина камеры решетки, м', commonLengthOfChamberGrate.toFixed(3))}
-                                        </div> :
-                                        null
-                                }
-                                {
-                                    amountOfWaste ? 
-                                        this.labelTemplate('Количество отходов в час', amountOfWaste) :
-                                        null
-                                }
-                            </div> :
-                            null
-                        }
-                    </div> :
-                    null
-            }
-            {
-                validateErrors.length > 0 ?
-                    this.renderValidateErrors() :
-                    null
-            }
+            {checkWaterError ? 
+                <OutputError errorMessage={'К сожалению, для заданных параметров не подходит ни одна решетка.' +
+                    'Пожалуйста, выберите иные входные данные (ширину прозоров и/или толщину стержней).'} /> :
+                null}
+            {this.resetData()}
+            {this.commonResultFirstAndSecondCounting()}
+            {validateErrors.length > 0 ? this.renderValidateErrors() : null}
         </div>;
     }
 
+    // Отрисовка третьего расчета
     private renderThirdTypeOfGrate = () => {
         const {checkGrateCrusherError} = this.state;
         return <div>
             {this.renderCommonInputData()}
-            {
-                this.selectAndInputTemplate('Толщина стержней решетки, м',
-                    <select className={'grate-input-value'} onChange={event => this.selectGrateCrusher(event)}>
-                        {grateCrushers.map((grateCrusher, index) => {
-                            return <option key={index} value={grateCrusher.mark}>{grateCrusher.mark}</option>
-                        })}
-                    </select>)
-            }
-            {
-                checkGrateCrusherError ? 
-                    <OutputError errorMessage={'Проверка прошла неудачно - данный тип решетки-дробилки ' +
-                        'не подходит, либо скорость близка к нужному значению, ' +
-                        'но таковой не является.'} /> :
-                    null
-            }
-            {
-                this.checkGrateCrusherSpeed ? 
-                    <div>
-                        {this.labelTemplate('Количество решеток дробилок необходимых для очистки, шт',
-                            this.amountGrateOfCrushers)}
-                        {this.labelTemplate('Проверка дробилки, скорость должна входить в диапазон [1 - 1.2], м/с',
-                            this.checkGrateCrusherSpeed)}
-                    </div> :
-                    null
-            }
+            {selectTemplate('Толщина стержней решетки, м',
+                <select className={'grate-input-value'} onChange={event => this.selectGrateCrusher(event)}>
+                    {grateCrushers.map((grateCrusher, index) => {
+                        return <option key={index} value={grateCrusher.mark}>{grateCrusher.mark}</option>
+                    })}
+                </select>)}
+            {checkGrateCrusherError ? 
+                <OutputError errorMessage={'Проверка прошла неудачно - данный тип решетки-дробилки ' +
+                    'не подходит, либо скорость близка к нужному значению, ' +
+                    'но таковой не является.'} /> : null}
+            {this.checkGrateCrusherSpeed ? 
+                <div>
+                    {labelTemplate('Количество решеток дробилок необходимых для очистки, шт', this.amountGrateOfCrushers)}
+                    {labelTemplate('Проверка дробилки, скорость должна входить в диапазон [1 - 1.2], м/с', this.checkGrateCrusherSpeed)}
+                </div> : null}
+            {this.resetData()}
         </div>;
     }
 
+    // Отрисовка ошибок валидации
     private renderValidateErrors = () => {
         const {validateErrors} = this.state;
         return <div className={'grate-input-group'}>
@@ -620,35 +613,13 @@ export class GrateComponent extends React.Component<Props, State> {
         </div>;
     }
 
-    private labelTemplate = (title: string, value: string | number) => {
-        return <InputGroup className={'grate-input-group'}>
-            <InputGroup.Prepend>
-                <InputGroup.Text className={'grate-input-title'}>
-                    {title}
-                </InputGroup.Text>
-            </InputGroup.Prepend>
-            <Form.Label className={'grate-input-value'}>
-                {value}
-            </Form.Label>
-        </InputGroup> 
-    }
-
-    private selectAndInputTemplate = (title: string, template: JSX.Element) => {
-        return <InputGroup className={'grate-input-group'}>
-            <InputGroup.Prepend>
-                <InputGroup.Text className={'grate-input-title'}>
-                    {title}
-                </InputGroup.Text>
-            </InputGroup.Prepend>
-            {template}
-        </InputGroup>;
-    }
-
+    // Автоматическая очистка полей при переключении
     private clearDataToDefault = () => {
         this.defaultLocalSettings();
         this.defaultStateSettings();
     }
 
+    // Гланая функция компонента которая запускает все
     render() {
         const {grateTypeOne, grateTypeTwo, grateTypeThree} = this.state;
         return (
@@ -658,10 +629,8 @@ export class GrateComponent extends React.Component<Props, State> {
                         <Nav.Link eventKey={'grate1'} 
                             onClick={() => {
                                 this.clearDataToDefault();
-                                this.setState({
-                                    grateTypeOne: true,
-                                    grateTypeTwo: false,
-                                    grateTypeThree: false});
+                                this.setState({grateTypeOne: true,
+                                    grateTypeTwo: false, grateTypeThree: false});
                             }}>
                             Решетки с механизированной очисткой
                         </Nav.Link>
@@ -670,10 +639,8 @@ export class GrateComponent extends React.Component<Props, State> {
                         <Nav.Link eventKey={'grate2'}
                             onClick={() => {
                                 this.clearDataToDefault();
-                                this.setState({
-                                    grateTypeOne: false,
-                                    grateTypeTwo: true,
-                                    grateTypeThree: false});
+                                this.setState({grateTypeOne: false,
+                                    grateTypeTwo: true, grateTypeThree: false});
                             }}>
                             Решетки с ручной очисткой
                         </Nav.Link>
@@ -682,24 +649,16 @@ export class GrateComponent extends React.Component<Props, State> {
                         <Nav.Link eventKey={'grate3'}
                             onClick={() => {
                                 this.clearDataToDefault();
-                                this.setState({
-                                    grateTypeOne: false,
-                                    grateTypeTwo: false,
-                                    grateTypeThree: true});
+                                this.setState({grateTypeOne: false,
+                                    grateTypeTwo: false, grateTypeThree: true});
                             }}>
                             Решетки-дробилки
                         </Nav.Link>
                     </Nav.Item>
                 </Nav>
-                {
-                    grateTypeOne ? this.renderFirstTypeOfGrate() : null
-                }
-                {
-                    grateTypeTwo ? this.renderSecondTypeOfGrate() : null
-                }
-                {
-                    grateTypeThree ? this.renderThirdTypeOfGrate() : null
-                }
+                {grateTypeOne ? this.renderFirstTypeOfGrate() : null}
+                {grateTypeTwo ? this.renderSecondTypeOfGrate() : null}
+                {grateTypeThree ? this.renderThirdTypeOfGrate() : null}
             </div>
         );
     }
@@ -744,3 +703,27 @@ function checkAllInputForCounting(checkObject: CheckObject): JSX.Element[] {
     }
     return allError;
 };
+
+function selectTemplate (title: string, template: JSX.Element) {
+    return <InputGroup className={'grate-input-group'}>
+        <InputGroup.Prepend>
+            <InputGroup.Text className={'grate-input-title'}>
+                {title}
+            </InputGroup.Text>
+        </InputGroup.Prepend>
+        {template}
+    </InputGroup>;
+}
+
+function labelTemplate (title: string, value: string | number) {
+    return <InputGroup className={'grate-input-group'}>
+        <InputGroup.Prepend>
+            <InputGroup.Text className={'grate-input-title'}>
+                {title}
+            </InputGroup.Text>
+        </InputGroup.Prepend>
+        <Form.Label className={'grate-input-value'}>
+            {value}
+        </Form.Label>
+    </InputGroup> 
+}
