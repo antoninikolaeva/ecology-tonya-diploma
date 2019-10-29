@@ -1,0 +1,70 @@
+.general-title {
+    margin: 1rem 2rem;
+}
+
+.checkbox {
+    margin-left: 2rem;
+}
+
+.scheme{
+    display: flex;
+    flex-direction: row;
+}
+.block-of-scheme {
+    display: flex;
+    flex-direction: column;
+    border: 0.2rem dotted black;
+    margin: 1rem 0 1rem 2rem;
+    padding: 1rem;
+}
+
+/* Radio button */
+
+.radio {
+    display: flex;
+    position: relative;
+    margin-left: 3rem;
+    padding-left: 1.5rem;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.radio input {
+    display: none;
+}
+
+.radio-mark {
+    display: flex;
+    position: absolute;
+    top: 0.2rem;
+    left: 0;
+    height: 18px;
+    width: 18px;
+    background-color: #ffffff;
+    border-radius: 50%;
+    border: 0.1rem solid lightgray;
+}
+
+.radio:hover input ~ .radio-mark {
+    background-color: #ccc;
+}
+
+.radio input:checked ~ .radio-mark {
+    background-color: #2196F3;
+}
+
+.radio-mark::after {
+    content: "";
+    position: absolute;
+}
+
+.radio-mark::after {
+    top: 4px;
+    left: 4px;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: white;
+}
+
