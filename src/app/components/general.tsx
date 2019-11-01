@@ -147,7 +147,7 @@ export class GeneralComponent extends React.Component<{}, State> {
                 {
                     device.name === KindOfDevices.sandTrap ?
                         <div>
-                            <div>Относится к песколовкам</div>
+                            <div style={{marginLeft: '3rem'}}>Обезвоживание песка</div>
                             {device.additionalListOfTypes.map((type, index) => {
                                 return <label className={'radio'} key={`${device.name}-${type.name}-${index}`}>{type.name}
                                     <input ref={radio => type.ref = radio} type={'radio'}
@@ -166,18 +166,25 @@ export class GeneralComponent extends React.Component<{}, State> {
     }
 
     private selectType = (event: React.ChangeEvent<HTMLInputElement>, device: Device, type: DeviceType) => {
-        device.listOfTypes.forEach(typeOfDevice => {
-            if (typeOfDevice.ref.checked && typeOfDevice.name !== type.name) {
-                typeOfDevice.ref.checked = false;
-            }
-        })
         let {deviceWatcher} = this.state;
+        const clearTypesExceptCurrent = (listOfTypes: DeviceType[]) => {
+            listOfTypes.forEach(typeOfDevice => {
+                if (typeOfDevice.ref.checked && typeOfDevice.name !== type.name) {
+                    typeOfDevice.ref.checked = false;
+                }
+            });    
+        }
         if (event.target.checked) {
             if (device.name === KindOfDevices.sandTrap) {
-                type.name === SandTrapInfra.square || type.name === SandTrapInfra.bunker ?
-                    device.additionalSelectedType = type.name :
+                if (type.name === SandTrapInfra.square || type.name === SandTrapInfra.bunker) {
+                    clearTypesExceptCurrent(device.additionalListOfTypes);
+                    device.additionalSelectedType = type.name;
+                } else {
+                    clearTypesExceptCurrent(device.listOfTypes);
                     device.selectedType = type.name;
+                }
             } else {
+                clearTypesExceptCurrent(device.listOfTypes);
                 device.selectedType = type.name;
             }
         } else {
