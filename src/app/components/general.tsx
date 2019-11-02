@@ -1,111 +1,33 @@
 import * as React from 'react';
 
 import { GrateComponent } from './grate/grate';
-import { Navbar, DropdownButton, Dropdown, Form } from 'react-bootstrap';
-
-// sump - отстойник для воды
-// average - усреднитель
-export enum KindOfDevices {
-    grate = 'Решетки',
-    sandTrap = 'Песколовки',
-    sump = 'Отстойники',
-    average = 'Усреднители',
-    oilTrap = 'Нефтеловушки',
-    filter = 'Фильтры',
-    centrifuge = 'Гидроциклоны и центрифуги'
-};
-
-// export enum GrateTypes {mechanics, hands, hammerCrusher};
-// // aerated - аэрируемые песколовки
-// export enum SandTrapTypes {horizontalForward, horizontalCircle, tangential, vertical, aerated};
-// export enum SandTrapInfrastructure {square, bunker};
-// // verticalWithThread - вертикальные отстойники с нисходящими-восходящими потоками
-// export enum SumpTypes {horizontal, vertical, verticalWithThread, radial};
-// // volleyDischarge - залповый сброс
-// // cyclicFluctuation - циклическе колебания
-// export enum AverageTypes {volleyDischarge, cyclicFluctuation, randomFluctuation};
-// export enum OilTrapTypes {horizontal, vertical};
-// // grainy - зернистый
-// // drum - барабанный
-// export enum FilterTypes {grainy, micro, drum};
-// // pressure - напорные гидроциклоны
-// // continuous - непрерывные центрифуги
-// // determine - периодические центрифуги
-// export enum CentrifugeTypes {opened, pressure, continuous, determine};
-
-interface DeviceType {
-    name: string;
-    ref: HTMLInputElement;
-}
-
-const grateTypes: DeviceType[] = [
-    {name: 'Механическая очистка', ref: undefined},
-    {name: 'Ручная очиска', ref: undefined},
-    {name: 'Дробилки', ref: undefined},
-];
-const sandTrapTypes: DeviceType[] = [
-    {name: 'Горизонтальные с прямолинейным движением воды', ref: undefined},
-    {name: 'Горизонтальные с круговым движением воды', ref: undefined},
-    {name: 'Тангенциальные', ref: undefined},
-    {name: 'Вертикальные', ref: undefined},
-    {name: 'Аэрируемые', ref: undefined},
-];
-enum SandTrapInfra {
-    square = 'Песковые пощадки',
-    bunker = 'Песковые бункеры'
-};
-const sandTrapInfrastructure: DeviceType[] = [
-    {name: 'Песковые пощадки', ref: undefined},
-    {name: 'Песковые бункеры', ref: undefined},
-];   
-const sumpTypes: DeviceType[] = [
-    {name: 'Горизонтальные', ref: undefined},
-    {name: 'Вертикальные', ref: undefined},
-    {name: 'Вертикальные с нисходящим-восходящим потоком', ref: undefined},
-    {name: 'Радиальные', ref: undefined},
-];
-const averageTypes: DeviceType[] = [
-    {name: 'Залповый сброс', ref: undefined},
-    {name: 'Циклические колебания', ref: undefined},
-    {name: 'Произвольный характер колебаний', ref: undefined},
-];
-const oilTrapTypes: DeviceType[] = [
-    {name: 'Горизонтальные', ref: undefined},
-    {name: 'Вертикальные', ref: undefined},
-]; 
-const filterTypes: DeviceType[] = [
-    {name: 'Зернистые', ref: undefined},
-    {name: 'Микрофильтры', ref: undefined},
-    {name: 'Барабанные сетки', ref: undefined},
-];
-const centrifugeTypes: DeviceType[] = [
-    {name: 'Открытые гидроциклоны', ref: undefined},
-    {name: 'Напорные гидроциклоны', ref: undefined},
-    {name: 'Центрифуги непрерывного действия', ref: undefined},
-    {name: 'Центрифуги периодического действия', ref: undefined},
-];
-
-export interface Device {
-    name: KindOfDevices;
-    priority: number;
-    selected: boolean;
-    listOfTypes: DeviceType[];
-    additionalListOfTypes?: DeviceType[]; // only for sandTrap
-    selectedType: string;
-    additionalSelectedType?: string; // only for sandTrap
-}
+import { Navbar, DropdownButton, Dropdown, Form, Nav } from 'react-bootstrap';
+import { checkValueToNumber, ErrorNames } from './utils';
+import { ErrorAlert } from './error/error';
+import { listOfDevices, Device, KindOfDevices, DeviceType, SandTrapInfra } from './general-resources';
 
 interface State {
     deviceWatcher: number;
+    secondMaxFlow: number;
+    dailyWaterFlow: number;
+    errorSecondMaxFlow: Error;
+    errorDailyWaterFlow: Error;
+    countMode: boolean;
 }
 
 export class GeneralComponent extends React.Component<{}, State> {
-
+    private maxSecondFlow: HTMLInputElement = undefined;
+    private dailyWaterFlow: HTMLInputElement = undefined;
     constructor(props: any, context: any) {
         super(props, context);
 
         this.state = {
             deviceWatcher: 0,
+            secondMaxFlow: undefined,
+            dailyWaterFlow: undefined,
+            errorSecondMaxFlow: undefined,
+            errorDailyWaterFlow: undefined,
+            countMode: false,
         }
     }
 
@@ -130,34 +52,51 @@ export class GeneralComponent extends React.Component<{}, State> {
             device.selected = true;
         } else {
             device.selected = false;
+            device.selectedType = '';
+            device.additionalSelectedType = '';
         }
         this.setState({deviceWatcher: deviceWatcher++});
     }
 
     private typeList = (device: Device) => {
+        const {dailyWaterFlow} = this.state;
+        const minValueOfDailyWaterFlow = Math.min(...device.listOfTypes.map(type => type.minDailyWaterFlow));
+        const maxValueOfDailyWaterFlow = Math.max(...device.listOfTypes.map(type => type.maxDailyWaterFlow));
+        const errorOfMinWaterFlow = new Error('Суточный расход воды слишком мал/велик, и использование данного оборудования нецелесообразно');
         if(device.selected) {
             return <div>
-                {device.listOfTypes.map((type, index) => {
-                    return <label className={'radio'} key={`${device.name}-${type.name}-${index}`}>{type.name}
-                        <input ref={radio => type.ref = radio} type={'radio'} 
-                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {this.selectType(event, device, type)}}/>
-                        <span className={'radio-mark'}></span>
-                    </label>;
-                })}
                 {
-                    device.name === KindOfDevices.sandTrap ?
+                    (device.name === KindOfDevices.sandTrap || device.name === KindOfDevices.sump)
+                    && dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow) ?
+                        <ErrorAlert errorValue={errorOfMinWaterFlow} /> :
                         <div>
-                            <div style={{marginLeft: '3rem'}}>Обезвоживание песка</div>
-                            {device.additionalListOfTypes.map((type, index) => {
+                            {device.listOfTypes.map((type, index) => {
+                                if ((device.name === KindOfDevices.sandTrap || device.name === KindOfDevices.sump) && dailyWaterFlow &&
+                                    (type.minDailyWaterFlow > dailyWaterFlow || type.maxDailyWaterFlow < dailyWaterFlow)) {
+                                    return null;
+                                }
                                 return <label className={'radio'} key={`${device.name}-${type.name}-${index}`}>{type.name}
-                                    <input ref={radio => type.ref = radio} type={'radio'}
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                            this.selectType(event, device, type);
-                                        }}/>
+                                    <input ref={radio => type.ref = radio} type={'radio'} 
+                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {this.selectType(event, device, type)}}/>
                                     <span className={'radio-mark'}></span>
-                                </label>})}
-                        </div>:
-                        null
+                                </label>;
+                            })}
+                            {
+                                device.name === KindOfDevices.sandTrap ?
+                                    <div>
+                                        <div style={{marginLeft: '3rem'}}>Обезвоживание песка</div>
+                                        {device.additionalListOfTypes.map((type, index) => {
+                                            return <label className={'radio'} key={`${device.name}-${type.name}-${index}`}>{type.name}
+                                                <input ref={radio => type.ref = radio} type={'radio'}
+                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                        this.selectType(event, device, type);
+                                                    }}/>
+                                                <span className={'radio-mark'}></span>
+                                            </label>})}
+                                    </div>:
+                                    null
+                            }
+                        </div>
                 }
             </div>;
         } else {
@@ -169,7 +108,7 @@ export class GeneralComponent extends React.Component<{}, State> {
         let {deviceWatcher} = this.state;
         const clearTypesExceptCurrent = (listOfTypes: DeviceType[]) => {
             listOfTypes.forEach(typeOfDevice => {
-                if (typeOfDevice.ref.checked && typeOfDevice.name !== type.name) {
+                if (typeOfDevice.ref && typeOfDevice.ref.checked && typeOfDevice.name !== type.name) {
                     typeOfDevice.ref.checked = false;
                 }
             });    
@@ -193,6 +132,36 @@ export class GeneralComponent extends React.Component<{}, State> {
         this.setState({deviceWatcher: deviceWatcher++});
     }
 
+    private renderBaseInput = () => {
+        const {errorSecondMaxFlow, errorDailyWaterFlow} = this.state;
+        return <div>
+            <div>
+                <span>Секундно массовый расход, м3/с</span>
+                <input type={'text'} ref={input => this.maxSecondFlow = input} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = checkInputData(event);
+                    if (value instanceof Error) {
+                        this.setState({errorSecondMaxFlow: value, secondMaxFlow: undefined});
+                    } else {
+                        this.setState({secondMaxFlow: value, errorSecondMaxFlow: undefined});
+                    }
+                }}/>
+            </div>
+            { errorSecondMaxFlow ? <ErrorAlert errorValue={errorSecondMaxFlow}/>: null}
+            <div>
+                <span>Суточный расход воды, м3/сут</span>
+                <input type={'text'} ref={input => this.dailyWaterFlow = input} onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                    const value = checkInputData(event);
+                    if (value instanceof Error) {
+                        this.setState({errorDailyWaterFlow: value, dailyWaterFlow: undefined});
+                    } else {
+                        this.setState({dailyWaterFlow: value, errorDailyWaterFlow: undefined});
+                    }
+                }}/>
+            </div>
+            { errorSecondMaxFlow ? <ErrorAlert errorValue={errorDailyWaterFlow}/>: null}
+        </div>;
+    }
+
     private finalScheme = () => {
         return <div className={'scheme'}>
             {listOfDevices.map((device, index) => {
@@ -209,75 +178,99 @@ export class GeneralComponent extends React.Component<{}, State> {
                     null
             })}
         </div> 
-
-
     }
 
     render() {
+        const {countMode} = this.state;
+        const grate = listOfDevices[0];
+        const sandTrap = listOfDevices[1];
+        const sump = listOfDevices[2];
+        const average = listOfDevices[3];
+        const oilTrap = listOfDevices[4];
+        const filter = listOfDevices[5];
+        const centrifuge = listOfDevices[6];
         return (
-            <div>
-                <Navbar bg="primary" variant="dark">
-                    <Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
-                </Navbar>
-                <h4 className={'general-title'}>Выберите очистные сооружения для расчетный схемы</h4>
-                {this.devicesList()}
-                <h4 className={'general-title'}>Схема очистных сооружений</h4>
-                {this.finalScheme()}
-            </div>
+            !countMode ?
+                <div>
+                    <Navbar bg="primary" variant="dark">
+                        <Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
+                    </Navbar>
+                    {this.renderBaseInput()}
+                    <h4 className={'general-title'}>Выберите очистные сооружения для расчетный схемы</h4>
+                    {this.devicesList()}
+                    <h4 className={'general-title'}>Схема очистных сооружений</h4>
+                    {this.finalScheme()}
+                    <button className={'btn btn-primary'} onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+                        this.setState({countMode: true});
+                    }}>Начать расчет</button>
+                </div> :
+                <div>
+                    <Nav fill variant={'tabs'} defaultActiveKey={'/'}>
+                        {
+                            grate.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'grate'}>
+                                    Решетки
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            sandTrap.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'sandTrap'}>
+                                    Песколовки
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            sump.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'sump'}>
+                                    Отстойники
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            average.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'average'}>
+                                    Усреднители
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            oilTrap.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'oilTrap'}>
+                                    Нефтеловушки
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            filter.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'filter'}>
+                                    Фильтры
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                        {
+                            centrifuge.selected ? <Nav.Item>
+                                <Nav.Link eventKey={'centrifuge'}>
+                                    Гидроциклоны центрифуги
+                                </Nav.Link>
+                            </Nav.Item> : null
+                        }
+                    </Nav>
+                </div>
         );
     }
 }
 
-const listOfDevices: Device[] = [
-    {
-        name: KindOfDevices.grate,
-        priority: 1,
-        selected: false,
-        listOfTypes: grateTypes,
-        selectedType: undefined,
-    },
-    {
-        name: KindOfDevices.sandTrap,
-        priority: 2,
-        selected: false,
-        listOfTypes: sandTrapTypes,
-        additionalListOfTypes: sandTrapInfrastructure,
-        selectedType: undefined,
-        additionalSelectedType: undefined,
-    },
-    {
-        name: KindOfDevices.sump,
-        priority: 3,
-        selected: false,
-        listOfTypes: sumpTypes,
-        selectedType: undefined,
-    },
-    {
-        name: KindOfDevices.average,
-        priority: 4,
-        selected: false,
-        listOfTypes: averageTypes,
-        selectedType: undefined,
-    },
-    {
-        name: KindOfDevices.oilTrap,
-        priority: 5,
-        selected: false,
-        listOfTypes: oilTrapTypes,
-        selectedType: undefined,
-    },
-    {
-        name: KindOfDevices.filter,
-        priority: 6,
-        selected: false,
-        listOfTypes: filterTypes,
-        selectedType: undefined,
-    },
-    {
-        name: KindOfDevices.centrifuge,
-        priority: 7,
-        selected: false,
-        listOfTypes: centrifugeTypes,
-        selectedType: undefined,
+export function checkInputData(event: React.ChangeEvent<HTMLInputElement>): number | Error {
+    if (!event.target.value) {
+        return;
     }
-];
+    const value = checkValueToNumber(event.target.value);
+    if (value instanceof Error && value.name === ErrorNames.isNotANumber) {
+        value.message = 'Данное значение не является числом, исправьте введенное значение';
+        return value;
+    } else {
+        return value;
+    }
+}
+
