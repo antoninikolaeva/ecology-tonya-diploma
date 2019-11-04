@@ -5,8 +5,14 @@ export enum ErrorNames {
 enum NumberExceptions {zero = '0', zeroFloatPoint = '0.', zeroFloatComma = '0,'}
 
 export function checkValueToNumber(value: string): number | Error {
+    const error = new Error(ErrorNames.isNotANumber);
+    error.name = ErrorNames.isNotANumber;
     if (!value) {
         return undefined;
+    }
+    const valueWithLetters = value.match(/[a-zA-Z]/g);
+    if(valueWithLetters) {
+        return error;
     }
     if (value === NumberExceptions.zero ||
         value === NumberExceptions.zeroFloatComma ||
@@ -18,8 +24,6 @@ export function checkValueToNumber(value: string): number | Error {
     if (number) {
         return number;
     } else {
-        const error = new Error(ErrorNames.isNotANumber);
-        error.name = ErrorNames.isNotANumber;
         return error;
     }
 }

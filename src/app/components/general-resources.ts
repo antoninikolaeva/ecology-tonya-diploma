@@ -1,107 +1,112 @@
 // sump - отстойник для воды
 // average - усреднитель
 export enum KindOfDevices {
-    grate = 'Решетки',
-    sandTrap = 'Песколовки',
-    sump = 'Отстойники',
-    average = 'Усреднители',
-    oilTrap = 'Нефтеловушки',
-    filter = 'Фильтры',
-    centrifuge = 'Гидроциклоны и центрифуги'
+    grate = 'grate',
+    sandTrap = 'sandTrap',
+    sump = 'sump',
+    average = 'average',
+    oilTrap = 'oilTrap',
+    filter = 'filter',
+    centrifuge = 'centrifuge'
 };
 
-// export enum GrateTypes {mechanics, hands, hammerCrusher};
-// // aerated - аэрируемые песколовки
-// export enum SandTrapTypes {horizontalForward, horizontalCircle, tangential, vertical, aerated};
-// export enum SandTrapInfrastructure {square, bunker};
-// // verticalWithThread - вертикальные отстойники с нисходящими-восходящими потоками
-// export enum SumpTypes {horizontal, vertical, verticalWithThread, radial};
-// // volleyDischarge - залповый сброс
-// // cyclicFluctuation - циклическе колебания
-// export enum AverageTypes {volleyDischarge, cyclicFluctuation, randomFluctuation};
-// export enum OilTrapTypes {horizontal, vertical};
-// // grainy - зернистый
-// // drum - барабанный
-// export enum FilterTypes {grainy, micro, drum};
-// // pressure - напорные гидроциклоны
-// // continuous - непрерывные центрифуги
-// // determine - периодические центрифуги
-// export enum CentrifugeTypes {opened, pressure, continuous, determine};
+// aerated - аэрируемые песколовки
+// volleyDischarge - залповый сброс
+// cyclicFluctuation - циклическе колебания
+// grainy - зернистый
+// drum - барабанный
+// pressure - напорные гидроциклоны
+// continuous - непрерывные центрифуги
+// determine - периодические центрифуги
 
 export interface DeviceType {
+    key: GrateTypes | SandTrapTypes | SandTrapInfraTypes | SumpTypes | AverageTypes | OilTrapTypes | FilterTypes | CentrifugeTypes;
     name: string;
     ref: HTMLInputElement;
     minDailyWaterFlow?: number;
     maxDailyWaterFlow?: number;
 }
 
+export enum GrateTypes {mechanic = 'mechanic', hand = 'hand', crusher = 'crusher'}
 export const grateTypes: DeviceType[] = [
-    {name: 'Механическая очистка', ref: undefined},
-    {name: 'Ручная очиска', ref: undefined},
-    {name: 'Дробилки', ref: undefined},
+    {key: GrateTypes.mechanic, name: 'Механическая очистка', ref: undefined},
+    {key: GrateTypes.hand, name: 'Ручная очиска', ref: undefined},
+    {key: GrateTypes.crusher, name: 'Дробилки', ref: undefined},
 ];
+export enum SandTrapTypes {horizontalForward = 'horizontalForward', horizontalCircle = 'horizontalCircle', tangential = 'tangential', vertical = 'vertical', aerated = 'aerated'}
 export const sandTrapTypes: DeviceType[] = [
-    {name: 'Горизонтальные с прямолинейным движением воды', ref: undefined, minDailyWaterFlow: 10000, maxDailyWaterFlow: 1000000},
-    {name: 'Горизонтальные с круговым движением воды', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000},
-    {name: 'Тангенциальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000},
-    {name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 10000},
-    {name: 'Аэрируемые', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000},
+    {key: SandTrapTypes.horizontalForward, name: 'Горизонтальные с прямолинейным движением воды', ref: undefined, minDailyWaterFlow: 10000, maxDailyWaterFlow: 1000000},
+    {key: SandTrapTypes.horizontalCircle, name: 'Горизонтальные с круговым движением воды', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000},
+    {key: SandTrapTypes.tangential, name: 'Тангенциальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000},
+    {key: SandTrapTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 10000},
+    {key: SandTrapTypes.aerated, name: 'Аэрируемые', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000},
 ];
-export enum SandTrapInfra {
-    square = 'Песковые пощадки',
-    bunker = 'Песковые бункеры'
-};
+export enum SandTrapInfraTypes {square = 'square', bunker = 'bunker'};
 export const sandTrapInfrastructure: DeviceType[] = [
-    {name: 'Песковые пощадки', ref: undefined},
-    {name: 'Песковые бункеры', ref: undefined},
-];   
+    {key: SandTrapInfraTypes.square, name: 'Песковые пощадки', ref: undefined},
+    {key: SandTrapInfraTypes.bunker, name: 'Песковые бункеры', ref: undefined},
+];
+export enum SumpTypes {horizontal = 'horizontal', vertical = 'vertical', verticalUpDownFlow = 'verticalUpDownFlow', radial = 'radial'};   
 export const sumpTypes: DeviceType[] = [
-    {name: 'Горизонтальные', ref: undefined, minDailyWaterFlow: 15000, maxDailyWaterFlow: 100000},
-    {name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000},
-    {name: 'Вертикальные с нисходящим-восходящим потоком', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000},
-    {name: 'Радиальные', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000},
+    {key: SumpTypes.horizontal, name: 'Горизонтальные', ref: undefined, minDailyWaterFlow: 15000, maxDailyWaterFlow: 100000},
+    {key: SumpTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000},
+    {key: SumpTypes.verticalUpDownFlow, name: 'Вертикальные с нисходящим-восходящим потоком', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000},
+    {key: SumpTypes.radial, name: 'Радиальные', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000},
 ];
+export enum AverageTypes {volleyDischarge = 'volleyDischarge', cycleFluctuation = 'cycleFluctuation', randomFluctuation = 'randomFluctuation'}
 export const averageTypes: DeviceType[] = [
-    {name: 'Залповый сброс', ref: undefined},
-    {name: 'Циклические колебания', ref: undefined},
-    {name: 'Произвольный характер колебаний', ref: undefined},
+    {key: AverageTypes.volleyDischarge, name: 'Залповый сброс', ref: undefined},
+    {key: AverageTypes.cycleFluctuation, name: 'Циклические колебания', ref: undefined},
+    {key: AverageTypes.randomFluctuation, name: 'Произвольный характер колебаний', ref: undefined},
 ];
+export enum OilTrapTypes {horizontal = 'horizontal', vertical = 'vertical'};
 export const oilTrapTypes: DeviceType[] = [
-    {name: 'Горизонтальные', ref: undefined},
-    {name: 'Вертикальные', ref: undefined},
-]; 
-export const filterTypes: DeviceType[] = [
-    {name: 'Зернистые', ref: undefined},
-    {name: 'Микрофильтры', ref: undefined},
-    {name: 'Барабанные сетки', ref: undefined},
+    {key: OilTrapTypes.horizontal, name: 'Горизонтальные', ref: undefined},
+    {key: OilTrapTypes.vertical, name: 'Вертикальные', ref: undefined},
 ];
+export enum FilterTypes {grainy = 'grainy', microFilter = 'microFilter', drumNets = 'drumNets'} 
+export const filterTypes: DeviceType[] = [
+    {key: FilterTypes.grainy, name: 'Зернистые', ref: undefined},
+    {key: FilterTypes.microFilter, name: 'Микрофильтры', ref: undefined},
+    {key: FilterTypes.drumNets, name: 'Барабанные сетки', ref: undefined},
+];
+export enum CentrifugeTypes {opened = 'opened', pressure = 'pressure', continuous = 'continuous', determinate = 'determinate'};   
 export const centrifugeTypes: DeviceType[] = [
-    {name: 'Открытые гидроциклоны', ref: undefined},
-    {name: 'Напорные гидроциклоны', ref: undefined},
-    {name: 'Центрифуги непрерывного действия', ref: undefined},
-    {name: 'Центрифуги периодического действия', ref: undefined},
+    {key: CentrifugeTypes.opened, name: 'Открытые гидроциклоны', ref: undefined},
+    {key: CentrifugeTypes.pressure, name: 'Напорные гидроциклоны', ref: undefined},
+    {key: CentrifugeTypes.continuous, name: 'Центрифуги непрерывного действия', ref: undefined},
+    {key: CentrifugeTypes.determinate, name: 'Центрифуги периодического действия', ref: undefined},
 ];
 
 export interface Device {
-    name: KindOfDevices;
+    name: string;
+    key: KindOfDevices;
     priority: number;
     selected: boolean;
     listOfTypes: DeviceType[];
     additionalListOfTypes?: DeviceType[]; // only for sandTrap
-    selectedType: string;
-    additionalSelectedType?: string; // only for sandTrap
+    selectedType: {
+        key: GrateTypes | SandTrapTypes | SandTrapInfraTypes | SumpTypes | AverageTypes | OilTrapTypes | FilterTypes | CentrifugeTypes;
+        name: string;
+    };
+    additionalSelectedType?: {
+        key: GrateTypes | SandTrapTypes | SandTrapInfraTypes | SumpTypes | AverageTypes | OilTrapTypes | FilterTypes | CentrifugeTypes;
+        name: string;
+    }; // only for sandTrap
 }
 
 export const listOfDevices: Device[] = [
     {
-        name: KindOfDevices.grate,
+        name: 'Решетки',
+        key: KindOfDevices.grate,
         priority: 1,
         selected: false,
         listOfTypes: grateTypes,
         selectedType: undefined,
     },
     {
-        name: KindOfDevices.sandTrap,
+        name: 'Песколовки',
+        key: KindOfDevices.sandTrap,
         priority: 2,
         selected: false,
         listOfTypes: sandTrapTypes,
@@ -110,35 +115,40 @@ export const listOfDevices: Device[] = [
         additionalSelectedType: undefined,
     },
     {
-        name: KindOfDevices.sump,
+        name: 'Отстойники',
+        key: KindOfDevices.sump,
         priority: 3,
         selected: false,
         listOfTypes: sumpTypes,
         selectedType: undefined,
     },
     {
-        name: KindOfDevices.average,
+        name: 'Усреднители',
+        key: KindOfDevices.average,
         priority: 4,
         selected: false,
         listOfTypes: averageTypes,
         selectedType: undefined,
     },
     {
-        name: KindOfDevices.oilTrap,
+        name: 'Нефтеловушки',
+        key: KindOfDevices.oilTrap,
         priority: 5,
         selected: false,
         listOfTypes: oilTrapTypes,
         selectedType: undefined,
     },
     {
-        name: KindOfDevices.filter,
+        name: 'Фильтры',
+        key: KindOfDevices.filter,
         priority: 6,
         selected: false,
         listOfTypes: filterTypes,
         selectedType: undefined,
     },
     {
-        name: KindOfDevices.centrifuge,
+        name: 'Гидроциклоны и центрифуги',
+        key: KindOfDevices.centrifuge,
         priority: 7,
         selected: false,
         listOfTypes: centrifugeTypes,
