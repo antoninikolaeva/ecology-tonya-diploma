@@ -1,19 +1,15 @@
 import * as React from 'react';
+import { Navbar, Form, Nav } from 'react-bootstrap';
 
-import { GrateComponent } from './grate/grate';
-import { Navbar, DropdownButton, Dropdown, Form, Nav } from 'react-bootstrap';
-import { checkValueToNumber, ErrorNames } from './utils';
+import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
 import { listOfDevices, Device, KindOfDevices, DeviceType, SandTrapInfraTypes, GrateTypes } from './general-resources';
 import { GrateMechanic } from './grate/grate-mechanic';
-import { inputTemplate } from './grate/grate.service';
 
 interface State {
     deviceWatcher: number;
     secondMaxFlow: number;
     dailyWaterFlow: number;
-    secondMaxFlowError: Error;
-    dailyWaterFlowError: Error;
     countMode: boolean;
 
     gratePageOpened: boolean;
@@ -26,8 +22,9 @@ interface State {
 }
 
 export class GeneralComponent extends React.Component<{}, State> {
-    private maxSecondFlow: HTMLInputElement = undefined;
-    private dailyWaterFlow: HTMLInputElement = undefined;
+    private selectDeviceRef: HTMLInputElement = undefined;
+    private maxSecondFlowRef: HTMLInputElement = undefined;
+    private dailyWaterFlowRef: HTMLInputElement = undefined;
     constructor(props: any, context: any) {
         super(props, context);
 
@@ -35,8 +32,6 @@ export class GeneralComponent extends React.Component<{}, State> {
             deviceWatcher: 0,
             secondMaxFlow: undefined,
             dailyWaterFlow: undefined,
-            secondMaxFlowError: undefined,
-            dailyWaterFlowError: undefined,
             countMode: false,
             gratePageOpened: false,
             sandTrapPageOpened: false,
@@ -65,6 +60,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 
     private selectDevice = (event: React.ChangeEvent<HTMLInputElement>, device: Device) => {
         let {deviceWatcher} = this.state;
+        device.ref = event.target;
         if (event.target.checked) {
             device.selected = true;
         } else {
@@ -150,25 +146,16 @@ export class GeneralComponent extends React.Component<{}, State> {
     }
 
     private renderBaseInput = () => {
-        const {secondMaxFlowError, dailyWaterFlowError} = this.state;
-        const secondMaxFlowInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-            const value = checkInputData(event);
-            if (value instanceof Error) { this.setState({secondMaxFlowError: value, secondMaxFlow: undefined});
-            } else { this.setState({secondMaxFlow: value, secondMaxFlowError: undefined}); }
-        }
-        const dailyWaterFlowInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-            const value = checkInputData(event);
-            if (value instanceof Error) { this.setState({dailyWaterFlowError: value, dailyWaterFlow: undefined});
-            } else { this.setState({dailyWaterFlow: value, dailyWaterFlowError: undefined}); }
-        }
         return <div>
-            {inputTemplate('Секундный максимальный расход, м3/с',
-                <input type={'text'} ref={input => this.maxSecondFlow = input} onChange={secondMaxFlowInput}/>)}
-            {secondMaxFlowError ? <ErrorAlert errorValue={secondMaxFlowError}/>: null}
-            {inputTemplate('Суточный расход воды, м3/сут',
-                <input type={'text'} ref={input => this.dailyWaterFlow = input} onChange={dailyWaterFlowInput}/>)}
-            {dailyWaterFlowError ? <ErrorAlert errorValue={dailyWaterFlowError}/>: null}
-        </div>;
+            <InputTemplate title={'Секундный максимальный расход, м3/с'}
+                placeholder={''}
+                onInputRef={(input) => {this.maxSecondFlowRef = input}}
+                onInput={(value) => { this.setState({secondMaxFlow: value})}}/>
+            <InputTemplate title={'Суточный расход воды, м3/сут'}
+                placeholder={''}
+                onInputRef={(input) => {this.dailyWaterFlowRef = input}}
+                onInput={(value) => { this.setState({dailyWaterFlow: value})}}/>
+        </div>
     }
 
     private finalScheme = () => {
@@ -262,7 +249,9 @@ export class GeneralComponent extends React.Component<{}, State> {
             return null;
         }
         if (grate.selectedType.key === GrateTypes.mechanic) {
-            return <GrateMechanic secondMaxFlow={secondMaxFlow} dailyWaterFlow={dailyWaterFlow} /*countMode={countMode}*/ />
+            return <GrateMechanic secondMaxFlow={secondMaxFlow}
+            dailyWaterFlow={dailyWaterFlow}
+            onCountMode={this.onCountMode} />
         }
         if (grate.selectedType.key === GrateTypes.hand) {
             return <div>Here will be a hand grates</div>//<GrateHand secondMaxFlow={secondMaxFlow} dailyWaterFlow={dailyWaterFlow} countMode={countMode}/>
@@ -270,6 +259,47 @@ export class GeneralComponent extends React.Component<{}, State> {
         if (grate.selectedType.key === GrateTypes.crusher) {
             return <div>Here will be a hummer crusher grates</div>//<GrateCrusher secondMaxFlow={secondMaxFlow} dailyWaterFlow={dailyWaterFlow} countMode={countMode}/>
         }
+    }
+
+    private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        this.setState({countMode: true});
+    }
+
+    private clearPage = () => {
+        this.maxSecondFlowRef.value = NULLSTR;
+        this.dailyWaterFlowRef.value = NULLSTR;
+        listOfDevices.forEach(device => {
+            if (device.ref) device.ref.checked = false;
+            device.selected = false;
+            device.selectedType= undefined;
+            device.additionalSelectedType = undefined;
+            device.listOfTypes.forEach(type => {
+                if (type.ref) type.ref.checked = false;
+            });
+            if (device.additionalListOfTypes) {
+                device.additionalListOfTypes.forEach(type => {
+                    if (type.ref) type.ref.checked = false;
+                });
+            }
+        });
+        this.setState({
+            averagePageOpened: false,
+            centrifugePageOpened: false,
+            filterPageOpened: false,
+            gratePageOpened: false,
+            oilTrapPageOpened: false,
+            sandTrapPageOpened: false,
+            sumpPageOpened: false,
+            countMode: false,
+            dailyWaterFlow: undefined,
+            secondMaxFlow: undefined,
+            deviceWatcher: 0,
+        });
+    }
+
+    private onCountMode = (countMode: boolean) => {
+        this.clearPage();
+        this.setState({countMode});
     }
 
     render() {
@@ -285,27 +315,11 @@ export class GeneralComponent extends React.Component<{}, State> {
                     {this.devicesList()}
                     <h4 className={'general-title'}>Схема очистных сооружений</h4>
                     {this.finalScheme()}
-                    <button className={'btn btn-primary'} onClick={(event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-                        this.setState({countMode: true});
-                    }}>Начать расчет</button>
+                    <button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>
+                    <button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
                 </div> :
                 this.renderListOfDevicesForCount()
         );
-    }
-}
-
-export function checkInputData(
-    event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
-): number | Error {
-    if (!event.target.value) {
-        return;
-    }
-    const value = checkValueToNumber(event.target.value);
-    if (value instanceof Error && value.name === ErrorNames.isNotANumber) {
-        value.message = 'Данное значение не является числом, исправьте введенное значение';
-        return value;
-    } else {
-        return value;
     }
 }
 

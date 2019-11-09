@@ -113,38 +113,3 @@ function getUniqueValuesArray(array: number[]) {
     return array.filter(
         (value, index, self) => self.indexOf(value) === index);
 }
-
-export function selectTemplate (title: string, template: JSX.Element): JSX.Element {
-    return <InputGroup className={'grate-input-group'}>
-        <InputGroup.Prepend>
-            <InputGroup.Text className={'grate-input-title'}>
-                {title}
-            </InputGroup.Text>
-        </InputGroup.Prepend>
-        {template}
-    </InputGroup>;
-}
-
-export function labelTemplate (title: string, value: string | number) {
-    return <InputGroup className={'grate-input-group'}>
-        <InputGroup.Prepend>
-            <InputGroup.Text className={'grate-input-title'}>
-                {title}
-            </InputGroup.Text>
-        </InputGroup.Prepend>
-        <Form.Label className={'grate-input-value'}>
-            {value}
-        </Form.Label>
-    </InputGroup> 
-}
-
-export function inputTemplate (title: string, template: JSX.Element) {
-    return <InputGroup className={'grate-input-group'}>
-        <InputGroup.Prepend>
-            <InputGroup.Text className={'grate-input-title'}>
-                {title}
-            </InputGroup.Text>
-        </InputGroup.Prepend>
-        {template}
-    </InputGroup>
-}

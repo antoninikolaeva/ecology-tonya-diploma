@@ -81,6 +81,7 @@ export const centrifugeTypes: DeviceType[] = [
 export interface Device {
     name: string;
     key: KindOfDevices;
+    ref: HTMLInputElement;
     priority: number;
     selected: boolean;
     listOfTypes: DeviceType[];
@@ -99,6 +100,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Решетки',
         key: KindOfDevices.grate,
+        ref: undefined,
         priority: 1,
         selected: false,
         listOfTypes: grateTypes,
@@ -107,6 +109,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Песколовки',
         key: KindOfDevices.sandTrap,
+        ref: undefined,
         priority: 2,
         selected: false,
         listOfTypes: sandTrapTypes,
@@ -117,6 +120,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Отстойники',
         key: KindOfDevices.sump,
+        ref: undefined,
         priority: 3,
         selected: false,
         listOfTypes: sumpTypes,
@@ -125,6 +129,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Усреднители',
         key: KindOfDevices.average,
+        ref: undefined,
         priority: 4,
         selected: false,
         listOfTypes: averageTypes,
@@ -133,6 +138,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Нефтеловушки',
         key: KindOfDevices.oilTrap,
+        ref: undefined,
         priority: 5,
         selected: false,
         listOfTypes: oilTrapTypes,
@@ -141,6 +147,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Фильтры',
         key: KindOfDevices.filter,
+        ref: undefined,
         priority: 6,
         selected: false,
         listOfTypes: filterTypes,
@@ -149,6 +156,7 @@ export const listOfDevices: Device[] = [
     {
         name: 'Гидроциклоны и центрифуги',
         key: KindOfDevices.centrifuge,
+        ref: undefined,
         priority: 7,
         selected: false,
         listOfTypes: centrifugeTypes,
