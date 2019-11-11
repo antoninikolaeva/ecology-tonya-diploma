@@ -4,7 +4,7 @@ import { Navbar, Form, Nav } from 'react-bootstrap';
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
 import { listOfDevices, Device, KindOfDevices, DeviceType, SandTrapInfraTypes, GrateTypes } from './general-resources';
-import { GrateMechanic } from './grate/grate-mechanic';
+import { GrateComponent } from './grate/grate';
 
 interface State {
     deviceWatcher: number;
@@ -244,20 +244,27 @@ export class GeneralComponent extends React.Component<{}, State> {
     }
 
     private renderGrateComponent = (grate: Device) => {
-        const {gratePageOpened, countMode, secondMaxFlow, dailyWaterFlow} = this.state;
+        const {gratePageOpened, secondMaxFlow, dailyWaterFlow} = this.state;
         if (!gratePageOpened) {
             return null;
         }
         if (grate.selectedType.key === GrateTypes.mechanic) {
-            return <GrateMechanic secondMaxFlow={secondMaxFlow}
-            dailyWaterFlow={dailyWaterFlow}
-            onCountMode={this.onCountMode} />
+            return <GrateComponent secondMaxFlow={secondMaxFlow}
+                dailyWaterFlow={dailyWaterFlow}
+                type={GrateTypes.mechanic}
+                onCountMode={this.onCountMode} />
         }
         if (grate.selectedType.key === GrateTypes.hand) {
-            return <div>Here will be a hand grates</div>//<GrateHand secondMaxFlow={secondMaxFlow} dailyWaterFlow={dailyWaterFlow} countMode={countMode}/>
+            return <GrateComponent secondMaxFlow={secondMaxFlow}
+                dailyWaterFlow={dailyWaterFlow}
+                type={GrateTypes.hand}
+                onCountMode={this.onCountMode} />
         }
         if (grate.selectedType.key === GrateTypes.crusher) {
-            return <div>Here will be a hummer crusher grates</div>//<GrateCrusher secondMaxFlow={secondMaxFlow} dailyWaterFlow={dailyWaterFlow} countMode={countMode}/>
+            return <GrateComponent secondMaxFlow={secondMaxFlow}
+                dailyWaterFlow={dailyWaterFlow}
+                type={GrateTypes.crusher}
+                onCountMode={this.onCountMode} />
         }
     }
 

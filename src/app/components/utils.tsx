@@ -84,6 +84,7 @@ export interface ItemList {
 
 interface SelectTemplateProps {
     title: string;
+    label: string;
     itemList: ItemList[];
     onSelect(value: number | string): void;
     onSelectRef?(input: HTMLSelectElement): void;
@@ -111,7 +112,7 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
     }
 
     render() {
-        const {title, itemList} = this.props;
+        const {title, itemList, label} = this.props;
         return <InputGroup className={'grate-input-group'}>
             <InputGroup.Prepend>
                 <InputGroup.Text className={'grate-input-title'}>
@@ -119,6 +120,7 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
                 </InputGroup.Text>
             </InputGroup.Prepend>
             <select className={'grate-input-value'} ref={input => this.onSelectRefChange(input)} onChange={this.onSelectChange}>
+                <option disabled selected>{label}</option>
                 {itemList.map((item, index) => {
                     return <option key={`${item.value}-${index}`} value={item.value}>{item.label}</option>
                 })}
