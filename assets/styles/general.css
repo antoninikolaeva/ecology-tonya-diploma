@@ -68,3 +68,22 @@
     background: white;
 }
 
+/* Templates */
+.label-template {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0 0;
+}
+
+.input-template {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0 0;
+}
+
+.select-template {
+    display: flex;
+    justify-content: space-between;
+    margin: 0.5rem 0 0;
+}
+

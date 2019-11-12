@@ -19,10 +19,11 @@ interface State {
     oilTrapPageOpened: boolean;
     filterPageOpened: boolean;
     centrifugePageOpened: boolean;
+
+    isValidateError: boolean;
 }
 
 export class GeneralComponent extends React.Component<{}, State> {
-    private selectDeviceRef: HTMLInputElement = undefined;
     private maxSecondFlowRef: HTMLInputElement = undefined;
     private dailyWaterFlowRef: HTMLInputElement = undefined;
     constructor(props: any, context: any) {
@@ -40,6 +41,7 @@ export class GeneralComponent extends React.Component<{}, State> {
             oilTrapPageOpened: false,
             filterPageOpened: false,
             centrifugePageOpened: false,
+            isValidateError: false
         }
     }
 
@@ -78,39 +80,35 @@ export class GeneralComponent extends React.Component<{}, State> {
         const errorOfMinWaterFlow = new Error('Суточный расход воды слишком мал/велик, и использование данного оборудования нецелесообразно');
         if(device.selected) {
             return <div>
-                {
-                    (device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
-                    && dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow) ?
-                        <ErrorAlert errorValue={errorOfMinWaterFlow} /> :
-                        <div>
-                            {device.listOfTypes.map((type, index) => {
-                                if ((device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) && dailyWaterFlow &&
-                                    (type.minDailyWaterFlow > dailyWaterFlow || type.maxDailyWaterFlow < dailyWaterFlow)) {
-                                    return null;
-                                }
-                                return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
-                                    <input ref={radio => type.ref = radio} type={'radio'} 
-                                        onChange={(event: React.ChangeEvent<HTMLInputElement>) => {this.selectType(event, device, type)}}/>
-                                    <span className={'radio-mark'}></span>
-                                </label>;
-                            })}
-                            {
-                                device.key === KindOfDevices.sandTrap ?
-                                    <div>
-                                        <div style={{marginLeft: '3rem'}}>Обезвоживание песка</div>
-                                        {device.additionalListOfTypes.map((type, index) => {
-                                            return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
-                                                <input ref={radio => type.ref = radio} type={'radio'}
-                                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                                                        this.selectType(event, device, type);
-                                                    }}/>
-                                                <span className={'radio-mark'}></span>
-                                            </label>})}
-                                    </div>:
-                                    null
+                {(device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
+                  && dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow) ?
+                    <ErrorAlert errorValue={errorOfMinWaterFlow} /> :
+                    <div>
+                        {device.listOfTypes.map((type, index) => {
+                            if ((device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) && dailyWaterFlow &&
+                                (type.minDailyWaterFlow > dailyWaterFlow || type.maxDailyWaterFlow < dailyWaterFlow)) {
+                                return null;
                             }
-                        </div>
-                }
+                            return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
+                                <input ref={radio => type.ref = radio} type={'radio'} 
+                                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {this.selectType(event, device, type)}}/>
+                                <span className={'radio-mark'}></span>
+                            </label>;
+                        })}
+                        {device.key === KindOfDevices.sandTrap ?
+                            <div>
+                                <div style={{marginLeft: '3rem'}}>Обезвоживание песка</div>
+                                {device.additionalListOfTypes.map((type, index) => {
+                                    return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
+                                        <input ref={radio => type.ref = radio} type={'radio'}
+                                            onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+                                                this.selectType(event, device, type);
+                                            }}/>
+                                        <span className={'radio-mark'}></span>
+                                    </label>})}
+                            </div>:
+                            null}
+                    </div>}
             </div>;
         } else {
             return null;
@@ -149,10 +147,12 @@ export class GeneralComponent extends React.Component<{}, State> {
         return <div>
             <InputTemplate title={'Секундный максимальный расход, м3/с'}
                 placeholder={''}
+                onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
                 onInputRef={(input) => {this.maxSecondFlowRef = input}}
                 onInput={(value) => { this.setState({secondMaxFlow: value})}}/>
             <InputTemplate title={'Суточный расход воды, м3/сут'}
                 placeholder={''}
+                onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
                 onInputRef={(input) => {this.dailyWaterFlowRef = input}}
                 onInput={(value) => { this.setState({dailyWaterFlow: value})}}/>
         </div>
@@ -269,6 +269,10 @@ export class GeneralComponent extends React.Component<{}, State> {
     }
 
     private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        const {isValidateError} = this.state;
+        if (isValidateError || !this.isDataExisted()) {
+            return;
+        }
         this.setState({countMode: true});
     }
 
@@ -301,6 +305,7 @@ export class GeneralComponent extends React.Component<{}, State> {
             dailyWaterFlow: undefined,
             secondMaxFlow: undefined,
             deviceWatcher: 0,
+            isValidateError: false,
         });
     }
 
@@ -309,8 +314,20 @@ export class GeneralComponent extends React.Component<{}, State> {
         this.setState({countMode});
     }
 
+    private isDataExisted = () => {
+        const {secondMaxFlow, dailyWaterFlow} = this.state;
+        const listOfSelectedDevice = listOfDevices.filter(device => device.selected &&
+            (device.selectedType || device.additionalSelectedType) &&
+            (device.selectedType.key || device.additionalSelectedType.key));
+        if (!secondMaxFlow || !dailyWaterFlow || listOfSelectedDevice.length === 0) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
     render() {
-        const {countMode} = this.state;
+        const {countMode, isValidateError} = this.state;
         return (
             !countMode ?
                 <div>
@@ -322,11 +339,12 @@ export class GeneralComponent extends React.Component<{}, State> {
                     {this.devicesList()}
                     <h4 className={'general-title'}>Схема очистных сооружений</h4>
                     {this.finalScheme()}
-                    <button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>
+                    {isValidateError || !this.isDataExisted() ? 
+                        <button className={'btn btn-primary'} disabled>Начать расчет</button> :
+                        <button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
                     <button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
                 </div> :
                 this.renderListOfDevicesForCount()
         );
     }
 }
-

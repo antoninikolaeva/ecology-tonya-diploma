@@ -1,8 +1,4 @@
-import * as React from 'react';
-import { Alert, Form } from 'react-bootstrap';
-
 import { grates } from './grate-resources';
-import { InputGroup } from 'react-bootstrap';
 
 export const GRATE_CONST = {
     G: 9.80666,
@@ -22,8 +18,8 @@ export const GRATE_CONST = {
     FIXED_WIDTH_SECTION: 0.016,
     BASE_AMOUNT_OF_GRATES: 3,
     ADDITIONAL_AMOUNT_OF_GRATES: 2,
-    SPEED_WATER_IN_CHANNEL_MIN: 0.6,
-    SPEED_WATER_IN_CHANNEL_MAX: 0.8,
+    SPEED_WATER_IN_CHANNEL_MIN: 1.5,
+    SPEED_WATER_IN_CHANNEL_MAX: 2,
     SPEED_WATER_IN_SECTION_MIN: 0.8,
     SPEED_WATER_IN_SECTION_MAX: 1,
     INCLINE_ANGLE_MIN: 60,
@@ -32,40 +28,6 @@ export const GRATE_CONST = {
     FLOW_RESTRICTION_RAKE_MAX: 1.1,
     TRANSFORM_LITER_TO_VOLUME_METER: 1000,
 };
-
-export interface InputProps {
-    title: string;
-    placeholder: string;
-    onChange?(value: string): void;
-}
-
-export class InputTemplate extends React.Component<InputProps, {}> {
-    constructor(props: InputProps) {
-        super(props);
-    }
-
-    onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        if (!event.target.value) this.props.onChange('0');
-        if (!checkIsNumber(event.target.value)) return;
-        const value = event.target.value.replace(/\,/g, '.');
-        this.props.onChange(value);
-    }
-
-    render() {
-        const {title, placeholder} = this.props;
-        return <InputGroup className={'grate-input-group'}>
-            <InputGroup.Prepend>
-                <InputGroup.Text className={'grate-input-title'}>
-                    {title}
-                </InputGroup.Text>
-            </InputGroup.Prepend>
-            <input className={'grate-input-value'} type={'text'}
-                placeholder={placeholder}
-                onChange={(event) => this.onInputChange(event)}/>
-        </InputGroup>;
-    }
-
-}
 
 export function transferRadiansToDegrees(radians: number): number {
     return radians * Math.PI / 180;
@@ -84,29 +46,6 @@ export function getUniqueRodThickness(currentWidthSection: number): number[] {
     });
     const currentRodThickness = currentGrates.map(grate => grate.rodThickness);
     return getUniqueValuesArray(currentRodThickness);
-}
-
-export function checkIsNumber(value: number | string): boolean {
-    if (typeof value === 'number') {
-        return true;
-    } else {
-        const regExp = /[^\D]/g;
-        const isSymbols = regExp.test(value);
-        return isSymbols;
-    }
-}
-
-export class OutputError extends React.Component<{errorMessage: string}, {}> {
-    constructor(props: {errorMessage: string}) {
-        super(props);
-    }
-
-    render() {
-        const {errorMessage} = this.props;
-        return <Alert variant={'danger'}>
-            {errorMessage}
-        </Alert>;
-    }
 }
 
 function getUniqueValuesArray(array: number[]) {

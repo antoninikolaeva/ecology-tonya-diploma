@@ -16,10 +16,8 @@ interface GrateComponentProps {
 
 interface GrateComponentState {
     sourceOfWasteWater: SourceOfWasteWater;
-    dailyWasteGenerated: number;
     amountOfWaste: number;
     amountOfHammerCrushers: number;
-    normOfWaterOut: number;
     speedOfWaterInChannel: number;
     speedOfWaterInSection: number;
     formOfRod: number;
@@ -38,6 +36,7 @@ interface GrateComponentState {
     currentGrateCrusher: GrateCrusher;
     amountGrateOfCrushers: number;
     checkGrateCrusherSpeed: number;
+    isValidateError: boolean;
 }
 
 export class GrateComponent extends React.Component<GrateComponentProps, GrateComponentState> {
@@ -59,10 +58,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         super(props);
         this.state = {
             sourceOfWasteWater: SourceOfWasteWater.manufacture,
-            dailyWasteGenerated: undefined,
             amountOfWaste: undefined,
             amountOfHammerCrushers: undefined,
-            normOfWaterOut: undefined,
             speedOfWaterInChannel: undefined,
             speedOfWaterInSection: undefined,
             formOfRod: FormOfRods.prizma,
@@ -81,6 +78,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             currentGrateCrusher: undefined,
             amountGrateOfCrushers: undefined,
             checkGrateCrusherSpeed: undefined,
+            isValidateError: false,
         };
     }
 
@@ -100,10 +98,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         this.checkSpeedOfWater = undefined;
         this.setState({
             sourceOfWasteWater: SourceOfWasteWater.manufacture,
-            dailyWasteGenerated: undefined,
             amountOfWaste: undefined,
             amountOfHammerCrushers: undefined,
-            normOfWaterOut: undefined,
             speedOfWaterInChannel: undefined,
             speedOfWaterInSection: undefined,
             formOfRod: FormOfRods.prizma,
@@ -122,6 +118,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             currentGrateCrusher: undefined,
             amountGrateOfCrushers: undefined,
             checkGrateCrusherSpeed: undefined,
+            isValidateError: false
         });
     }
 
@@ -143,8 +140,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             Math.ceil(amountOfWaste / this.currentHammerCrusher.performance) :
             1;
         sourceOfWasteWater === SourceOfWasteWater.manufacture ?
-            this.setState({amountOfWaste, amountOfHammerCrushers, dailyWasteGenerated: value}) :
-            this.setState({amountOfWaste, amountOfHammerCrushers, normOfWaterOut: value})
+            this.setState({amountOfWaste, amountOfHammerCrushers}) :
+            this.setState({amountOfWaste, amountOfHammerCrushers})
     }
 
     // Основной расчет по нажатию на кнопку Подобрать марку решетки,
@@ -153,8 +150,15 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
     // решеток, тогда нужно менять какие-либо параметры.
     private grateCounting = () => {
         const {secondMaxFlow, type} = this.props;
-        const {flowRestrictionRake, speedOfWaterInChannel, speedOfWaterInSection, currentRodThickness} = this.state;
-        let amountOfSection
+        const {
+            flowRestrictionRake,
+            speedOfWaterInChannel,
+            speedOfWaterInSection,
+            currentRodThickness,
+            isValidateError
+        } = this.state;
+        if (!this.isDataExisted() || isValidateError) return;
+        let amountOfSection;
         if (type === GrateTypes.mechanic) {
             amountOfSection = (flowRestrictionRake * secondMaxFlow) /
                 (Math.sqrt(secondMaxFlow / speedOfWaterInChannel) *
@@ -271,7 +275,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         if (this.normOfWaterOutRef) this.normOfWaterOutRef.value = '';
         if (typeof value === 'number') {
             this.setState({sourceOfWasteWater: value,
-                amountOfWaste: 0, amountOfHammerCrushers: 0, dailyWasteGenerated: 0, normOfWaterOut: 0});
+                amountOfWaste: 0, amountOfHammerCrushers: 0});
         }
     }
 
@@ -357,16 +361,18 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             return {value: crusher.performance, label: crusher.mark}
         });
         return <div>
-            <SelectTemplate title={'Источник сточных вод'} label={'Выберите имточник сточных вод'} itemList={selectSourceWaterList}
+            <SelectTemplate title={'Источник сточных вод'} label={'Выберите источник сточных вод'} itemList={selectSourceWaterList}
                 onSelect={(value) => this.selectSourceOfWasteWater(value)}/>
             {labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
             {sourceOfWasteWater === SourceOfWasteWater.city ? 
                 <InputTemplate title={'Норма водоотведения, л/(чел*сут)'}
                     placeholder={''}
+                    onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
                     onInputRef={(input) => {this.normOfWaterOutRef = input}}
                     onInput={(value) => {this.amountOfWasteGenerated(value)}}/> :
                 <InputTemplate title={'Количество образующихся отбросов, м3/сут'}
                     placeholder={''}
+                    onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
                     onInputRef={(input) => {this.dailyWasteGeneratedRef = input}}
                     onInput={(value) => {this.amountOfWasteGenerated(value)}}/>}
             <SelectTemplate title={'Выбор молотковых дробилок'} label={'Выберите молотковую дробилку'} itemList={selectHammerCrusherList}
@@ -396,25 +402,33 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         return <div>
             {labelTemplate('Секундный максимальный расход', secondMaxFlow)}
             {type === GrateTypes.mechanic || type === GrateTypes.hand ?
-                <div>
+                <div className={'grate-input'}>
                     {this.renderSourceOfWasteWater()}
                     <InputTemplate title={'Скрость течения воды в канале, м/с, диапазон [1.5 - 2]'}
                         placeholder={'Введите значение Vk...'}
+                        onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
+                        range={{minValue: _.SPEED_WATER_IN_CHANNEL_MIN, maxValue: _.SPEED_WATER_IN_CHANNEL_MAX}}
                         onInputRef={(input) => {this.speedOfWaterInChannelRef = input}}
                         onInput={(value) => {this.setState({speedOfWaterInChannel: value})}}/>
                     <InputTemplate title={'Скорость движения воды в прозорах решетки, м/с, диапазон [0.8 - 1]'}
                         placeholder={'Введите значение Vp...'}
+                        onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
+                        range={{minValue: _.SPEED_WATER_IN_SECTION_MIN, maxValue: _.SPEED_WATER_IN_SECTION_MAX}}
                         onInputRef={(input) => {this.speedOfWaterInSectionRef = input}}
                         onInput={(value) => {this.setState({speedOfWaterInSection: value})}}/>
                     <SelectTemplate title={'Выбор формы стержней'} label={'Выберите форму стержня'} itemList={formOfRods}
                         onSelect={(value) => this.selectFormOfRods(value)}/>
                     <InputTemplate title={'Угол наклона решетки к горизонту, диапазон [60 - 70]'}
                         placeholder={'Введите значение α...'}
+                        onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
+                        range={{minValue: _.INCLINE_ANGLE_MIN, maxValue: _.INCLINE_ANGLE_MAX}}
                         onInputRef={(input) => {this.inclineAngleRef = input}}
                         onInput={(value) => {this.setState({inclineAngle: value})}}/>
                     {type === GrateTypes.mechanic ? 
                         <InputTemplate title={'Коэффициент, учитывающий стеснение потока механическими граблями, диапазон [1.05 - 1.1]'}
                             placeholder={'Введите значение Kst...'}
+                            onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
+                            range={{minValue: _.FLOW_RESTRICTION_RAKE_MIN, maxValue: _.FLOW_RESTRICTION_RAKE_MAX}}
                             onInputRef={(input) => {this.flowRestrictionRakeRef = input}}
                             onInput={(value) => {this.setState({flowRestrictionRake: value})}}/> :
                         null}
@@ -466,7 +480,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         ];
         return (
             amountOfSuitableGrates > 0 ?
-            <div>
+            <div className={'grate-result'}>
                 {labelTemplate('Количество рабочих решеток, шт', amountOfSuitableGrates)}
                 {labelTemplate('Количество резервных решеток, шт',
                     amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1)}
@@ -502,17 +516,45 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 
     // Отрисовка кнопки расчета
     private renderCountingButton = () => {
-        return <Button variant={'outline-primary'} className={'grate-counting-btn'}
-            onClick={() => this.grateCounting()}>
-            Подобрать марку решеток
-        </Button>
+        const {isValidateError} = this.state;
+        const isNotReadyToCount = !this.isDataExisted() || isValidateError;
+        return isNotReadyToCount ?
+            <Button variant={'outline-primary'} className={''} disabled>
+                Подобрать марку решеток
+            </Button> :
+            <Button variant={'outline-primary'} className={''}
+                onClick={() => this.grateCounting()}>
+                Подобрать марку решеток
+            </Button>
     }
         // Отрисовка кнопки очистки
     private resetData = () => {
-        return <Button variant={'outline-danger'} className={'grate-counting-btn'}
+        return <Button variant={'outline-danger'} className={''}
             onClick={() => this.clearPage()}>
             Очистить входные данные
         </Button>
+    }
+
+    private isDataExisted = () => {
+        const {type} = this.props;
+        const {speedOfWaterInChannel,
+            speedOfWaterInSection, inclineAngle, flowRestrictionRake,
+            amountOfHammerCrushers, formOfRod, currentRodThickness,
+            currentGrateCrusher
+        } = this.state;
+        if (GrateTypes.mechanic === type && (!speedOfWaterInChannel ||
+            !speedOfWaterInSection || !inclineAngle || !this.currentWidthSection ||
+            !amountOfHammerCrushers || !formOfRod || !currentRodThickness || !flowRestrictionRake)) {
+            return false;
+        } else if (GrateTypes.hand === type && (!speedOfWaterInChannel ||
+            !speedOfWaterInSection || !inclineAngle || !this.currentWidthSection ||
+            !amountOfHammerCrushers || !formOfRod || !currentRodThickness)) {
+            return false;
+        } else if (GrateTypes.crusher === type && !currentGrateCrusher) {
+            return false;
+        } else {
+            return true;
+        }
     }
 
     render() {
@@ -527,10 +569,12 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
                         <span>Очистка решетками дробилками</span>}
                     <button className={'btn btn-primary'} onClick={this.returnToScheme}>Изменить схему</button>
                 </div>
-                {this.renderGrate()}
-                {type === GrateTypes.mechanic || type === GrateTypes.hand ? 
-                    this.resultCounting() :
-                    null}
+                <div className={'grate-container'}>
+                    {this.renderGrate()}
+                    {type === GrateTypes.mechanic || type === GrateTypes.hand ? 
+                        this.resultCounting() :
+                        null}
+                </div>
             </div>
         );
     }

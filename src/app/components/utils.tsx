@@ -5,20 +5,26 @@ import { ErrorAlert } from './error/error';
 export const NULLSTR = '';
 
 export enum ErrorNames {
-    isNotANumber = 'The value is not a number',
+    isNotNumber = 'The value is not a number',
+    isNotRange = 'The value is not a proper to range',
 }
 
 enum NumberExceptions {zero = '0', zeroFloatPoint = '0.', zeroFloatComma = '0,'}
 
-export function checkValueToNumber(value: string): number | Error {
-    const error = new Error(ErrorNames.isNotANumber);
-    error.name = ErrorNames.isNotANumber;
+export interface RangeOfNumber {
+    minValue: number;
+    maxValue: number;
+}
+
+export function checkValueToNumber(value: string, range?: RangeOfNumber): number | Error {
+    const errorNumber = new Error(ErrorNames.isNotNumber);
+    errorNumber.name = ErrorNames.isNotNumber;
     if (!value) {
         return undefined;
     }
     const valueWithLetters = value.match(/[a-zA-Z]/g);
     if(valueWithLetters) {
-        return error;
+        return errorNumber;
     }
     if (value === NumberExceptions.zero ||
         value === NumberExceptions.zeroFloatComma ||
@@ -28,9 +34,17 @@ export function checkValueToNumber(value: string): number | Error {
     value = onInputChange(value);
     const number = parseFloat(value);
     if (number) {
-        return number;
+        if (range && range.minValue <= number && range.maxValue >= number) {
+            return number;
+        } else if (!range) {
+            return number;
+        } else {
+            const errorRange = new Error(ErrorNames.isNotRange);
+            errorRange.name = ErrorNames.isNotRange;
+            return errorRange;
+        }
     } else {
-        return error;
+        return errorNumber;
     }
 }
 
@@ -39,42 +53,38 @@ export function onInputChange (value: string) {
 }
 
 export function checkInputData(
-    event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+    range?: RangeOfNumber
 ): number | Error {
     if (!event.target.value) {
         return;
     }
-    const value = checkValueToNumber(event.target.value);
-    if (value instanceof Error && value.name === ErrorNames.isNotANumber) {
-        value.message = 'Данное значение не является числом, исправьте введенное значение';
-        return value;
+    const value = checkValueToNumber(event.target.value, range);
+    if (value instanceof Error) {
+        if(value.name === ErrorNames.isNotNumber) {
+            value.message = 'Данное значение не является числом, исправьте введенное значение';
+            return value;
+        }
+        if(value.name === ErrorNames.isNotRange) {
+            value.message = 'Данное значение не входит в заданный диапазон, исправьте введенное значение';
+            return value;
+        }
     } else {
         return value;
     }
 }
 
 export function labelTemplate (title: string, value: string | number): JSX.Element {
-    return <InputGroup className={'grate-input-group'}>
+    return <InputGroup className={'label-template'}>
         <InputGroup.Prepend>
-            <InputGroup.Text className={'grate-input-title'}>
+            <InputGroup.Text className={''}>
                 {title}
             </InputGroup.Text>
         </InputGroup.Prepend>
-        <Form.Label className={'grate-input-value'}>
+        <Form.Label className={''}>
             {value}
         </Form.Label>
     </InputGroup> 
-}
-
-export function selectTemplate (title: string, template: JSX.Element): JSX.Element {
-    return <InputGroup className={'grate-input-group'}>
-        <InputGroup.Prepend>
-            <InputGroup.Text className={'grate-input-title'}>
-                {title}
-            </InputGroup.Text>
-        </InputGroup.Prepend>
-        {template}
-    </InputGroup>;
 }
 
 export interface ItemList {
@@ -95,7 +105,7 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
         super(props);
     }
 
-    onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    private onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
         const value = checkInputData(event);
         // if we get an error, it means that we have a string field and we return it like a string
         if (value instanceof Error) {
@@ -105,7 +115,7 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
         this.props.onSelect(value);
     }
 
-    onSelectRefChange = (input: HTMLSelectElement) => {
+    private onSelectRefChange = (input: HTMLSelectElement) => {
         if (input && this.props.onSelectRef) {
             this.props.onSelectRef(input);
         }
@@ -113,13 +123,13 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
 
     render() {
         const {title, itemList, label} = this.props;
-        return <InputGroup className={'grate-input-group'}>
+        return <InputGroup className={'select-template'}>
             <InputGroup.Prepend>
-                <InputGroup.Text className={'grate-input-title'}>
+                <InputGroup.Text className={''}>
                     {title}
                 </InputGroup.Text>
             </InputGroup.Prepend>
-            <select className={'grate-input-value'} ref={input => this.onSelectRefChange(input)} onChange={this.onSelectChange}>
+            <select className={''} ref={input => this.onSelectRefChange(input)} onChange={this.onSelectChange}>
                 <option disabled selected>{label}</option>
                 {itemList.map((item, index) => {
                     return <option key={`${item.value}-${index}`} value={item.value}>{item.label}</option>
@@ -133,8 +143,11 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
 interface InputTemplateProps {
     title: string;
     placeholder: string;
+    onErrorExist(isError: boolean): void;
+    range?: RangeOfNumber;
     onInputRef?(input: HTMLInputElement): void;
     onInput?(value: number): void;
+    
 }
 
 interface InputTemplateState {
@@ -149,19 +162,22 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
         }
     }
 
-    onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        const value = checkInputData(event);
+    private onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const {range, onInput, onErrorExist} = this.props;
+        const value = checkInputData(event, range);
         if (value instanceof Error) {
+            onErrorExist(true);
             this.setState({error: value});
             return;
         }
-        if (this.props.onInput) {
+        if (onInput) {
+            onErrorExist(false);
             this.props.onInput(value);
             this.setState({error: undefined});
         }
     }
 
-    onInputRefChange = (input: HTMLInputElement) => {
+    private onInputRefChange = (input: HTMLInputElement) => {
         if (input && this.props.onInputRef) {
             this.props.onInputRef(input);
         }
@@ -171,9 +187,9 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
         const {title, placeholder} = this.props;
         const {error} = this.state;
         return <div>
-            <InputGroup className={'grate-input-group'}>
+            <InputGroup className={'input-template'}>
                 <InputGroup.Prepend>
-                    <InputGroup.Text className={'grate-input-title'}>
+                    <InputGroup.Text className={''}>
                         {title}
                     </InputGroup.Text>
                 </InputGroup.Prepend>
