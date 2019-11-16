@@ -94,15 +94,19 @@ export interface ItemList {
 
 interface SelectTemplateProps {
     title: string;
-    label: string;
     itemList: ItemList[];
     onSelect(value: number | string): void;
-    onSelectRef?(input: HTMLSelectElement): void;
+    onSelectRef?(optionList: HTMLOptionElement[]): void;
 }
 
 export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
+    private listOfOptionElements: HTMLOptionElement[] = [];
     constructor(props: SelectTemplateProps) {
         super(props);
+    }
+
+    componentDidMount() {
+        this.onSelectRefChange();
     }
 
     private onSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
@@ -115,24 +119,29 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
         this.props.onSelect(value);
     }
 
-    private onSelectRefChange = (input: HTMLSelectElement) => {
-        if (input && this.props.onSelectRef) {
-            this.props.onSelectRef(input);
+    private onSelectRefChange = () => {
+        if (this.listOfOptionElements.length !== 0 && this.props.onSelectRef) {
+            this.props.onSelectRef(this.listOfOptionElements);
         }
     }
 
     render() {
-        const {title, itemList, label} = this.props;
+        const {title, itemList} = this.props;
+        this.listOfOptionElements = [];
         return <InputGroup className={'select-template'}>
             <InputGroup.Prepend>
                 <InputGroup.Text className={''}>
                     {title}
                 </InputGroup.Text>
             </InputGroup.Prepend>
-            <select className={''} ref={input => this.onSelectRefChange(input)} onChange={this.onSelectChange}>
-                <option disabled selected>{label}</option>
+            <select className={''} onChange={this.onSelectChange}>
                 {itemList.map((item, index) => {
-                    return <option key={`${item.value}-${index}`} value={item.value}>{item.label}</option>
+                    if (index === 0) {
+                        return <option ref={option => this.listOfOptionElements.push(option)} key={`${item.value}-${index}`} value={item.value} disabled selected>{item.label}</option>
+                    } else {
+                        return <option ref={option => this.listOfOptionElements.push(option)} key={`${item.value}-${index}`} value={item.value}>{item.label}</option>
+                    }
+                    
                 })}
             </select>
         </InputGroup>

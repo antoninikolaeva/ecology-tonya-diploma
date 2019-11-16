@@ -4,14 +4,14 @@
 
 .grate-input {
     display: flex;
-    flex: 5;
+    flex: 1;
     flex-direction: column;
     margin: 1rem;
 }
 
 .grate-result {
     display: flex;
-    flex: 3;
+    flex: 1;
     flex-direction: column;
     margin: 1rem;
 }

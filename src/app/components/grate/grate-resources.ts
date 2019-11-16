@@ -26,13 +26,13 @@ export interface GrateCrusher {
     speedOfMoveInSectionMax: number;
 }
 export enum SourceOfWasteWater {
-    manufacture,
-    city
+    manufacture = 'manufacture',
+    city = 'manufacture'
 };
 
 export enum TypeOfGrates {
-    vertical,
-    incline
+    vertical = 'vertical',
+    incline = 'incline'
 };
 
 export enum FormOfRods {

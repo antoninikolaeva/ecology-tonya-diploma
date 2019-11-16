@@ -152,6 +152,7 @@ export class GeneralComponent extends React.Component<{}, State> {
                 onInput={(value) => { this.setState({secondMaxFlow: value})}}/>
             <InputTemplate title={'Суточный расход воды, м3/сут'}
                 placeholder={''}
+                range={{minValue: 0, maxValue: 1000000}}
                 onErrorExist={(isError) => {this.setState({isValidateError: isError})}}
                 onInputRef={(input) => {this.dailyWaterFlowRef = input}}
                 onInput={(value) => { this.setState({dailyWaterFlow: value})}}/>
