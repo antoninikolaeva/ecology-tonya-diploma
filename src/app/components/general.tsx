@@ -335,15 +335,19 @@ export class GeneralComponent extends React.Component<{}, State> {
                     <Navbar bg="primary" variant="dark">
                         <Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
                     </Navbar>
-                    {this.renderBaseInput()}
-                    <h4 className={'general-title'}>Выберите очистные сооружения для расчетный схемы</h4>
-                    {this.devicesList()}
-                    <h4 className={'general-title'}>Схема очистных сооружений</h4>
-                    {this.finalScheme()}
-                    {isValidateError || !this.isDataExisted() ? 
-                        <button className={'btn btn-primary'} disabled>Начать расчет</button> :
-                        <button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
-                    <button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
+                    <div className={'general-container'}>
+                        {this.renderBaseInput()}
+                        <h4 className={'general-title'}>Выберите очистные сооружения для расчетный схемы</h4>
+                        {this.devicesList()}
+                        <h4 className={'general-title'}>Схема очистных сооружений</h4>
+                        {this.finalScheme()}
+                        <div className={'ctrl-buttons-panel'}>
+                            {isValidateError || !this.isDataExisted() ? 
+                                <button className={'btn btn-primary'} disabled>Начать расчет</button> :
+                                <button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
+                            <button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
+                        </div>
+                    </div>
                 </div> :
                 this.renderListOfDevicesForCount()
         );

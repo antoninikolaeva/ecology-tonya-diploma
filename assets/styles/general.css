@@ -1,3 +1,9 @@
+.general-container {
+    display: flex;
+    flex-direction: column;
+    padding: 1rem;
+}
+
 .general-title {
     margin: 1rem 2rem;
 }
@@ -69,21 +75,67 @@
 }
 
 /* Templates */
-.label-template {
+.label-template, .input-template, .select-template {
     display: flex;
     justify-content: space-between;
-    margin: 0.5rem 0 0;
+    flex-direction: column;
+    margin: 0.3rem 0 1rem;
 }
 
-.input-template {
+.input-label {
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.3rem 0;
+}
+
+.readonly-text {
+    border-bottom: 1px solid #4d90fe;
+    padding: 0.5rem;
+    font-size: 1.1rem;
+    box-shadow: inset 0 0 0.2rem 0 #4d90fe;
+}
+
+.select-input, .text-input {
+    padding: 0.5rem;
+    border: none;
+    border-bottom: 1px solid #4d90fe;
+    box-shadow: inset 0 0 0.2rem 0 #4d90fe;
+}
+
+/* Table hacking */
+.table-result {
+    margin: 1rem 0;
+}
+
+.left-title-column {
+    border-right: none !important;
+}
+
+.right-title-column {
+    border-left: none !important;
+}
+
+/* Title of the counting */
+.title-container {
+    display: flex;
+    padding: 0.5rem 1rem;
+    justify-content: space-between;
+}
+
+.count-title {
+    font-weight: bold;
+    font-size: 1.4rem;
+}
+
+.input-data-title {
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+    font-size: 1.2rem;
+}
+
+/* Control buttons panel */
+.ctrl-buttons-panel {
     display: flex;
     justify-content: space-between;
-    margin: 0.5rem 0 0;
+    margin: 1rem 0;
 }
-
-.select-template {
-    display: flex;
-    justify-content: space-between;
-    margin: 0.5rem 0 0;
-}
-

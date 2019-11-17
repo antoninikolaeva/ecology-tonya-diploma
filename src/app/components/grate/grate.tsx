@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 
 import { GRATE_CONST as _, getUniqueWidthSection, getUniqueRodThickness, transferRadiansToDegrees } from './grate.service';
 import { SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, Grate, TypeOfGrates, grateCrushers, GrateCrusher } from './grate-resources';
@@ -448,6 +448,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             this.rodThicknessList.unshift({value: undefined, label: 'Выберите толщину стержня'});
         }
         return <div className={'grate-input'}>
+            <div className={'input-data-title'}>Входные данные</div>
             {labelTemplate('Секундный максимальный расход', secondMaxFlow)}
             {type === GrateTypes.mechanic || type === GrateTypes.hand ?
                 <div>
@@ -488,8 +489,11 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
                     <SelectTemplate title={'Толщина стержней решетки, м'} itemList={this.rodThicknessList}
                         onSelect={(value) => {this.selectCurrentRodThickness(value)}}
                         onSelectRef={(optionList) => {this.rodThicknessesRef = optionList}}/> : null}
-                    {this.renderCountingButton()}
-                    {this.resetData()}
+                    <div className={'ctrl-buttons-panel'}>
+                        {this.renderCountingButton()}
+                        {this.resetData()}
+                    </div>
+
                 </div> :
                 <div>
                     <SelectTemplate title={'Выбор типа решетки дробилки'} itemList={this.grateCrusherList}
@@ -539,9 +543,12 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         }
         return ( 
             <div className={'grate-result'}>
-                {labelTemplate('Проверка решеток на соответствие:', `
-                    ${_.MIN_CHECK_SPEED_WATER} <= ${checkSpeedOfWater} <= ${_.MAX_CHECK_SPEED_WATER} :
-                    ${_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater ? 'Соответствует' : 'Не соответствует'}`)}
+                <div className={'input-data-title'}>Результаты расчета</div>
+                {checkSpeedOfWater ?
+                    labelTemplate('Проверка решеток на соответствие:', `
+                        ${_.MIN_CHECK_SPEED_WATER} <= ${checkSpeedOfWater.toFixed(3)} <= ${_.MAX_CHECK_SPEED_WATER} :
+                        ${_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater ? 'Соответствует' : 'Не соответствует'}`) :
+                        null}
                 {suitableGrates && suitableGrates.length !== 0 ?
                     <div>
                         <SelectTemplate title={'Выбор решетки'} itemList={this.suitableGrateList}
@@ -556,21 +563,25 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
                             onSelectRef={(optionList) => {this.typeOfGratesRef = optionList}}/>
                         {this.renderCheckingButton()}
                         {valueOfLedgeInstallationPlace ?
-                        <div>
-                            {labelTemplate('Величина уступа в месте установки решетки, м', valueOfLedgeInstallationPlace.toFixed(3))}
-                            {labelTemplate('Количество технической воды, подводимой к дробилками, м3/ч',
-                                (_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3))}
-                            {amountOfHammerCrushers ? labelTemplate('Количество молотковых дробилок необходимых для очистки, шт', amountOfHammerCrushers) : null}
-                            {labelTemplate('Количество рабочих решеток, шт', amountOfSuitableGrates)}
-                            {labelTemplate('Количество резервных решеток, шт', amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1)}  
-                            {commonLengthOfChamberGrate ?
-                            <div>
-                                {labelTemplate('Длина входной части канала, м', sizeOfInputChannelPart.toFixed(3))}
-                                {labelTemplate('Длина выходной части канала, м', sizeOfOutputChannelPart.toFixed(3))}
-                                {labelTemplate('Длина расширенной части канала, м', lengthOfIncreaseChannelPart.toFixed(3))}
-                                {labelTemplate('Общая длина камеры решетки, м', commonLengthOfChamberGrate.toFixed(3))}
-                            </div> : null}
-                            {amountOfWaste ? labelTemplate('Количество отходов, кг/ч', amountOfWaste) : null}
+                        <div className={'table-result'}>
+                            <Table bordered hover>
+                                <tbody>
+                                    <tr><td>Величина уступа в месте установки решетки, м</td><td>{valueOfLedgeInstallationPlace.toFixed(3)}</td></tr>
+                                    <tr><td className={'input-label left-title-column'}>Молотковые дробилки</td><td className={'right-title-column'}></td></tr>
+                                    <tr><td>Количество технической воды, подводимой к дробилками, м3/ч</td><td>{(_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3)}</td></tr>
+                                    <tr><td>Количество молотковых дробилок необходимых для очистки, шт</td><td>{amountOfHammerCrushers}</td></tr>
+                                    <tr><td className={'input-label left-title-column'}>Решетки</td><td className={'right-title-column'}></td></tr>
+                                    <tr><td>Количество рабочих решеток, шт</td><td>{amountOfSuitableGrates}</td></tr>
+                                    <tr><td>Количество резервных решеток, шт</td><td>{amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1}</td></tr>
+                                    <tr><td className={'input-label left-title-column'}>Основные длины</td><td className={'right-title-column'}></td></tr>
+                                    <tr><td>Длина входной части канала, м</td><td>{sizeOfInputChannelPart.toFixed(3)}</td></tr>
+                                    <tr><td>Длина выходной части канала, м</td><td>{sizeOfOutputChannelPart.toFixed(3)}</td></tr>
+                                    <tr><td>Длина расширенной части канала, м</td><td>{lengthOfIncreaseChannelPart.toFixed(3)}</td></tr>
+                                    <tr><td>Общая длина камеры решетки, м</td><td>{commonLengthOfChamberGrate.toFixed(3)}</td></tr>
+                                    <tr><td className={'input-label left-title-column'}>Отходы</td><td className={'right-title-column'}></td></tr>
+                                    <tr><td>Количество отходов, кг/ч</td><td>{amountOfWaste}</td></tr>
+                                </tbody>
+                            </Table>
                         </div> :
                         null
                         }
@@ -588,34 +599,34 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         const {isValidateError} = this.state;
         const isNotReadyToCount = !this.isDataExisted() || isValidateError;
         return isNotReadyToCount ?
-            <Button variant={'outline-primary'} className={''} disabled>
+            <button className={'btn btn-primary'} disabled>
                 Подобрать марку решеток
-            </Button> :
-            <Button variant={'outline-primary'} className={''}
+            </button> :
+            <button className={'btn btn-primary'}
                 onClick={() => this.grateCounting()}>
                 Подобрать марку решеток
-            </Button>
+            </button>
     }
 
     // Отрисовка кнопки расчета
     private renderCheckingButton = () => {
         const isNotReadyToCount = !this.isCheckResultDataExisted();
         return isNotReadyToCount ?
-            <Button variant={'outline-primary'} className={''} disabled>
+            <button className={'btn btn-primary'} disabled>
                 Показать результаты данной выборки
-            </Button> :
-            <Button variant={'outline-primary'} className={''}
+            </button> :
+            <button className={'btn btn-primary'}
                 onClick={() => this.resultCounting()}>
                 Показать результаты данной выборки
-            </Button>
+            </button>
     }
 
     // Отрисовка кнопки очистки
     private resetData = () => {
-        return <Button variant={'outline-danger'} className={''}
+        return <button className={'btn btn-danger'}
             onClick={() => this.clearPage()}>
             Очистить входные данные
-        </Button>
+        </button>
     }
 
     private isDataExisted = () => {
@@ -653,12 +664,12 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         const {type} = this.props;
         return (
             <div>
-                <div>
+                <div className={'title-container'}>
                     {type === GrateTypes.mechanic ?
-                        <span>Механическая очистка</span>:
+                        <div className={'count-title'}>Механическая очистка</div>:
                     type === GrateTypes.hand ?
-                        <span>Ручная очистка</span>:
-                        <span>Очистка решетками дробилками</span>}
+                        <div className={'count-title'}>Ручная очистка</div>:
+                        <div className={'count-title'}>Очистка решетками дробилками</div>}
                     <button className={'btn btn-primary'} onClick={this.returnToScheme}>Изменить схему</button>
                 </div>
                 <div className={'grate-container'}>

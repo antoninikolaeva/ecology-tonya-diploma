@@ -27,7 +27,7 @@ export interface GrateCrusher {
 }
 export enum SourceOfWasteWater {
     manufacture = 'manufacture',
-    city = 'manufacture'
+    city = 'city'
 };
 
 export enum TypeOfGrates {

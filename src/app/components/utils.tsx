@@ -75,16 +75,14 @@ export function checkInputData(
 }
 
 export function labelTemplate (title: string, value: string | number): JSX.Element {
-    return <InputGroup className={'label-template'}>
-        <InputGroup.Prepend>
-            <InputGroup.Text className={''}>
-                {title}
-            </InputGroup.Text>
-        </InputGroup.Prepend>
-        <Form.Label className={''}>
+    return <div className={'label-template'}>
+        <div className={'input-label'}>
+            {title}
+        </div>
+        <div className={'readonly-text'}>
             {value}
-        </Form.Label>
-    </InputGroup> 
+        </div>
+    </div> 
 }
 
 export interface ItemList {
@@ -128,13 +126,11 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
     render() {
         const {title, itemList} = this.props;
         this.listOfOptionElements = [];
-        return <InputGroup className={'select-template'}>
-            <InputGroup.Prepend>
-                <InputGroup.Text className={''}>
-                    {title}
-                </InputGroup.Text>
-            </InputGroup.Prepend>
-            <select className={''} onChange={this.onSelectChange}>
+        return <div className={'select-template'}>
+            <div className={'input-label'}>
+                {title}
+            </div>
+            <select className={'select-input'} onChange={this.onSelectChange}>
                 {itemList.map((item, index) => {
                     if (index === 0) {
                         return <option ref={option => this.listOfOptionElements.push(option)} key={`${item.value}-${index}`} value={item.value} disabled selected>{item.label}</option>
@@ -144,7 +140,7 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
                     
                 })}
             </select>
-        </InputGroup>
+        </div>
     }
 }
 
@@ -196,14 +192,12 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
         const {title, placeholder} = this.props;
         const {error} = this.state;
         return <div>
-            <InputGroup className={'input-template'}>
-                <InputGroup.Prepend>
-                    <InputGroup.Text className={''}>
-                        {title}
-                    </InputGroup.Text>
-                </InputGroup.Prepend>
-                <input type={'text'} placeholder={placeholder} ref={input => this.onInputRefChange(input)} onChange={this.onInputChange}/>
-            </InputGroup>
+            <div className={'input-template'}>
+                <div className={'input-label'}>
+                    {title}
+                </div>
+                <input className={'text-input'} type={'text'} placeholder={placeholder} ref={input => this.onInputRefChange(input)} onChange={this.onInputChange}/>
+            </div>
             {error ? <ErrorAlert errorValue={error}/>: null}
         </div>
     }
