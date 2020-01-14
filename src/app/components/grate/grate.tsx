@@ -12,6 +12,7 @@ interface GrateComponentProps {
     dailyWaterFlow: number;
     type: GrateTypes;
     onCountMode(countMode: boolean): void;
+    gratePageOpened: boolean;
 }
 
 interface GrateComponentState {
@@ -660,7 +661,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         }
     }
 
-    render() {
+    private renderGrateView = () => {
         const {type} = this.props;
         return (
             <div>
@@ -680,5 +681,10 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
                 </div>
             </div>
         );
+    }
+
+    render() {
+        const {gratePageOpened} = this.props;
+        return gratePageOpened ? this.renderGrateView() : <div style={{display: 'none'}}>{this.renderGrateView()}</div>
     }
 }

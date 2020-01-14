@@ -221,7 +221,7 @@ export class GeneralComponent extends React.Component<{}, State> {
                 {grate.selected ? <Nav.Item onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {this.selectDeviceToCount(event, grate)}}>
                         <Nav.Link eventKey={KindOfDevices.grate}>{grate.name}</Nav.Link>
                     </Nav.Item> : null}
-                {sandTrap.selected ? <Nav.Item>
+                {sandTrap.selected ? <Nav.Item onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {this.selectDeviceToCount(event, sandTrap)}}>
                         <Nav.Link eventKey={KindOfDevices.sandTrap}>{sandTrap.name}</Nav.Link>
                     </Nav.Item> : null}
                 {sump.selected ? <Nav.Item>
@@ -240,33 +240,44 @@ export class GeneralComponent extends React.Component<{}, State> {
                         <Nav.Link eventKey={KindOfDevices.centrifuge}>{centrifuge.name}</Nav.Link>
                     </Nav.Item> : null}
             </Nav>
-            {this.renderGrateComponent(grate)}
+            {grate.selected ? this.renderGrateComponent(grate): null}
+            {sandTrap.selected ? this.renderSandTrapComponent(sandTrap): null}
         </div>
     }
 
     private renderGrateComponent = (grate: Device) => {
         const {gratePageOpened, secondMaxFlow, dailyWaterFlow} = this.state;
-        if (!gratePageOpened) {
-            return null;
-        }
         if (grate.selectedType.key === GrateTypes.mechanic) {
             return <GrateComponent secondMaxFlow={secondMaxFlow}
                 dailyWaterFlow={dailyWaterFlow}
                 type={GrateTypes.mechanic}
-                onCountMode={this.onCountMode} />
+                onCountMode={this.onCountMode} 
+                gratePageOpened={gratePageOpened}/>
         }
         if (grate.selectedType.key === GrateTypes.hand) {
             return <GrateComponent secondMaxFlow={secondMaxFlow}
                 dailyWaterFlow={dailyWaterFlow}
                 type={GrateTypes.hand}
-                onCountMode={this.onCountMode} />
+                onCountMode={this.onCountMode}
+                gratePageOpened={gratePageOpened}/>
         }
         if (grate.selectedType.key === GrateTypes.crusher) {
             return <GrateComponent secondMaxFlow={secondMaxFlow}
                 dailyWaterFlow={dailyWaterFlow}
                 type={GrateTypes.crusher}
-                onCountMode={this.onCountMode} />
+                onCountMode={this.onCountMode}
+                gratePageOpened={gratePageOpened}/>
         }
+    }
+
+    private renderSandTrapComponent = (sandTrap: any) => {
+        const {sandTrapPageOpened, secondMaxFlow, dailyWaterFlow} = this.state;
+        if (!sandTrapPageOpened) {
+            return null;
+        }
+        return <div>
+            It will be sand trap counting.
+        </div>
     }
 
     private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
