@@ -5,6 +5,7 @@ import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
 import { listOfDevices, Device, KindOfDevices, DeviceType, SandTrapInfraTypes, GrateTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
+import { GeneralDataModel, dataModel } from './data-model';
 
 interface State {
     deviceWatcher: number;
@@ -209,6 +210,7 @@ export class GeneralComponent extends React.Component<{}, State> {
     }
 
     private renderListOfDevicesForCount = () => {
+        const {gratePageOpened, sandTrapPageOpened} = this.state;
         const grate = listOfDevices[0];
         const sandTrap = listOfDevices[1];
         const sump = listOfDevices[2];
@@ -216,6 +218,8 @@ export class GeneralComponent extends React.Component<{}, State> {
         const oilTrap = listOfDevices[4];
         const filter = listOfDevices[5];
         const centrifuge = listOfDevices[6];
+        const grateComponent = this.renderGrateComponent(grate);
+        const sandTrapComponent = this.renderSandTrapComponent(sandTrap);
         return <div>
             <Nav fill variant={'tabs'} defaultActiveKey={'/'}>
                 {grate.selected ? <Nav.Item onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {this.selectDeviceToCount(event, grate)}}>
@@ -240,43 +244,40 @@ export class GeneralComponent extends React.Component<{}, State> {
                         <Nav.Link eventKey={KindOfDevices.centrifuge}>{centrifuge.name}</Nav.Link>
                     </Nav.Item> : null}
             </Nav>
-            {grate.selected ? this.renderGrateComponent(grate): null}
-            {sandTrap.selected ? this.renderSandTrapComponent(sandTrap): null}
+            {grate.selected && gratePageOpened ?
+                grateComponent :
+                <div style={{visibility: 'hidden', height: 0, width: 0}}>{grateComponent}</div>}
+            {sandTrap.selected && sandTrapPageOpened ?
+                sandTrapComponent :
+                <div style={{visibility: 'hidden', height: 0, width: 0}}>{sandTrapComponent}</div>}
         </div>
     }
 
     private renderGrateComponent = (grate: Device) => {
-        const {gratePageOpened, secondMaxFlow, dailyWaterFlow} = this.state;
-        if (grate.selectedType.key === GrateTypes.mechanic) {
-            return <GrateComponent secondMaxFlow={secondMaxFlow}
-                dailyWaterFlow={dailyWaterFlow}
-                type={GrateTypes.mechanic}
-                onCountMode={this.onCountMode} 
-                gratePageOpened={gratePageOpened}/>
-        }
-        if (grate.selectedType.key === GrateTypes.hand) {
-            return <GrateComponent secondMaxFlow={secondMaxFlow}
-                dailyWaterFlow={dailyWaterFlow}
-                type={GrateTypes.hand}
-                onCountMode={this.onCountMode}
-                gratePageOpened={gratePageOpened}/>
-        }
-        if (grate.selectedType.key === GrateTypes.crusher) {
-            return <GrateComponent secondMaxFlow={secondMaxFlow}
-                dailyWaterFlow={dailyWaterFlow}
-                type={GrateTypes.crusher}
-                onCountMode={this.onCountMode}
-                gratePageOpened={gratePageOpened}/>
-        }
+        const {secondMaxFlow, dailyWaterFlow} = this.state;
+        return <GrateComponent secondMaxFlow={secondMaxFlow}
+            dailyWaterFlow={dailyWaterFlow}
+            type={
+                grate.selectedType.key === GrateTypes.mechanic ? GrateTypes.mechanic :
+                grate.selectedType.key === GrateTypes.hand ? GrateTypes.hand :
+                GrateTypes.crusher
+            }
+            onCountMode={this.onCountMode}/>
     }
 
     private renderSandTrapComponent = (sandTrap: any) => {
-        const {sandTrapPageOpened, secondMaxFlow, dailyWaterFlow} = this.state;
-        if (!sandTrapPageOpened) {
-            return null;
-        }
+        const {secondMaxFlow, dailyWaterFlow} = this.state;
+        const grateResult = dataModel.getGrateResult();
         return <div>
-            It will be sand trap counting.
+            <div>Value 1: {grateResult.currentSuitableGrate ? grateResult.currentSuitableGrate.mark : undefined}</div>
+            <div>Value 2: {grateResult.amountOfHammerCrushers}</div>
+            <div>Value 3: {grateResult.amountOfSuitableGrates}</div>
+            <div>Value 4: {grateResult.amountOfWaste}</div>
+            <div>Value 5: {grateResult.commonLengthOfChamberGrate}</div>
+            <div>Value 6: {grateResult.lengthOfIncreaseChannelPart}</div>
+            <div>Value 7: {grateResult.sizeOfInputChannelPart}</div>
+            <div>Value 8: {grateResult.sizeOfOutputChannelPart}</div>
+            <div>Value 9: {grateResult.valueOfLedgeInstallationPlace}</div>
         </div>
     }
 

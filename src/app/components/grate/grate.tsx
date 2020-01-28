@@ -6,17 +6,18 @@ import { SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, 
 import { labelTemplate, InputTemplate, ItemList, SelectTemplate, NULLSTR } from '../utils';
 import { GrateTypes } from '../general-resources';
 import { ErrorAlert } from '../error/error';
+import { GeneralDataModel, dataModel } from '../data-model';
 
 interface GrateComponentProps {
     secondMaxFlow: number;
     dailyWaterFlow: number;
     type: GrateTypes;
     onCountMode(countMode: boolean): void;
-    gratePageOpened: boolean;
 }
 
 interface GrateComponentState {
     sourceOfWasteWater: SourceOfWasteWater;
+    inputAmountOfWaste: number;
     amountOfWaste: number;
     amountOfHammerCrushers: number;
     currentHammerCrusher: HammerCrusher;
@@ -99,6 +100,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         this.grateCrusherList.unshift({value: undefined, label: 'Выберите тип решетки дробилки'});
         this.state = {
             sourceOfWasteWater: undefined,
+            inputAmountOfWaste: undefined,
             amountOfWaste: undefined,
             amountOfHammerCrushers: undefined,
             currentHammerCrusher: undefined,
@@ -155,6 +157,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
         this.resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
         this.setState({
             sourceOfWasteWater: undefined,
+            inputAmountOfWaste: undefined,
             amountOfWaste: undefined,
             amountOfHammerCrushers: undefined,
             speedOfWaterInChannel: undefined,
@@ -205,8 +208,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             Math.ceil(amountOfWaste / currentHammerCrusher.performance) :
             1;
         sourceOfWasteWater === SourceOfWasteWater.manufacture ?
-            this.setState({amountOfWaste, amountOfHammerCrushers}) :
-            this.setState({amountOfWaste, amountOfHammerCrushers})
+            this.setState({inputAmountOfWaste: value, amountOfWaste, amountOfHammerCrushers}) :
+            this.setState({inputAmountOfWaste: value, amountOfWaste, amountOfHammerCrushers})
     }
 
     // Основной расчет по нажатию на кнопку Подобрать марку решетки,
@@ -528,8 +531,20 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
             amountOfHammerCrushers,
             checkSpeedOfWater,
             suitableGrates,
-            limitedStandardWidthOfChannel
+            limitedStandardWidthOfChannel,
+            currentSuitableGrate,
         } = this.state;
+        dataModel.setGrateResult({
+            currentSuitableGrate, 
+            valueOfLedgeInstallationPlace,
+            amountOfHammerCrushers,
+            amountOfSuitableGrates,
+            sizeOfInputChannelPart,
+            sizeOfOutputChannelPart,
+            lengthOfIncreaseChannelPart,
+            commonLengthOfChamberGrate,
+            amountOfWaste,
+        });
         if (suitableGrates && suitableGrates.length !== 0) {
             this.suitableGrateList = suitableGrates.map(grate => {
                 return {value: grate.mark, label: grate.mark};
@@ -684,7 +699,6 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
     }
 
     render() {
-        const {gratePageOpened} = this.props;
-        return gratePageOpened ? this.renderGrateView() : <div style={{display: 'none'}}>{this.renderGrateView()}</div>
+        return this.renderGrateView();
     }
 }
