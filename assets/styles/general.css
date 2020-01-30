@@ -139,3 +139,12 @@
     justify-content: space-between;
     margin: 1rem 0;
 }
+
+/* Device tabs */
+.device-tabs-container .nav.nav-tabs {
+    display: flex;
+}
+.device-tabs-container .nav.nav-tabs a.nav-item.nav-link {
+    display: flex;
+    flex: 1;
+}

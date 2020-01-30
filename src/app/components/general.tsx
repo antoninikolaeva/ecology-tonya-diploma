@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Navbar, Form, Nav } from 'react-bootstrap';
+import { Navbar, Form, Nav, Tabs, Tab } from 'react-bootstrap';
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
@@ -13,20 +13,21 @@ interface State {
     dailyWaterFlow: number;
     countMode: boolean;
 
-    gratePageOpened: boolean;
-    sandTrapPageOpened: boolean;
-    sumpPageOpened: boolean;
-    averagePageOpened: boolean;
-    oilTrapPageOpened: boolean;
-    filterPageOpened: boolean;
-    centrifugePageOpened: boolean;
-
     isValidateError: boolean;
 }
 
 export class GeneralComponent extends React.Component<{}, State> {
     private maxSecondFlowRef: HTMLInputElement = undefined;
     private dailyWaterFlowRef: HTMLInputElement = undefined;
+
+    private grate: Device = listOfDevices[0];
+    private sandTrap: Device = listOfDevices[1];
+    private sump: Device = listOfDevices[2];
+    private average: Device = listOfDevices[3];
+    private oilTrap: Device = listOfDevices[4];
+    private filter: Device = listOfDevices[5];
+    private centrifuge: Device = listOfDevices[6];
+
     constructor(props: any, context: any) {
         super(props, context);
 
@@ -35,13 +36,6 @@ export class GeneralComponent extends React.Component<{}, State> {
             secondMaxFlow: undefined,
             dailyWaterFlow: undefined,
             countMode: false,
-            gratePageOpened: false,
-            sandTrapPageOpened: false,
-            sumpPageOpened: false,
-            averagePageOpened: false,
-            oilTrapPageOpened: false,
-            filterPageOpened: false,
-            centrifugePageOpened: false,
             isValidateError: false
         }
     }
@@ -178,78 +172,39 @@ export class GeneralComponent extends React.Component<{}, State> {
         </div> 
     }
 
-    private selectDeviceToCount = (event: React.MouseEvent<HTMLDivElement, MouseEvent>, device: Device) => {
-        if (device.key === KindOfDevices.grate) {
-            this.setState({gratePageOpened: true, sandTrapPageOpened: false, sumpPageOpened: false, averagePageOpened: false,
-                oilTrapPageOpened: false, filterPageOpened: false, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.sandTrap) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: true, sumpPageOpened: false, averagePageOpened: false,
-                oilTrapPageOpened: false, filterPageOpened: false, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.sump) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: false, sumpPageOpened: true, averagePageOpened: false,
-                oilTrapPageOpened: false, filterPageOpened: false, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.average) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: false, sumpPageOpened: false, averagePageOpened: true,
-                oilTrapPageOpened: false, filterPageOpened: false, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.oilTrap) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: false, sumpPageOpened: false, averagePageOpened: false,
-                oilTrapPageOpened: true, filterPageOpened: false, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.filter) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: false, sumpPageOpened: false, averagePageOpened: false,
-                oilTrapPageOpened: false, filterPageOpened: true, centrifugePageOpened: false});
-        }
-        if (device.key === KindOfDevices.centrifuge) {
-            this.setState({gratePageOpened: false, sandTrapPageOpened: false, sumpPageOpened: false, averagePageOpened: false,
-                oilTrapPageOpened: false, filterPageOpened: false, centrifugePageOpened: true});
-        }
-    }
-
     private renderListOfDevicesForCount = () => {
-        const {gratePageOpened, sandTrapPageOpened} = this.state;
-        const grate = listOfDevices[0];
-        const sandTrap = listOfDevices[1];
-        const sump = listOfDevices[2];
-        const average = listOfDevices[3];
-        const oilTrap = listOfDevices[4];
-        const filter = listOfDevices[5];
-        const centrifuge = listOfDevices[6];
-        const grateComponent = this.renderGrateComponent(grate);
-        const sandTrapComponent = this.renderSandTrapComponent(sandTrap);
-        return <div>
-            <Nav fill variant={'tabs'} defaultActiveKey={'/'}>
-                {grate.selected ? <Nav.Item onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {this.selectDeviceToCount(event, grate)}}>
-                        <Nav.Link eventKey={KindOfDevices.grate}>{grate.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {sandTrap.selected ? <Nav.Item onClick={(event: React.MouseEvent<HTMLDivElement, MouseEvent>) => {this.selectDeviceToCount(event, sandTrap)}}>
-                        <Nav.Link eventKey={KindOfDevices.sandTrap}>{sandTrap.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {sump.selected ? <Nav.Item>
-                        <Nav.Link eventKey={KindOfDevices.sump}>{sump.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {average.selected ? <Nav.Item>
-                        <Nav.Link eventKey={KindOfDevices.average}>{average.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {oilTrap.selected ? <Nav.Item>
-                        <Nav.Link eventKey={KindOfDevices.oilTrap}>{oilTrap.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {filter.selected ? <Nav.Item>
-                        <Nav.Link eventKey={KindOfDevices.filter}>{filter.name}</Nav.Link>
-                    </Nav.Item> : null}
-                {centrifuge.selected ? <Nav.Item>
-                        <Nav.Link eventKey={KindOfDevices.centrifuge}>{centrifuge.name}</Nav.Link>
-                    </Nav.Item> : null}
-            </Nav>
-            {grate.selected && gratePageOpened ?
-                grateComponent :
-                <div style={{visibility: 'hidden', height: 0, width: 0}}>{grateComponent}</div>}
-            {sandTrap.selected && sandTrapPageOpened ?
-                sandTrapComponent :
-                <div style={{visibility: 'hidden', height: 0, width: 0}}>{sandTrapComponent}</div>}
+        const defaultActiveKey = listOfDevices.find(device => device.selected);
+        return <div className={'device-tabs-container'}>
+            <Tabs defaultActiveKey={defaultActiveKey.key} id='allDeviceTabs'>
+                {this.grate.selected ?
+                    <Tab eventKey={this.grate.key} title={this.grate.name}>
+                        {this.renderGrateComponent(this.grate)}
+                    </Tab> : null}
+                {this.sandTrap.selected ?
+                    <Tab eventKey={this.sandTrap.key} title={this.sandTrap.name}>
+                        {this.renderSandTrapComponent(this.grate)}
+                    </Tab> : null} 
+                {this.sump.selected ?
+                    <Tab eventKey={this.sump.key} title={this.sump.name}>
+                        {'Will be sump'}
+                    </Tab> : null}
+                {this.average.selected ?
+                    <Tab eventKey={this.average.key} title={this.average.name}>
+                        {'Will be average'}
+                    </Tab> : null}
+                {this.oilTrap.selected ?
+                    <Tab eventKey={this.oilTrap.key} title={this.oilTrap.name}>
+                        {'Will be oilTrap'}
+                    </Tab> : null}
+                {this.filter.selected ?
+                    <Tab eventKey={this.filter.key} title={this.filter.name}>
+                        {'Will be filter'}
+                    </Tab> : null}
+                {this.centrifuge.selected ?
+                    <Tab eventKey={this.centrifuge.key} title={this.centrifuge.name}>
+                        {'Will be centrifuge'}
+                    </Tab> : null}
+            </Tabs>
         </div>
     }
 
@@ -267,17 +222,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 
     private renderSandTrapComponent = (sandTrap: any) => {
         const {secondMaxFlow, dailyWaterFlow} = this.state;
-        const grateResult = dataModel.getGrateResult();
         return <div>
-            <div>Value 1: {grateResult.currentSuitableGrate ? grateResult.currentSuitableGrate.mark : undefined}</div>
-            <div>Value 2: {grateResult.amountOfHammerCrushers}</div>
-            <div>Value 3: {grateResult.amountOfSuitableGrates}</div>
-            <div>Value 4: {grateResult.amountOfWaste}</div>
-            <div>Value 5: {grateResult.commonLengthOfChamberGrate}</div>
-            <div>Value 6: {grateResult.lengthOfIncreaseChannelPart}</div>
-            <div>Value 7: {grateResult.sizeOfInputChannelPart}</div>
-            <div>Value 8: {grateResult.sizeOfOutputChannelPart}</div>
-            <div>Value 9: {grateResult.valueOfLedgeInstallationPlace}</div>
+            Will be sandTrap
         </div>
     }
 
@@ -307,13 +253,6 @@ export class GeneralComponent extends React.Component<{}, State> {
             }
         });
         this.setState({
-            averagePageOpened: false,
-            centrifugePageOpened: false,
-            filterPageOpened: false,
-            gratePageOpened: false,
-            oilTrapPageOpened: false,
-            sandTrapPageOpened: false,
-            sumpPageOpened: false,
             countMode: false,
             dailyWaterFlow: undefined,
             secondMaxFlow: undefined,
