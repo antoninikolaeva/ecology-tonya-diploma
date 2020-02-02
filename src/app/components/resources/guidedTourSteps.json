@@ -1,0 +1,66 @@
+[{
+  "selector": ".ontodia-overlayed-element",
+  "title": "Click the element to start the tour",
+  "text": "Welcome to the guided tour of Ontodia (in beta). This tour will tell you about the ways to explore your datasets. Ontodia has a commercial version, which is capable of data authoring and will be released soon - visit <a href='http://ontodia.org/'>ontodia.org</a> for more information.",
+  "style": {"button": {"display": "none"}},
+  "event": "editor:changeSelection"
+}, {
+  "selector": ".ontodia-halo__navigate",
+  "title": "Click navigation icon to explore the connections of the node",
+  "text": "You can use this icon to explore the neighborhood of any node on the graph.",
+  "style": {"button": {"display": "none"}},
+  "event": "editor:toggleDialog"
+}, {
+  "selector": ".ontodia-connections-menu",
+  "text": "Wait...",
+  "style": {"button": {"display": "none"}},
+  "event": "connections:loadLinks"
+}, {
+  "selector": ".ontodia-connections-menu_links-list",
+  "title": "Select a connection type",
+  "text": "All connections that the selected node has in the dataset are listed here. You can choose the one that you’d like to expand",
+  "style": {"button": {"display": "none"}},
+  "event": "connections:expandLink"
+}, {
+  "selector": ".ontodia-connections-menu",
+  "text": "Wait...",
+  "style": {"button": {"display": "none"}},
+  "event": "connections:loadElements"
+}, {
+  "selector": ".ontodia-connections-menu_objects-panel_objects-list",
+  "title": "Select nodes you want to add to the graph and click Add button",
+  "text": "Here you see all entities that are connected to the initial node with a specific link that you’ve chosen earlier. You can select one or several entities.",
+  "style": {"button": {"display": "none"}},
+  "event": "editor:addElements"
+}, {
+  "selector": ".ontodia-halo__add-to-filter",
+  "title": "Bring up all entities related to this one by clicking the funnel icon",
+  "text": "Funnel icon filters out to the “Filtered items” panel all the entities that related to the selected node",
+  "style": {"button": {"display": "none"}},
+  "event": "search:updateCriteria"
+}, {
+  "selector": ".ontodia-instances-search",
+  "text": "Wait...",
+  "position": "right",
+  "style": {"button": {"display": "none"}},
+  "event": "search:queryItems"
+}, {
+  "selector": ".ontodia-list-element-view",
+  "title": "To expand the diagram drag-n-drop a node from the Filtered items panel to the canvas.",
+  "text": "Multiple selection with Shift key pressed down allows to select several items. Please make notice of the search box: if there are too many things in this panel, search for the one you need",
+  "style": {"button": {"display": "none"}},
+  "event": "editor:addElements"
+}, {
+  "selector": ".ontodia-class-tree__tree",
+  "title": "Drag-n-drop any class from the Classes panel to your diagram",
+  "text": "You can also try to expand and collapse classes in the class tree. And don’t forget about search!",
+  "position": "right",
+  "style": {"button": {"display": "none"}},
+  "event": "editor:addElements"
+}, {
+  "selector": ".saveDiagramButton",
+  "text": "Don’t forget to save your work by clicking Save button"
+}, {
+  "selector": ".ontodia-toolbar .ontodia-btn-group",
+  "text": "Here we collected all the tools you need to work with your diagram"
+}]
