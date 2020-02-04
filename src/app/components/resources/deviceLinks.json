@@ -1,0 +1,22 @@
+[
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mechanic"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/hand"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/crusher"
+  }
+]

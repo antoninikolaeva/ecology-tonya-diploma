@@ -316,7 +316,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 								<button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
 							<button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
 						</div>
-						<div style={{ width: '1900px', height: '800px' }}>
+						<div style={{ width: '100%', height: '800px' }}>
 							<Workspace ref={workspaceProps.ref} onSaveDiagram={workspaceProps.onSaveDiagram}></Workspace>
 						</div>
 					</div>
@@ -326,10 +326,10 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 }
 
-import CLASSES from './resources/classes.json';
-import LINK_TYPES from './resources/linkTypes.json';
-import ELEMENTS from './resources/elements.json';
-import LINKS from './resources/links.json';
+import CLASSES from './resources/deviceClasses.json';
+import LINK_TYPES from './resources/deviceLinkTypes.json';
+import ELEMENTS from './resources/deviceElements.json';
+import LINKS from './resources/deviceLinks.json';
 
 export type LinkTypeIri = string & { readonly linkTypeBrand: void };
 export type ElementTypeIri = string & { readonly classBrand: void };
@@ -538,7 +538,7 @@ function onWorkspaceMounted(workspace: Workspace) {
 
 const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
 	ref: onWorkspaceMounted,
-	onSaveDiagram: workspace => {
+	onSaveDiagram: (workspace: Workspace) => {
 		const diagram = workspace.getModel().exportLayout();
 		window.location.hash = saveLayoutToLocalStorage(diagram);
 		window.location.reload();

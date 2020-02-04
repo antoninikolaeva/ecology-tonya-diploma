@@ -1,0 +1,68 @@
+[
+    {
+        "id": "http://tonya-diploma.com/device",
+        "label": {
+            "values": [
+                {
+                    "value": "Device",
+                    "language": "en"
+                },
+                {
+                    "value": "Очистное сооружение",
+                    "language": "ru"
+                }
+            ]
+        },
+        "children": [
+            {
+                "id": "http://tonya-diploma.com/device/grate",
+                "label": {
+                    "values": [
+                        {
+                            "value": "Решетка",
+                            "language": "ru"
+                        }
+                    ]
+                },
+                "children": [
+                    {
+                        "id": "http://tonya-diploma.com/device/grate/mechanic",
+                        "label": {
+                            "values": [
+                                {
+                                    "value": "Механическая решетка",
+                                    "language": "ru"
+                                }
+                            ]
+                        },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/grate/hand",
+                        "label": {
+                            "values": [
+                                {
+                                    "value": "Ручная очистка",
+                                    "language": "ru"
+                                }
+                            ]
+                        },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/grate/crusher",
+                        "label": {
+                            "values": [
+                                {
+                                    "value": "Решетка дробилка",
+                                    "language": "ru"
+                                }
+                            ]
+                        },
+                        "children": []
+                    }
+                ]
+            }
+        ]
+    }
+]

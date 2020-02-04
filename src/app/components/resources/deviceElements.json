@@ -1,0 +1,147 @@
+{
+    "http://tonya-diploma.com/device": {
+        "id": "http://tonya-diploma.com/device",
+        "types": [
+            "http://tonya-diploma.com/type/Device"
+        ],
+        "label": {
+            "values": [
+                {
+                    "value": "Device",
+                    "language": "en"
+                },
+                {
+                    "value": "Очитное сооружение",
+                    "language": "ru"
+                }
+            ]
+        },
+        "properties": {
+            "http://tonya-diploma.com/device/description": {
+                "type": "string",
+                "values": [
+                    {
+                        "value": "Очистное сооружение для очистки сточных вод",
+                        "language": "ru"
+                    }
+                ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/grate": {
+        "id": "http://tonya-diploma.com/device/grate",
+        "types": [
+            "http://tonya-diploma.com/type/Device-Grate"
+        ],
+        "label": {
+            "values": [
+                {
+                    "value": "Grate",
+                    "language": "en"
+                },
+                {
+                    "value": "Решетка",
+                    "language": "ru"
+                }
+            ]
+        },
+        "properties": {
+            "http://tonya-diploma.com/device/description": {
+                "type": "string",
+                "values": [
+                    {
+                        "value": "Решетки для очистки сточных вод от крупного мусора",
+                        "language": "ru"
+                    }
+                ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/mechanic": {
+        "id": "http://tonya-diploma.com/device/grate/mechanic",
+        "types": [
+            "http://tonya-diploma.com/type/Mechanic-Grate"
+        ],
+        "label": {
+            "values": [
+                {
+                    "value": "Mechanic grate",
+                    "language": "en"
+                },
+                {
+                    "value": "Механическая решетка",
+                    "language": "ru"
+                }
+            ]
+        },
+        "properties": {
+            "http://tonya-diploma.com/device/description": {
+                "type": "string",
+                "values": [
+                    {
+                        "value": "Механическая решетка для очистки сточных вод от крупного мусора",
+                        "language": "ru"
+                    }
+                ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/hand": {
+        "id": "http://tonya-diploma.com/device/grate/hand",
+        "types": [
+            "http://tonya-diploma.com/type/Hand-Grate"
+        ],
+        "label": {
+            "values": [
+                {
+                    "value": "Hand grate",
+                    "language": "en"
+                },
+                {
+                    "value": "Ручная очистка",
+                    "language": "ru"
+                }
+            ]
+        },
+        "properties": {
+            "http://tonya-diploma.com/device/description": {
+                "type": "string",
+                "values": [
+                    {
+                        "value": "Ручная очистка сточных вод от крупного мусора",
+                        "language": "ru"
+                    }
+                ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/crusher": {
+        "id": "http://tonya-diploma.com/device/grate/crusher",
+        "types": [
+            "http://tonya-diploma.com/type/Crusher-Grate"
+        ],
+        "label": {
+            "values": [
+                {
+                    "value": "Crusher grate",
+                    "language": "en"
+                },
+                {
+                    "value": "Решетка-дробилка",
+                    "language": "ru"
+                }
+            ]
+        },
+        "properties": {
+            "http://tonya-diploma.com/device/description": {
+                "type": "string",
+                "values": [
+                    {
+                        "value": "Решетка-дробилка для очистки сточных вод от крупного мусора",
+                        "language": "ru"
+                    }
+                ]
+            }
+        }
+    }
+}

@@ -89,17 +89,17 @@
 }
 
 .readonly-text {
-    border-bottom: 1px solid #4d90fe;
+    border-bottom: 1px solid darkslateblue;
     padding: 0.5rem;
     font-size: 1.1rem;
-    box-shadow: inset 0 0 0.2rem 0 #4d90fe;
+    background-color: #dfdfdf;
 }
 
 .select-input, .text-input {
     padding: 0.5rem;
     border: none;
-    border-bottom: 1px solid #4d90fe;
-    box-shadow: inset 0 0 0.2rem 0 #4d90fe;
+    border-bottom: 1px solid darkslateblue;
+    background-color: #dfdfdf;
 }
 
 /* Table hacking */
