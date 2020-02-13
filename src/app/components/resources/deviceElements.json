@@ -46,7 +46,7 @@
             ]
         },
         "properties": {
-            "http://tonya-diploma.com/device/description": {
+            "http://tonya-diploma.com/device/grate/description": {
                 "type": "string",
                 "values": [
                     {
@@ -75,7 +75,7 @@
             ]
         },
         "properties": {
-            "http://tonya-diploma.com/device/description": {
+            "http://tonya-diploma.com/device/grate/mechanic/description": {
                 "type": "string",
                 "values": [
                     {
@@ -104,7 +104,7 @@
             ]
         },
         "properties": {
-            "http://tonya-diploma.com/device/description": {
+            "http://tonya-diploma.com/device/grate/hand/description": {
                 "type": "string",
                 "values": [
                     {
@@ -133,7 +133,7 @@
             ]
         },
         "properties": {
-            "http://tonya-diploma.com/device/description": {
+            "http://tonya-diploma.com/device/grate/crusher/description": {
                 "type": "string",
                 "values": [
                     {
@@ -142,6 +142,23 @@
                     }
                 ]
             }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/mechanic/mg5t": {
+        "id": "http://tonya-diploma.com/device/grate/mechanic/mg5t",
+        "types": [
+            "http://tonya-diploma.com/type/Mechanic-Grate"
+        ],
+        "image": "",
+        "label": { "values": [ { "value": "МГ5Т", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/width": { "type": "string", "values": [ { "value": 2 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/height": { "type": "string", "values": [ { "value": 3 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/square": { "type": "string", "values": [ { "value": 6 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/widthSection": { "type": "string", "values": [ { "value": 0.016 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/rodThickness": { "type": "string", "values": [ { "value": 0.08 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/numberOfSection": { "type": "string", "values": [ { "value": 84 } ] },
+            "http://tonya-diploma.com/device/grate/mechanic/mg5t/image1": { "type": "string", "values": [ { "value": 84 } ] }
         }
     }
 }

@@ -13,34 +13,110 @@
                 }
             ]
         },
+        "count": "1",
         "children": [
             {
                 "id": "http://tonya-diploma.com/device/grate",
                 "label": {
                     "values": [
                         {
+                            "value": "Grate",
+                            "language": "en"
+                        },
+                        {
                             "value": "Решетка",
                             "language": "ru"
                         }
                     ]
                 },
+                "count": "3",
                 "children": [
                     {
                         "id": "http://tonya-diploma.com/device/grate/mechanic",
                         "label": {
                             "values": [
                                 {
+                                    "value": "Mechanic grate",
+                                    "language": "en"
+                                },
+                                {
                                     "value": "Механическая решетка",
                                     "language": "ru"
                                 }
                             ]
                         },
-                        "children": []
+                        "count": "6",
+                        "children": [
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg5t",
+                                "label": {  "values": [  { "value": "МГ5Т", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg6t",
+                                "label": {  "values": [  { "value": "МГ6Т", "language": "ru" } ] },
+                                "width": { "values": [ { "value": 2 } ] },
+                                "height": { "values": [ { "value": 2 } ] },
+                                "square": { "values": [ { "value": 4 } ] },
+                                "widthSection": { "values": [ { "value": 0.016 } ] },
+                                "rodThickness": { "values": [ { "value": 0.008 } ] },
+                                "numberOfSection": { "values": [ { "value": 84 } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg7t",
+                                "label": {  "values": [  { "value": "МГ7Т", "language": "ru" } ] },
+                                "width": { "values": [ { "value": 0.8 } ] },
+                                "height": { "values": [ { "value": 1.4 } ] },
+                                "square": { "values": [ { "value": 1.12 } ] },
+                                "widthSection": { "values": [ { "value": 0.016 } ] },
+                                "rodThickness": { "values": [ { "value": 0.008 } ] },
+                                "numberOfSection": { "values": [ { "value": 31 } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg8t",
+                                "label": {  "values": [  { "value": "МГ8Т", "language": "ru" } ] },
+                                "width": { "values": [ { "value": 1.4 } ] },
+                                "height": { "values": [ { "value": 2 } ] },
+                                "square": { "values": [ { "value": 2.8 } ] },
+                                "widthSection": { "values": [ { "value": 0.016 } ] },
+                                "rodThickness": { "values": [ { "value": 0.008 } ] },
+                                "numberOfSection": { "values": [ { "value": 55 } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg9t",
+                                "label": {  "values": [  { "value": "МГ9Т", "language": "ru" } ] },
+                                "width": { "values": [ { "value": 1 } ] },
+                                "height": { "values": [ { "value": 1.2 } ] },
+                                "square": { "values": [ { "value": 1.2 } ] },
+                                "widthSection": { "values": [ { "value": 0.016 } ] },
+                                "rodThickness": { "values": [ { "value": 0.008 } ] },
+                                "numberOfSection": { "values": [ { "value": 39 } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/mechanic/mg10t",
+                                "label": {  "values": [  { "value": "МГ10Т", "language": "ru" } ] },
+                                "width": { "values": [ { "value": 1 } ] },
+                                "height": { "values": [ { "value": 2 } ] },
+                                "square": { "values": [ { "value": 2 } ] },
+                                "widthSection": { "values": [ { "value": 0.016 } ] },
+                                "rodThickness": { "values": [ { "value": 0.008 } ] },
+                                "numberOfSection": { "values": [ { "value": 39 } ] },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "id": "http://tonya-diploma.com/device/grate/hand",
                         "label": {
                             "values": [
+                                {
+                                    "value": "Hand clean",
+                                    "language": "en"
+                                },
                                 {
                                     "value": "Ручная очистка",
                                     "language": "ru"
@@ -53,6 +129,10 @@
                         "id": "http://tonya-diploma.com/device/grate/crusher",
                         "label": {
                             "values": [
+                                {
+                                    "value": "Grate-crusher",
+                                    "language": "en"
+                                },
                                 {
                                     "value": "Решетка дробилка",
                                     "language": "ru"

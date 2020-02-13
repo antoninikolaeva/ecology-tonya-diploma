@@ -18,5 +18,10 @@
     "sourceId": "http://tonya-diploma.com/device/grate",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/grate/crusher"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mechanic/mg5t"
   }
 ]
