@@ -1,3 +1,4 @@
+import * as React from 'react';
 import {
 	Workspace,
 	WorkspaceProps,
@@ -8,6 +9,8 @@ import {
 	Dictionary,
 	ElementModel,
 	LinkModel,
+	LayoutElement,
+	LayoutLink,
 } from 'ontodia';
 import { cloneDeep, keyBy, map, each } from 'lodash';
 
@@ -202,7 +205,7 @@ function onWorkspaceMounted(workspace: Workspace) {
 
 	const diagram = tryLoadLayoutFromLocalStorage();
 	workspace.getModel().importLayout({
-		diagram,
+		diagram: testDiagram,
 		dataProvider: new DemoDataProvider(
 			CLASSES as any,
 			LINK_TYPES as any,
@@ -219,7 +222,7 @@ export const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> =
 		const diagram = workspace.getModel().exportLayout();
 		window.location.hash = saveLayoutToLocalStorage(diagram);
 		window.location.reload();
-	},
+	}
 };
 
 export function saveLayoutToLocalStorage(diagram: SerializedDiagram): string {
@@ -247,3 +250,59 @@ export function tryLoadLayoutFromLocalStorage(): SerializedDiagram | undefined {
 	}
 	return undefined;
 }
+
+const elements: ReadonlyArray<LayoutElement> = [
+	{
+		'@type': 'Element',
+		'@id': 'http://tonya-diploma.com/device/grate/mg5t',
+		iri: ('http://tonya-diploma.com/device/grate/mg5t') as ElementIri,
+		position: {x: 10, y: 10},
+	},
+	{
+		'@type': 'Element',
+		'@id': 'http://tonya-diploma.com/device/grate/mg6t',
+		iri: ('http://tonya-diploma.com/device/grate/mg6t') as ElementIri,
+		position: {x: 200, y: 200},
+	},
+	{
+		'@type': 'Element',
+		'@id': 'http://tonya-diploma.com/device/grate/mechanic',
+		iri: ('http://tonya-diploma.com/device/grate/mechanic') as ElementIri,
+		position: {x: 400, y: 400},
+	},
+];
+
+const links: ReadonlyArray<LayoutLink> = [
+	{
+		'@type': 'Link',
+		'@id': 'http://tonya-diploma.com/device/consists_of/1',
+		property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
+		source: {
+			'@id': 'http://tonya-diploma.com/device/grate/mechanic',
+		},
+		target: {
+			'@id': 'http://tonya-diploma.com/device/grate/mg5t',
+		}
+	},
+	{
+		'@type': 'Link',
+		'@id': 'http://tonya-diploma.com/device/consists_of/2',
+		property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
+		source: {
+			'@id': 'http://tonya-diploma.com/device/grate/mechanic',
+		},
+		target: {
+			'@id': 'http://tonya-diploma.com/device/grate/mg6t',
+		}
+	},
+];
+
+const testDiagram: SerializedDiagram = {
+	'@context': 'https://ontodia.org/context/v1.json',
+	'@type': 'Diagram',
+	layoutData: {
+		'@type': 'Layout',
+		elements: elements,
+		links: links,
+	}
+};

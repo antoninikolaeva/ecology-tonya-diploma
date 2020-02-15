@@ -20,8 +20,254 @@
     "targetId": "http://tonya-diploma.com/device/grate/crusher"
   },
   {
+    "sourceId": "http://tonya-diploma.com/device/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/hammer-crusher"
+  },
+
+
+  {
     "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
-    "targetId": "http://tonya-diploma.com/device/grate/mechanic/mg5t"
+    "targetId": "http://tonya-diploma.com/device/grate/mg5t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg6t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg7t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg8t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg9t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg10t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg11t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg12t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu1"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu2"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu3"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu4"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu5"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu6"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu7"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmn10"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmn6"
+  },  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rgd"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rfs1"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rs16"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/mechanic",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rs35"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg5t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg6t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg7t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg8t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg9t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg10t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg11t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/mg12t"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu1"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu2"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu3"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu4"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu5"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu6"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmu7"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmn10"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rmn6"
+  },  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rgd"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rfs1"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rs16"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rs35"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rd100"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rd200"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rd400"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/grate/crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/grate/rd600"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/hammer-crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/hammer-crusher/d3b"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/hammer-crusher",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/hammer-crusher/dk1-0"
   }
 ]

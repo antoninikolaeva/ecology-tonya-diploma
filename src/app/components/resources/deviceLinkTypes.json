@@ -1,18 +1,7 @@
 [
   {
     "id": "http://tonya-diploma.com/device/consists_of",
-    "label": {
-      "values": [
-        {
-          "value": "consists of",
-          "language": "en"
-        },
-        {
-          "value": "состоит из",
-          "language": "en"
-        }
-      ]
-    },
+    "label": { "values": [ { "value": "состоит из", "language": "en" } ] },
     "count": 0
   }
 ]

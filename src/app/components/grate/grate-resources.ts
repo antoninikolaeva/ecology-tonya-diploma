@@ -3,7 +3,7 @@ export interface Grate {
 	size: {
 		width: number;
 		height: number;
-	}
+	};
 	widthSection: number;
 	square: number;
 	rodThickness: number;
@@ -25,15 +25,16 @@ export interface GrateCrusher {
 	speedOfMoveInSectionMin: number;
 	speedOfMoveInSectionMax: number;
 }
+
 export enum SourceOfWasteWater {
 	manufacture = 'manufacture',
 	city = 'city'
-};
+}
 
 export enum TypeOfGrates {
 	vertical = 'vertical',
 	incline = 'incline'
-};
+}
 
 export enum FormOfRods {
 	prizma = 2.42,
@@ -81,9 +82,12 @@ export const hammerCrushers: HammerCrusher[] = [
 
 const transferToMeterInSec = 1 / 3600;
 export const grateCrushers: GrateCrusher[] = [
-	{ mark: 'РД-100', maxPerformance: 30 * transferToMeterInSec, squareHeliumHole: 0.00764, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
-	{ mark: 'РД-200', maxPerformance: 60 * transferToMeterInSec, squareHeliumHole: 0.019, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
-	{ mark: 'РД-400', maxPerformance: 420 * transferToMeterInSec, squareHeliumHole: 0.119, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
-	{ mark: 'РД-600', maxPerformance: 2000 * transferToMeterInSec, squareHeliumHole: 0.455, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
-]
-
+	{ mark: 'РД-100', maxPerformance: 30 * transferToMeterInSec,
+		squareHeliumHole: 0.00764, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
+	{ mark: 'РД-200', maxPerformance: 60 * transferToMeterInSec,
+		squareHeliumHole: 0.019, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
+	{ mark: 'РД-400', maxPerformance: 420 * transferToMeterInSec,
+		squareHeliumHole: 0.119, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
+	{ mark: 'РД-600', maxPerformance: 2000 * transferToMeterInSec,
+		squareHeliumHole: 0.455, speedOfMoveInSectionMin: 1, speedOfMoveInSectionMax: 1.2 },
+];
