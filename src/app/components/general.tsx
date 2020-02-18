@@ -1,19 +1,20 @@
 import * as React from 'react';
-import { Navbar, Form, Tabs, Tab } from 'react-bootstrap';
-import { Workspace } from 'ontodia';
+import { Navbar, Form, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-bootstrap';
+import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement } from 'ontodia';
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
-import { listOfDevices, Device, KindOfDevices, DeviceType, SandTrapInfraTypes, GrateTypes } from './general-resources';
+import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
-import { workspaceProps } from './ontodia/dataProvider';
+import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 
 interface State {
 	deviceWatcher: number;
 	secondMaxFlow: number;
 	dailyWaterFlow: number;
 	countMode: boolean;
-
+	deviceDiagram: SerializedDiagram;
+	workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace>;
 	isValidateError: boolean;
 }
 
@@ -37,6 +38,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 			secondMaxFlow: undefined,
 			dailyWaterFlow: undefined,
 			countMode: false,
+			deviceDiagram: undefined,
+			workspaceProps: undefined,
 			isValidateError: false
 		};
 	}
@@ -46,19 +49,43 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	private devicesList = () => {
-		return listOfDevices.map((device, index) => {
-			return <Form key={`${device.key}-${index}`}>
-				<Form.Check className={'checkbox'}
-					id={`${device.key}-${index}`}
-					custom type={'checkbox'}
-					label={device.name}
-					onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-						this.selectDevice(event, device);
-					}}>
-				</Form.Check>
-				{this.typeList(device)}
-			</Form>;
+		const list = listOfDevices.map((device, index) => {
+			return <Card>
+				<Accordion.Toggle eventKey={`${index}`}>
+					<div style={{display: 'flex', justifyContent: 'space-between'}}>
+						<Form key={`${device.key}-${index}`}>
+							<Form.Check className={'checkbox'}
+								id={`${device.key}-${index}`}
+								custom type={'checkbox'}
+								label={device.name}
+								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
+									this.selectDevice(event, device);
+								}}>
+							</Form.Check>
+						</Form>
+						<div>{device.selected ? 'Open' : undefined}</div>
+					</div>
+				</Accordion.Toggle>
+				{
+					device.selected ?
+						<Accordion.Collapse eventKey={`${index}`}>
+							<Card.Body>{this.typeList(device)}</Card.Body>
+						</Accordion.Collapse> :
+						null
+				}
+
+			</Card>
 		});
+		return <Container>
+			<Row className='justify-content-md-center'>
+				<Col xs lg='12'>
+					<h4 className={'general-title'}>
+						Выберите очистные сооружения для расчетный схемы
+					</h4>
+					<Accordion>{list}</Accordion>
+				</Col>
+			</Row>
+		</Container>
 	}
 
 	private selectDevice = (event: React.ChangeEvent<HTMLInputElement>, device: Device) => {
@@ -68,8 +95,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			device.selected = true;
 		} else {
 			device.selected = false;
-			device.selectedType = { key: undefined, name: '' };
-			device.additionalSelectedType = { key: undefined, name: '' };
+			device.selectedType = { iri: undefined, key: undefined, name: '' };
 		}
 		this.setState({ deviceWatcher: deviceWatcher++ });
 	}
@@ -98,20 +124,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 								<span className={'radio-mark'}></span>
 							</label>;
 						})}
-						{device.key === KindOfDevices.sandTrap ?
-							<div>
-								<div style={{ marginLeft: '3rem' }}>Обезвоживание песка</div>
-								{device.additionalListOfTypes.map((type, index) => {
-									return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
-										<input ref={radio => type.ref = radio} type={'radio'}
-											onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-												this.selectType(event, device, type);
-											}} />
-										<span className={'radio-mark'}></span>
-									</label>;
-								})}
-							</div> :
-							null}
 					</div>}
 			</div>;
 		} else {
@@ -129,56 +141,35 @@ export class GeneralComponent extends React.Component<{}, State> {
 			});
 		};
 		if (event.target.checked) {
-			if (device.key === KindOfDevices.sandTrap) {
-				if (type.key === SandTrapInfraTypes.square || type.key === SandTrapInfraTypes.bunker) {
-					clearTypesExceptCurrent(device.additionalListOfTypes);
-					device.additionalSelectedType = { key: type.key, name: type.name };
-				} else {
-					clearTypesExceptCurrent(device.listOfTypes);
-					device.selectedType = { key: type.key, name: type.name };
-				}
-			} else {
-				clearTypesExceptCurrent(device.listOfTypes);
-				device.selectedType = { key: type.key, name: type.name };
-			}
+			clearTypesExceptCurrent(device.listOfTypes);
+			device.selectedType = { iri: type.iri, key: type.key, name: type.name };
+			this.updateDiagram();
 		} else {
-			device.selectedType = { key: undefined, name: '' };
+			device.selectedType = { iri: undefined, key: undefined, name: '' };
 		}
 		this.setState({ deviceWatcher: deviceWatcher++ });
 	}
 
 	private renderBaseInput = () => {
-		return <div>
-			<InputTemplate title={'Секундный максимальный расход, м3/с'}
-				placeholder={''}
-				onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-				onInputRef={(input) => { this.maxSecondFlowRef = input; }}
-				onInput={(value) => { this.setState({ secondMaxFlow: value }); }} />
-			<InputTemplate title={'Суточный расход воды, м3/сут'}
-				placeholder={''}
-				range={{ minValue: 0, maxValue: 1000000 }}
-				onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-				onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
-				onInput={(value) => { this.setState({ dailyWaterFlow: value }); }} />
-		</div>;
-	}
-
-	private finalScheme = () => {
-		return <div className={'scheme'}>
-			{listOfDevices.map((device, index) => {
-				return device.selected ?
-					<div key={index} className={'block-of-scheme'}>
-						<div>Сооружение: {device.name} </div>
-						<div> Тип сооружения: {device.selectedType ? device.selectedType.name : null}</div>
-						{device.key === KindOfDevices.sandTrap ?
-							<div>
-								Тип дополнительного сооружения: {device.additionalSelectedType ? device.additionalSelectedType.name : null}
-							</div> :
-							null}
-					</div> :
-					null;
-			})}
-		</div>;
+		return <Container>
+			<Row className='justify-content-md-center'>
+				<Col xs lg='6'>
+					<InputTemplate title={'Секундный максимальный расход, м3/с'}
+						placeholder={''}
+						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+						onInputRef={(input) => { this.maxSecondFlowRef = input; }}
+						onInput={(value) => { this.setState({ secondMaxFlow: value }); }} />
+				</Col>
+				<Col xs lg='6'>
+					<InputTemplate title={'Суточный расход воды, м3/сут'}
+						placeholder={''}
+						range={{ minValue: 0, maxValue: 1000000 }}
+						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
+						onInput={(value) => { this.setState({ dailyWaterFlow: value }); }} />
+				</Col>
+			</Row>
+		</Container>;
 	}
 
 	private renderListOfDevicesForCount = () => {
@@ -249,15 +240,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 			if (device.ref) { device.ref.checked = false; }
 			device.selected = false;
 			device.selectedType = undefined;
-			device.additionalSelectedType = undefined;
 			device.listOfTypes.forEach(type => {
 				if (type.ref) { type.ref.checked = false; }
 			});
-			if (device.additionalListOfTypes) {
-				device.additionalListOfTypes.forEach(type => {
-					if (type.ref) { type.ref.checked = false; }
-				});
-			}
 		});
 		this.setState({
 			countMode: false,
@@ -275,14 +260,55 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private isDataExisted = () => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
-		const listOfSelectedDevice = listOfDevices.filter(device => device.selected &&
-			(device.selectedType || device.additionalSelectedType) &&
-			(device.selectedType.key || device.additionalSelectedType.key));
+		const listOfSelectedDevice = listOfDevices.filter(device => device.selected && device.selectedType && device.selectedType.key);
 		if (!secondMaxFlow || !dailyWaterFlow || listOfSelectedDevice.length === 0) {
 			return false;
 		} else {
 			return true;
 		}
+	}
+
+	private updateDiagram = () => {
+		const links: LayoutLink[] = [];
+		const elements: LayoutElement[] = [];
+		listOfDevices.forEach((device, index) => {
+			if (device.selected && device.selectedType) {
+				const element = (ELEMENTS as any)[device.selectedType.iri];
+				if (element) {
+					elements.push({
+						'@type': 'Element',
+						'@id': device.selectedType.iri,
+						iri: device.selectedType.iri,
+						position: {x: (50 + index * 50), y: 400},
+					})
+				}
+			}
+		});
+		const testDiagram: SerializedDiagram = {
+			'@context': 'https://ontodia.org/context/v1.json',
+			'@type': 'Diagram',
+			layoutData: {
+				'@type': 'Layout',
+				elements: elements,
+				links: links,
+			}
+		};
+		this.setState({deviceDiagram: testDiagram, workspaceProps: {ref: this.onWorkspaceMounted}});
+	}
+
+	private onWorkspaceMounted = (workspace: Workspace) => {
+		if (!workspace) { return; }
+
+		workspace.getModel().importLayout({
+			diagram: this.state.deviceDiagram,
+			dataProvider: new DemoDataProvider(
+				CLASSES as any,
+				LINK_TYPES as any,
+				ELEMENTS as any,
+				LINKS as any
+			),
+			validateLinks: true,
+		});
 	}
 
 	render() {
@@ -295,18 +321,16 @@ export class GeneralComponent extends React.Component<{}, State> {
 					</Navbar>
 					<div className={'general-container'}>
 						{this.renderBaseInput()}
-						<h4 className={'general-title'}>Выберите очистные сооружения для расчетный схемы</h4>
 						{this.devicesList()}
 						<h4 className={'general-title'}>Схема очистных сооружений</h4>
-						{this.finalScheme()}
+						<div style={{ width: '100%', height: '800px' }}>
+							<Workspace ref={this.state.workspaceProps ? this.state.workspaceProps.ref: undefined}></Workspace>
+						</div>
 						<div className={'ctrl-buttons-panel'}>
 							{isValidateError || !this.isDataExisted() ?
 								<button className={'btn btn-primary'} disabled>Начать расчет</button> :
 								<button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
 							<button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
-						</div>
-						<div style={{ width: '100%', height: '800px' }}>
-							<Workspace ref={workspaceProps.ref} onSaveDiagram={workspaceProps.onSaveDiagram}></Workspace>
 						</div>
 					</div>
 				</div> :
