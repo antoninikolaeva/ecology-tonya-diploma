@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Navbar, Form, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-bootstrap';
-import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement } from 'ontodia';
+import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement, LinkTypeIri } from 'ontodia';
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
@@ -21,6 +21,7 @@ interface State {
 export class GeneralComponent extends React.Component<{}, State> {
 	private maxSecondFlowRef: HTMLInputElement = undefined;
 	private dailyWaterFlowRef: HTMLInputElement = undefined;
+	private workspace: Workspace;
 
 	private grate: Device = listOfDevices[0];
 	private sandTrap: Device = listOfDevices[1];
@@ -46,6 +47,25 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	componentWillUnmount() {
 		this.setState({ deviceWatcher: 0 });
+	}
+
+	componentDidUpdate(prevProps: {}, prevState: State) {
+		const { deviceDiagram } = this.state;
+		const isNewData = !prevState.deviceDiagram && deviceDiagram;
+		const isUpdatedData = deviceDiagram && prevState.deviceDiagram &&
+			(prevState.deviceDiagram.layoutData.elements !== deviceDiagram.layoutData.elements);
+		if (isNewData || isUpdatedData) {
+			this.workspace.getModel().importLayout({
+				diagram: this.state.deviceDiagram,
+				dataProvider: new DemoDataProvider(
+					CLASSES as any,
+					LINK_TYPES as any,
+					ELEMENTS as any,
+					LINKS as any
+				),
+				validateLinks: true,
+			});
+		}
 	}
 
 	private devicesList = () => {
@@ -273,19 +293,36 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const elements: LayoutElement[] = [];
 		listOfDevices.forEach((device, index) => {
 			if (device.selected && device.selectedType) {
+				const elementDevice = (ELEMENTS as any)[device.iri];
 				const element = (ELEMENTS as any)[device.selectedType.iri];
+				if (elementDevice &&
+					(elements.length === 0 || elements.every(item => item.iri !== device.iri))) {
+					elements.push({
+						'@type': 'Element',
+						'@id': device.iri,
+						iri: device.iri,
+						position: {x: (index * 100), y: 100},
+					});
+				}
 				if (element) {
 					elements.push({
 						'@type': 'Element',
 						'@id': device.selectedType.iri,
 						iri: device.selectedType.iri,
-						position: {x: (50 + index * 50), y: 400},
-					})
+						position: {x: (index * 100), y: 400},
+					});
+					links.push({
+						'@type': 'Link',
+						'@id': `http://tonya-diploma.com/device/consists_of/${Math.random() * 1000000}`,
+						property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
+						source: {'@id': device.iri},
+						target: {'@id': device.selectedType.iri}
+					});
 				}
 			}
 		});
 		const testDiagram: SerializedDiagram = {
-			'@context': 'https://ontodia.org/context/v1.json',
+			'@context': `https://ontodia.org/context/v1.json`,
 			'@type': 'Diagram',
 			layoutData: {
 				'@type': 'Layout',
@@ -293,13 +330,15 @@ export class GeneralComponent extends React.Component<{}, State> {
 				links: links,
 			}
 		};
-		this.setState({deviceDiagram: testDiagram, workspaceProps: {ref: this.onWorkspaceMounted}});
+		this.setState({deviceDiagram: testDiagram});
 	}
 
 	private onWorkspaceMounted = (workspace: Workspace) => {
 		if (!workspace) { return; }
 
-		workspace.getModel().importLayout({
+		this.workspace = workspace;
+
+		this.workspace.getModel().importLayout({
 			diagram: this.state.deviceDiagram,
 			dataProvider: new DemoDataProvider(
 				CLASSES as any,
@@ -313,6 +352,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	render() {
 		const { countMode, isValidateError } = this.state;
+		const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
+			ref: this.onWorkspaceMounted
+		};
 		return (
 			!countMode ?
 				<div>
@@ -324,7 +366,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 						{this.devicesList()}
 						<h4 className={'general-title'}>Схема очистных сооружений</h4>
 						<div style={{ width: '100%', height: '800px' }}>
-							<Workspace ref={this.state.workspaceProps ? this.state.workspaceProps.ref: undefined}></Workspace>
+							<Workspace ref={workspaceProps ? workspaceProps.ref : undefined}></Workspace>
 						</div>
 						<div className={'ctrl-buttons-panel'}>
 							{isValidateError || !this.isDataExisted() ?

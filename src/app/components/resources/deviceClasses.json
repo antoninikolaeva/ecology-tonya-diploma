@@ -2,7 +2,7 @@
     {
         "id": "http://tonya-diploma.com/device",
         "label": {  "values": [ { "value": "Очистное сооружение", "language": "ru" } ] },
-        "count": "1",
+        "count": "3",
         "children": [
             {
                 "id": "http://tonya-diploma.com/device/grate",
@@ -275,6 +275,38 @@
                     {
                         "id": "http://tonya-diploma.com/device/hammer-crusher/dk1-0",
                         "label": {  "values": [ { "value": "ДК-1,0", "language": "ru" } ] },
+                        "children": []
+                    }
+                ]
+            },
+            {
+                "id": "http://tonya-diploma.com/device/sandTrap",
+                "label": { "values": [ { "value": "Песколовка", "language": "ru" } ] },
+                "count": "5",
+                "children": [
+                    {
+                        "id": "http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move",
+                        "label": {  "values": [ { "value": "Горизонтальные с прямолинейным движением воды", "language": "ru" } ] },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move",
+                        "label": {  "values": [ { "value": "Горизонтальные с круговым движением воды", "language": "ru" } ] },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/sandTrap/tangential",
+                        "label": {  "values": [ { "value": "Тангенциальные", "language": "ru" } ] },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/sandTrap/vertical",
+                        "label": {  "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/sandTrap/aerated",
+                        "label": {  "values": [ { "value": "Аэрируемые", "language": "ru" } ] },
                         "children": []
                     }
                 ]

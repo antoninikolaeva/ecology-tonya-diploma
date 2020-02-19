@@ -425,5 +425,79 @@
             "http://tonya-diploma.com/device/grate/dk1-0/Масса": { "type": "string", "values": [ { "value": 2000 } ] },
             "http://tonya-diploma.com/device/grate/dk1-0/Мощность": { "type": "string", "values": [ { "value": 75 } ] }
         }
+    },
+
+
+    "http://tonya-diploma.com/device/sandTrap": {
+        "id": "http://tonya-diploma.com/device/sandTrap",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Песколовка", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move": {
+        "id": "http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Горизонтальные с прямолинейным движением воды", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move": {
+        "id": "http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Горизонтальные с круговым движением воды", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sandTrap/tangential": {
+        "id": "http://tonya-diploma.com/device/sandTrap/tangential",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Тангенциальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/tangential/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sandTrap/vertical": {
+        "id": "http://tonya-diploma.com/device/sandTrap/vertical",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/vertical/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sandTrap/aerated": {
+        "id": "http://tonya-diploma.com/device/sandTrap/aerated",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Аэрируемые", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sandTrap/aerated/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
     }
 }

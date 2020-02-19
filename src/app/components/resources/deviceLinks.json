@@ -5,6 +5,18 @@
     "targetId": "http://tonya-diploma.com/device/grate"
   },
   {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/hammer-crusher"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap"
+  },
+
+  
+  {
     "sourceId": "http://tonya-diploma.com/device/grate",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/grate/mechanic"
@@ -18,11 +30,6 @@
     "sourceId": "http://tonya-diploma.com/device/grate",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/grate/crusher"
-  },
-  {
-    "sourceId": "http://tonya-diploma.com/device/device",
-    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
-    "targetId": "http://tonya-diploma.com/device/hammer-crusher"
   },
 
 
@@ -269,5 +276,32 @@
     "sourceId": "http://tonya-diploma.com/device/hammer-crusher",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/hammer-crusher/dk1-0"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/sandTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sandTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sandTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap/tangential"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sandTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap/vertical"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sandTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sandTrap/aerated"
   }
 ]
