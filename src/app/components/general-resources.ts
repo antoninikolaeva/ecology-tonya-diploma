@@ -136,7 +136,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: 'http://tonya-diploma.com/device/sandTrap' as ElementIri ,
 		name: 'Песколовки',
 		key: KindOfDevices.sandTrap,
 		ref: undefined,
@@ -146,7 +146,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: '' as ElementIri ,
 		name: 'Отстойники',
 		key: KindOfDevices.sump,
 		ref: undefined,
@@ -156,7 +156,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: '' as ElementIri ,
 		name: 'Усреднители',
 		key: KindOfDevices.average,
 		ref: undefined,
@@ -166,7 +166,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: '' as ElementIri ,
 		name: 'Нефтеловушки',
 		key: KindOfDevices.oilTrap,
 		ref: undefined,
@@ -176,7 +176,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: '' as ElementIri ,
 		name: 'Фильтры',
 		key: KindOfDevices.filter,
 		ref: undefined,
@@ -186,7 +186,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: '' as ElementIri ,
 		name: 'Гидроциклоны и центрифуги',
 		key: KindOfDevices.centrifuge,
 		ref: undefined,

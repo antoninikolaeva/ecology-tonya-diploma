@@ -301,7 +301,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 						'@type': 'Element',
 						'@id': device.iri,
 						iri: device.iri,
-						position: {x: (index * 100), y: 100},
+						position: {x: (index * 300 - 300), y: 100},
 					});
 				}
 				if (element) {
@@ -309,7 +309,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 						'@type': 'Element',
 						'@id': device.selectedType.iri,
 						iri: device.selectedType.iri,
-						position: {x: (index * 100), y: 400},
+						position: {x: (index * 300 - 300), y: 400},
 					});
 					links.push({
 						'@type': 'Link',
@@ -322,7 +322,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			}
 		});
 		const testDiagram: SerializedDiagram = {
-			'@context': `https://ontodia.org/context/v1.json`,
+			'@context': 'https://ontodia.org/context/v1.json',
 			'@type': 'Diagram',
 			layoutData: {
 				'@type': 'Layout',

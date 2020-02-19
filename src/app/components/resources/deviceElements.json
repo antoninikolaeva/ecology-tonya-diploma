@@ -400,7 +400,13 @@
         "id": "http://tonya-diploma.com/device/hammer-crusher",
         "types": [ "http://tonya-diploma.com/type/Device" ],
         "image": "",
-        "label": { "values": [ { "value": "Молотковая дробилка", "language": "ru" } ] }
+        "label": { "values": [ { "value": "Молотковая дробилка", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/hammer-crusher": {
+                "type": "string",
+                "values": [ { "value": "XXXXXXXXXXXXXXXXXXXXXX", "language": "ru" } ]
+            }
+        }
     },
     "http://tonya-diploma.com/device/hammer-crusher/d3b": {
         "id": "http://tonya-diploma.com/device/hammer-crusher/d3b",
