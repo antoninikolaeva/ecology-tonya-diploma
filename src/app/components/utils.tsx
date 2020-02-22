@@ -133,14 +133,16 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
 			<select className={'select-input'} onChange={this.onSelectChange}>
 				{itemList.map((item, index) => {
 					if (index === 0) {
-						return <option ref={option => this.listOfOptionElements.push(option)} key={`${item.value}-${index}`} value={item.value} disabled selected>{item.label}</option>
+						return <option ref={option => this.listOfOptionElements.push(option)}
+							key={`${item.value}-${index}`} value={item.value} disabled selected>{item.label}</option>;
 					} else {
-						return <option ref={option => this.listOfOptionElements.push(option)} key={`${item.value}-${index}`} value={item.value}>{item.label}</option>
+						return <option ref={option => this.listOfOptionElements.push(option)}
+							key={`${item.value}-${index}`} value={item.value}>{item.label}</option>;
 					}
 
 				})}
 			</select>
-		</div>
+		</div>;
 	}
 }
 
@@ -157,14 +159,17 @@ interface InputTemplateProps {
 
 interface InputTemplateState {
 	error: Error;
+	value: string;
 }
 
 export class InputTemplate extends React.Component<InputTemplateProps, InputTemplateState> {
+	private inputRef: HTMLInputElement;
 	constructor(props: InputTemplateProps) {
 		super(props);
 		this.state = {
 			error: undefined,
-		}
+			value: undefined,
+		};
 	}
 
 	private onInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -172,13 +177,13 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
 		const value = checkInputData(event, range);
 		if (value instanceof Error) {
 			onErrorExist(true);
-			this.setState({ error: value });
+			this.setState({ error: value, value: event.target.value });
 			return;
 		}
 		if (onInput) {
 			onErrorExist(false);
 			this.props.onInput(value);
-			this.setState({ error: undefined });
+			this.setState({ error: undefined, value: event.target.value });
 		}
 	}
 
@@ -188,17 +193,33 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
 		}
 	}
 
+	private resetValue = () => {
+		if (this.inputRef) {
+			this.inputRef.value = '';
+			this.setState({value: undefined, error: undefined});
+		}
+	}
+
 	render() {
 		const { title, placeholder } = this.props;
-		const { error } = this.state;
+		const { error, value } = this.state;
 		return <div>
 			<div className={'input-template'}>
 				<div className={'input-label'}>
 					{title}
 				</div>
-				<input className={'text-input'} type={'text'} placeholder={placeholder} ref={input => this.onInputRefChange(input)} onChange={this.onInputChange} />
+				<div className={'input-with-clear-button'}>
+					<input className={'text-input'} type={'text'}
+						placeholder={placeholder} ref={input => {
+							this.inputRef = input; this.onInputRefChange(input);
+							}
+						} onChange={this.onInputChange} />
+					{value ? <button className={'input-clear-button'} onClick={this.resetValue}>
+							<i className={'fas fa-times'}></i>
+						</button> : null}
+				</div>
 			</div>
 			{error ? <ErrorAlert errorValue={error} /> : null}
-		</div>
+		</div>;
 	}
 }

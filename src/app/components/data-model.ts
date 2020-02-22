@@ -19,7 +19,7 @@ export class GeneralDataModel {
 		this.initDataModel();
 	}
 
-	private initDataModel = () => {
+	private initDataModel() {
 		this.grateResult = {
 			currentSuitableGrate: undefined,
 			valueOfLedgeInstallationPlace: 0,
@@ -33,12 +33,16 @@ export class GeneralDataModel {
 		};
 	}
 
-	public setGrateResult = (result: GrateResultData) => {
+	public setGrateResult(result: GrateResultData) {
 		this.grateResult = result;
 	}
 
-	public getGrateResult = (): GrateResultData => {
+	public getGrateResult(): GrateResultData {
 		return this.grateResult;
+	}
+
+	public resetResultData() {
+		this.initDataModel();
 	}
 }
 

@@ -1,7 +1,4 @@
-import * as React from 'react';
 import {
-	Workspace,
-	WorkspaceProps,
 	SerializedDiagram,
 	convertToSerializedDiagram,
 	DataProvider,
@@ -9,12 +6,8 @@ import {
 	Dictionary,
 	ElementModel,
 	LinkModel,
-	LayoutElement,
-	LayoutLink,
 } from 'ontodia';
 import { cloneDeep, keyBy, map, each } from 'lodash';
-
-import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from '../resources/resources';
 
 export type LinkTypeIri = string & { readonly linkTypeBrand: void };
 export type ElementTypeIri = string & { readonly classBrand: void };
@@ -200,31 +193,6 @@ class DemoDataProvider implements DataProvider {
 	}
 }
 
-function onWorkspaceMounted(workspace: Workspace) {
-	if (!workspace) { return; }
-
-	const diagram = tryLoadLayoutFromLocalStorage();
-	workspace.getModel().importLayout({
-		diagram: testDiagram,
-		dataProvider: new DemoDataProvider(
-			CLASSES as any,
-			LINK_TYPES as any,
-			ELEMENTS as any,
-			LINKS as any
-		),
-		validateLinks: true,
-	});
-}
-
-export const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
-	ref: onWorkspaceMounted,
-	onSaveDiagram: (workspace: Workspace) => {
-		const diagram = workspace.getModel().exportLayout();
-		window.location.hash = saveLayoutToLocalStorage(diagram);
-		window.location.reload();
-	}
-};
-
 export function saveLayoutToLocalStorage(diagram: SerializedDiagram): string {
 	const randomKey = Math.floor((1 + Math.random()) * 0x10000000000)
 		.toString(16).substring(1);
@@ -250,59 +218,3 @@ export function tryLoadLayoutFromLocalStorage(): SerializedDiagram | undefined {
 	}
 	return undefined;
 }
-
-const elements: ReadonlyArray<LayoutElement> = [
-	{
-		'@type': 'Element',
-		'@id': 'http://tonya-diploma.com/device/grate/mg5t',
-		iri: ('http://tonya-diploma.com/device/grate/mg5t') as ElementIri,
-		position: {x: 10, y: 10},
-	},
-	{
-		'@type': 'Element',
-		'@id': 'http://tonya-diploma.com/device/grate/mg6t',
-		iri: ('http://tonya-diploma.com/device/grate/mg6t') as ElementIri,
-		position: {x: 200, y: 200},
-	},
-	{
-		'@type': 'Element',
-		'@id': 'http://tonya-diploma.com/device/grate/mechanic',
-		iri: ('http://tonya-diploma.com/device/grate/mechanic') as ElementIri,
-		position: {x: 400, y: 400},
-	},
-];
-
-const links: ReadonlyArray<LayoutLink> = [
-	{
-		'@type': 'Link',
-		'@id': 'http://tonya-diploma.com/device/consists_of/1',
-		property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-		source: {
-			'@id': 'http://tonya-diploma.com/device/grate/mechanic',
-		},
-		target: {
-			'@id': 'http://tonya-diploma.com/device/grate/mg5t',
-		}
-	},
-	{
-		'@type': 'Link',
-		'@id': 'http://tonya-diploma.com/device/consists_of/2',
-		property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-		source: {
-			'@id': 'http://tonya-diploma.com/device/grate/mechanic',
-		},
-		target: {
-			'@id': 'http://tonya-diploma.com/device/grate/mg6t',
-		}
-	},
-];
-
-const testDiagram: SerializedDiagram = {
-	'@context': 'https://ontodia.org/context/v1.json',
-	'@type': 'Diagram',
-	layoutData: {
-		'@type': 'Layout',
-		elements: elements,
-		links: links,
-	}
-};

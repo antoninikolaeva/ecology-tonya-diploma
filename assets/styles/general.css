@@ -2,21 +2,12 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
+    background-color: #f4f9fd;
 }
 
 .general-title {
-    margin: 1rem 2rem;
+    margin: 0 0 1rem 0;
 }
-
-/* .checkbox {
-    border: 2px solid #707070;
-    margin-top: 0.3rem;
-    padding: 0.3rem;
-    border-radius: 0.2rem;
-}
-.checkbox .custom-control-label {
-    margin-left: 2rem;
-} */
 
 .scheme{
     display: flex;
@@ -31,7 +22,6 @@
 }
 
 /* Radio button */
-
 .radio {
     display: flex;
     position: relative;
@@ -86,6 +76,14 @@
     justify-content: space-between;
     flex-direction: column;
     margin: 0.3rem 0 1rem;
+    position: relative;
+}
+
+.input-with-clear-button {
+    display: flex;
+    flex: 1;
+    width: 100%;
+    position: relative;
 }
 
 .input-label {
@@ -94,20 +92,27 @@
     padding: 0.3rem 0 0.5rem;
 }
 
-.readonly-text {
-    border-bottom: 1px solid darkslateblue;
-    padding: 0.5rem;
+.select-input, .text-input, .readonly-text {
+    padding: 0.3rem 0.7rem;
     font-size: 1.1rem;
-    background-color: #dfdfdf;
+    border: none;
+    outline: none;
+    border-bottom: 1px solid #a1a1a1;
+    background-color: #ffffff;
+    border-radius: 0.2rem 0.2rem 0 0;
+    width: 100%;
 }
 
-.select-input, .text-input {
-    padding: 0.3rem 0.7rem;
+.input-clear-button {
+    position: absolute;
+    top: 0.4rem;
+    right: 0.2rem;
+    background: white;
+    width: 24px;
+    height: 24px;
+    opacity: 0.5;
     border: none;
-    border-bottom: 1px solid #6b6b6b;
-    background-color: #e8e8e8;
     outline: none;
-    border-radius: 0.2rem 0.2rem 0 0;
 }
 
 /* Table hacking */
@@ -126,19 +131,18 @@
 /* Title of the counting */
 .title-container {
     display: flex;
-    padding: 0.5rem 1rem;
+    padding: 0.5rem 1rem 0.5rem 3rem;
     justify-content: space-between;
 }
 
 .count-title {
     font-weight: bold;
-    font-size: 1.4rem;
+    font-size: 2rem;
 }
 
 .input-data-title {
     font-weight: bold;
-    padding: 0.5rem 1rem;
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 
 /* Control buttons panel */
@@ -151,8 +155,44 @@
 /* Device tabs */
 .device-tabs-container .nav.nav-tabs {
     display: flex;
+    padding-top: 1rem;
+    background-color: #f3f3f3;
 }
 .device-tabs-container .nav.nav-tabs a.nav-item.nav-link {
     display: flex;
     flex: 1;
 }
+.device-tabs-container .nav-tabs .nav-link:focus,
+.device-tabs-container .nav-tabs .nav-link:hover {
+    border-color: transparent;
+}
+
+/* ontodia container */
+.ontodia-container {
+    width: 100%;
+    height: 100vh;
+    border-top: 1px solid #b3b3b3;
+}
+
+/* Accordion button */
+.accordion .card {
+    margin-bottom: 0.3rem;
+}
+.accordion .card button{
+    padding: 0.5rem;
+    background-color: #b8ffe7;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.accordion .card .card-body {
+    border-bottom: 1px solid rgba(0,0,0,.125);
+    padding: 1.25rem 0;
+}
+
+/* table in the result */
+.table {
+    background-color: white;
+}
+

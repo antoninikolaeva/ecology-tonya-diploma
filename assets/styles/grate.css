@@ -2,16 +2,17 @@
     display: flex;
 }
 
-.grate-input {
+.grate-result, .grate-input {
     display: flex;
     flex: 1;
     flex-direction: column;
-    margin: 1rem;
+    padding: 1.5rem 3rem;
+}
+
+.grate-input {
+    background-color: #ededed;
 }
 
 .grate-result {
-    display: flex;
-    flex: 1;
-    flex-direction: column;
-    margin: 1rem;
+    background-color: #b5e5d5;
 }

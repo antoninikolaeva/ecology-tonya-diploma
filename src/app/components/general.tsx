@@ -7,6 +7,7 @@ import { ErrorAlert } from './error/error';
 import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
+import { SandTrapComponent } from './sandTrap/sandTrap';
 
 interface State {
 	deviceWatcher: number;
@@ -14,7 +15,6 @@ interface State {
 	dailyWaterFlow: number;
 	countMode: boolean;
 	deviceDiagram: SerializedDiagram;
-	workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace>;
 	isValidateError: boolean;
 }
 
@@ -40,7 +40,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 			dailyWaterFlow: undefined,
 			countMode: false,
 			deviceDiagram: undefined,
-			workspaceProps: undefined,
 			isValidateError: false
 		};
 	}
@@ -68,7 +67,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		}
 	}
 
-	private devicesList = () => {
+	private renderDevicesList = () => {
 		const list = listOfDevices.map((device, index) => {
 			return <Card>
 				<Accordion.Toggle eventKey={`${index}`}>
@@ -83,7 +82,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 								}}>
 							</Form.Check>
 						</Form>
-						<div>{device.selected ? 'Open' : undefined}</div>
+						<div>{device.selected ? <i className={'fas fa-caret-down'}></i> : undefined}</div>
 					</div>
 				</Accordion.Toggle>
 				{
@@ -94,18 +93,18 @@ export class GeneralComponent extends React.Component<{}, State> {
 						null
 				}
 
-			</Card>
+			</Card>;
 		});
 		return <Container>
-			<Row className='justify-content-md-center'>
+			<Row className={'justify-content-md-center general-container'}>
 				<Col xs lg='12'>
 					<h4 className={'general-title'}>
-						Выберите очистные сооружения для расчетный схемы
+						Выберите очистные сооружения для расчетный схемы (отметка галочкой)
 					</h4>
 					<Accordion>{list}</Accordion>
 				</Col>
 			</Row>
-		</Container>
+		</Container>;
 	}
 
 	private selectDevice = (event: React.ChangeEvent<HTMLInputElement>, device: Device) => {
@@ -172,7 +171,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private renderBaseInput = () => {
 		return <Container>
-			<Row className='justify-content-md-center'>
+			<Row className={'justify-content-md-center general-container'} style={{flexDirection: 'row'}}>
 				<Col xs lg='6'>
 					<InputTemplate title={'Секундный максимальный расход, м3/с'}
 						placeholder={''}
@@ -187,6 +186,47 @@ export class GeneralComponent extends React.Component<{}, State> {
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
 						onInput={(value) => { this.setState({ dailyWaterFlow: value }); }} />
+				</Col>
+			</Row>
+		</Container>;
+	}
+
+	private renderOntodia() {
+		const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
+			ref: this.onWorkspaceMounted,
+		};
+		return <div>
+			<Container>
+				<Row className={'justify-content-md-center general-container'}>
+					<Col xs lg='12'>
+						<h4 className={'general-title'}>Схема очистных сооружений</h4>
+					</Col>
+				</Row>
+			</Container>
+			<div className={'ontodia-container'}>
+				<Workspace
+					ref={workspaceProps ? workspaceProps.ref : undefined}
+					leftPanelInitiallyOpen={false}
+					rightPanelInitiallyOpen={false}
+					hidePanels={true}
+					hideScrollBars={true}
+					hideTutorial={true}
+				></Workspace>
+			</div>
+		</div>;
+	}
+
+	private renderCountCtrlButtons() {
+		const { isValidateError } = this.state;
+		return <Container>
+			<Row className={'justify-content-md-center general-container'}>
+				<Col xs lg='12'>
+					<div className={'ctrl-buttons-panel'}>
+						{isValidateError || !this.isDataExisted() ?
+							<button className={'btn btn-primary'} disabled>Начать расчет</button> :
+							<button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
+						<button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
+					</div>
 				</Col>
 			</Row>
 		</Container>;
@@ -242,7 +282,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private renderSandTrapComponent = (sandTrap: any) => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
-		return <div>Will be sandTrap</div>;
+		return <SandTrapComponent></SandTrapComponent>;
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -337,7 +377,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 		if (!workspace) { return; }
 
 		this.workspace = workspace;
-
 		this.workspace.getModel().importLayout({
 			diagram: this.state.deviceDiagram,
 			dataProvider: new DemoDataProvider(
@@ -351,32 +390,19 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	render() {
-		const { countMode, isValidateError } = this.state;
-		const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
-			ref: this.onWorkspaceMounted
-		};
-		return (
-			!countMode ?
+		const { countMode } = this.state;
+		return <div>
+			<Navbar bg='primary' variant='dark'>
+				<Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
+			</Navbar>
+			{!countMode ?
 				<div>
-					<Navbar bg='primary' variant='dark'>
-						<Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
-					</Navbar>
-					<div className={'general-container'}>
-						{this.renderBaseInput()}
-						{this.devicesList()}
-						<h4 className={'general-title'}>Схема очистных сооружений</h4>
-						<div style={{ width: '100%', height: '800px' }}>
-							<Workspace ref={workspaceProps ? workspaceProps.ref : undefined}></Workspace>
-						</div>
-						<div className={'ctrl-buttons-panel'}>
-							{isValidateError || !this.isDataExisted() ?
-								<button className={'btn btn-primary'} disabled>Начать расчет</button> :
-								<button className={'btn btn-primary'} onClick={this.startCounting}>Начать расчет</button>}
-							<button className={'btn btn-danger'} onClick={this.clearPage}>Очистить расчет</button>
-						</div>
-					</div>
+					{this.renderBaseInput()}
+					{this.renderDevicesList()}
+					{this.renderCountCtrlButtons()}
+					{this.renderOntodia()}
 				</div> :
-				this.renderListOfDevicesForCount()
-		);
+				this.renderListOfDevicesForCount()}
+		</div>;
 	}
 }
