@@ -1,18 +1,19 @@
-.grate-container {
+.device-container {
     display: flex;
 }
 
-.grate-result, .grate-input {
+.device-result, .device-input
+ {
     display: flex;
     flex: 1;
     flex-direction: column;
     padding: 1.5rem 3rem;
 }
 
-.grate-input {
+.device-input {
     background-color: #ededed;
 }
 
-.grate-result {
+.device-result {
     background-color: #b5e5d5;
 }

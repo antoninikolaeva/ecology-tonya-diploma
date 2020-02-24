@@ -458,7 +458,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 			});
 			this.rodThicknessList.unshift({ value: undefined, label: 'Выберите толщину стержня' });
 		}
-		return <div className={'grate-input'}>
+		return <div className={'device-input'}>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
 			{type === GrateTypes.mechanic || type === GrateTypes.hand ?
@@ -564,7 +564,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 			this.limitedStandardChannelWidthList.unshift({ value: undefined, label: 'Выберите ширину канала' });
 		}
 		return (
-			<div className={'grate-result'}>
+			<div className={'device-result'}>
 				<div className={'input-data-title'}>Результаты расчета</div>
 				{checkSpeedOfWater ?
 					labelTemplate('Проверка решеток на соответствие:', `
@@ -715,7 +715,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 							<div className={'count-title'}>Очистка решетками дробилками</div>}
 					{this.renderToolbar()}
 				</div>
-				<div className={'grate-container'}>
+				<div className={'device-container'}>
 					{this.renderGrate()}
 					{type === GrateTypes.mechanic || type === GrateTypes.hand ?
 						this.renderResultCounting() :

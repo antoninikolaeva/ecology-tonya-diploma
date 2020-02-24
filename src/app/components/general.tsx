@@ -4,7 +4,7 @@ import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutL
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
-import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes } from './general-resources';
+import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 import { SandTrapComponent } from './sandTrap/sandTrap';
@@ -242,7 +242,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 					</Tab> : null}
 				{this.sandTrap.selected ?
 					<Tab eventKey={this.sandTrap.key} title={this.sandTrap.name}>
-						{this.renderSandTrapComponent(this.grate)}
+						{this.renderSandTrapComponent(this.sandTrap)}
 					</Tab> : null}
 				{this.sump.selected ?
 					<Tab eventKey={this.sump.key} title={this.sump.name}>
@@ -282,7 +282,16 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private renderSandTrapComponent = (sandTrap: any) => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
-		return <SandTrapComponent></SandTrapComponent>;
+		return <SandTrapComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				sandTrap.selectedType.key === SandTrapTypes.horizontalForward ? SandTrapTypes.horizontalForward :
+				sandTrap.selectedType.key === SandTrapTypes.horizontalCircle ? SandTrapTypes.horizontalCircle :
+				sandTrap.selectedType.key === SandTrapTypes.tangential ? SandTrapTypes.tangential :
+				sandTrap.selectedType.key === SandTrapTypes.vertical ? SandTrapTypes.vertical : SandTrapTypes.aerated
+			}
+		></SandTrapComponent>;
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
