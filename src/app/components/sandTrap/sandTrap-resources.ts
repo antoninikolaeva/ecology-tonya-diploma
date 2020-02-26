@@ -1,3 +1,5 @@
+export const minSpeedWaterFlow = 0.15;
+export const maxSpeedWaterFlow = 0.3;
 export enum HydraulicFinenessSand {
 	middle = 18.7,
 	high = 24.2
