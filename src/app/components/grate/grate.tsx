@@ -3,7 +3,7 @@ import { Button, Table } from 'react-bootstrap';
 
 import { GRATE_CONST as _, getUniqueWidthSection, getUniqueRodThickness, transferRadiansToDegrees } from './grate.service';
 import { SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, Grate, TypeOfGrates, grateCrushers, GrateCrusher } from './grate-resources';
-import { labelTemplate, InputTemplate, ItemList, SelectTemplate, NULLSTR } from '../utils';
+import { labelTemplate, InputTemplate, ItemList, SelectTemplate, NULLSTR, resetSelectToDefault } from '../utils';
 import { GrateTypes } from '../general-resources';
 import { ErrorAlert } from '../error/error';
 import { GeneralDataModel, dataModel } from '../data-model';
@@ -131,14 +131,6 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 		};
 	}
 
-	private resetSelectToDefault = (itemListRef: HTMLOptionElement[], itemList: ItemList[]) => {
-		if (itemListRef && itemListRef.length !== 0) {
-			itemListRef[0].selected = true;
-			itemListRef[0].disabled = true;
-			itemListRef[0].value = itemList[0].label;
-		}
-	}
-
 	private clearPage = () => {
 		if (this.dailyWasteGeneratedRef) { this.dailyWasteGeneratedRef.value = NULLSTR; }
 		if (this.normOfWaterOutRef) { this.normOfWaterOutRef.value = NULLSTR; }
@@ -146,15 +138,15 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 		if (this.speedOfWaterInSectionRef) { this.speedOfWaterInSectionRef.value = NULLSTR; }
 		if (this.inclineAngleRef) { this.inclineAngleRef.value = NULLSTR; }
 		if (this.flowRestrictionRakeRef) { this.flowRestrictionRakeRef.value = NULLSTR; }
-		this.resetSelectToDefault(this.sourceOfWasteWaterRef, this.selectSourceWaterList);
-		this.resetSelectToDefault(this.hammerCrushersRef, this.selectHammerCrusherList);
-		this.resetSelectToDefault(this.formOfRodsRef, this.formOfRodList);
-		this.resetSelectToDefault(this.widthSectionsRef, this.widthSectionList);
-		this.resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
-		this.resetSelectToDefault(this.grateCrushersRef, this.grateCrusherList);
-		this.resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
-		this.resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
-		this.resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
+		resetSelectToDefault(this.sourceOfWasteWaterRef, this.selectSourceWaterList);
+		resetSelectToDefault(this.hammerCrushersRef, this.selectHammerCrusherList);
+		resetSelectToDefault(this.formOfRodsRef, this.formOfRodList);
+		resetSelectToDefault(this.widthSectionsRef, this.widthSectionList);
+		resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
+		resetSelectToDefault(this.grateCrushersRef, this.grateCrusherList);
+		resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
+		resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
+		resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
 		this.setState({
 			sourceOfWasteWater: undefined,
 			inputAmountOfWaste: undefined,
@@ -227,9 +219,9 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 			currentWidthSection
 		} = this.state;
 		if (!this.isDataExisted() || isValidateError) { return; }
-		this.resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
-		this.resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
-		this.resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
+		resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
+		resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
+		resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
 		let amountOfSection;
 		if (type === GrateTypes.mechanic) {
 			amountOfSection = (flowRestrictionRake * secondMaxFlow) /
@@ -379,7 +371,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 		if (typeof value === 'number') {
 			const listOfRodThickness = getUniqueRodThickness(value);
 			if (this.rodThicknessesRef) {
-				this.resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
+				resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
 			}
 			this.setState({ listOfRodThickness, currentRodThickness: undefined, currentWidthSection: value });
 		}

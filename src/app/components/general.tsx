@@ -291,6 +291,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 				sandTrap.selectedType.key === SandTrapTypes.tangential ? SandTrapTypes.tangential :
 				sandTrap.selectedType.key === SandTrapTypes.vertical ? SandTrapTypes.vertical : SandTrapTypes.aerated
 			}
+			onCountMode={this.onCountMode}
 		></SandTrapComponent>;
 	}
 

@@ -85,6 +85,14 @@ export function labelTemplate(title: string, value: string | number): JSX.Elemen
 	</div>
 }
 
+export function resetSelectToDefault(itemListRef: HTMLOptionElement[], itemList: ItemList[]) {
+	if (itemListRef && itemListRef.length !== 0) {
+		itemListRef[0].selected = true;
+		itemListRef[0].disabled = true;
+		itemListRef[0].value = itemList[0].label;
+	}
+}
+
 export interface ItemList {
 	value: number | string;
 	label: string;
