@@ -8,6 +8,7 @@ import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapT
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 import { SandTrapComponent } from './sandTrap/sandTrap';
+import { GeneralResult } from './result/result';
 
 interface State {
 	deviceWatcher: number;
@@ -16,6 +17,7 @@ interface State {
 	countMode: boolean;
 	deviceDiagram: SerializedDiagram;
 	isValidateError: boolean;
+	resultMode: boolean;
 }
 
 export class GeneralComponent extends React.Component<{}, State> {
@@ -40,7 +42,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 			dailyWaterFlow: undefined,
 			countMode: false,
 			deviceDiagram: undefined,
-			isValidateError: false
+			isValidateError: false,
+			resultMode: false,
 		};
 	}
 
@@ -268,6 +271,10 @@ export class GeneralComponent extends React.Component<{}, State> {
 		</div>;
 	}
 
+	private renderResult = () => {
+		return <GeneralResult />;
+	}
+
 	private renderGrateComponent = (grate: Device) => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
 		return <GrateComponent secondMaxFlow={secondMaxFlow}
@@ -277,7 +284,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 					grate.selectedType.key === GrateTypes.hand ? GrateTypes.hand :
 						GrateTypes.crusher
 			}
-			onCountMode={this.onCountMode} />;
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}/>;
 	}
 
 	private renderSandTrapComponent = (sandTrap: any) => {
@@ -292,6 +300,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 				sandTrap.selectedType.key === SandTrapTypes.vertical ? SandTrapTypes.vertical : SandTrapTypes.aerated
 			}
 			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
 		></SandTrapComponent>;
 	}
 
@@ -300,7 +309,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		if (isValidateError || !this.isDataExisted()) {
 			return;
 		}
-		this.setState({ countMode: true });
+		this.setState({ countMode: true, resultMode: false });
 	}
 
 	private clearPage = () => {
@@ -326,6 +335,10 @@ export class GeneralComponent extends React.Component<{}, State> {
 	private onCountMode = (countMode: boolean) => {
 		this.clearPage();
 		this.setState({ countMode });
+	}
+
+	private onResultMode = (resultMode: boolean) => {
+		this.setState({ resultMode });
 	}
 
 	private isDataExisted = () => {
@@ -400,19 +413,23 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	render() {
-		const { countMode } = this.state;
+		const { countMode, resultMode } = this.state;
 		return <div>
 			<Navbar bg='primary' variant='dark'>
 				<Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
 			</Navbar>
-			{!countMode ?
-				<div>
+			{
+				countMode
+				? this.renderListOfDevicesForCount()
+				: resultMode
+				? this.renderResult()
+				: <div>
 					{this.renderBaseInput()}
 					{this.renderDevicesList()}
 					{this.renderCountCtrlButtons()}
 					{this.renderOntodia()}
-				</div> :
-				this.renderListOfDevicesForCount()}
+				</div>
+			}
 		</div>;
 	}
 }

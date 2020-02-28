@@ -13,6 +13,7 @@ interface GrateComponentProps {
 	dailyWaterFlow: number;
 	type: GrateTypes;
 	onCountMode(countMode: boolean): void;
+	onResultMode(resultMode: boolean): void;
 }
 
 interface GrateComponentState {
@@ -617,6 +618,11 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 		this.props.onCountMode(false);
 	}
 
+	private goToResult = () => {
+		this.props.onCountMode(false);
+		this.props.onResultMode(true);
+	}
+
 	// Отрисовка кнопки расчета
 	private renderCountingButton = () => {
 		const { isValidateError } = this.state;
@@ -657,7 +663,7 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 			</button>
 			{this.resetData()}
 			<button className={'merge-result btn btn-success'}
-				onClick={() => {}}
+				onClick={this.goToResult}
 				title={'Cводная схема очитныех сооружений'}>
 				<i className={'fas fa-trophy'}></i>
 			</button>

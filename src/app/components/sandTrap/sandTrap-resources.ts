@@ -29,3 +29,5 @@ export enum AmountOfBlockedSand {
 export const minPeriodRemoveSediment = 0;
 export const maxPeriodRemoveSediment = 2;
 export const coefficientDispersionOfSediment = 3;
+export const widthCircleGutterForHorizontalCircle = [0.5, 0.8, 1, 1.4, 1.5, 1.8];
+export const diameterLowBaseOfBunker = 0.4;
