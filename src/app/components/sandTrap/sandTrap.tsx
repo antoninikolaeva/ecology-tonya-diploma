@@ -73,7 +73,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 	];
 	private widthCircleGutterList: ItemList[] = SandTrapSource.widthCircleGutterForHorizontalCircle.map(width => {
 		return { value: width, label: `${width}` };
-	})
+	});
 	private alphaList: ItemList[] = SandTrapSource.alphaList.map(alpha => {
 		return { value: alpha, label: `${alpha}` };
 	});
@@ -568,99 +568,101 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			return;
 		}
 		const { type } = this.props;
-		return <div className={'table-result'}>
-			<Table bordered hover>
-				<tbody>
-					{(type === SandTrapTypes.horizontalForward ||
-					type === SandTrapTypes.horizontalCircle ||
-					type === SandTrapTypes.aerated)
-						? <>
-							<tr><td>Необходимая площадь живого сечения одного отделения песколовки, м2</td>
-								<td>{this.squareOneCompartmentOfSandTrap ? this.squareOneCompartmentOfSandTrap.toFixed(3) : undefined}</td></tr>
-							<tr><td>Длина песколовки, м</td>
-								<td>{this.lengthOfSandTrap ? this.lengthOfSandTrap.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+		return (
+			<div className={'table-result'}>
+				<Table bordered hover>
+					<tbody>
+						{(type === SandTrapTypes.horizontalForward ||
+						type === SandTrapTypes.horizontalCircle ||
+						type === SandTrapTypes.aerated)
+							? <>
+								<tr><td>Необходимая площадь живого сечения одного отделения песколовки, м2</td>
+									<td>{this.squareOneCompartmentOfSandTrap ? this.squareOneCompartmentOfSandTrap.toFixed(3) : undefined}</td></tr>
+								<tr><td>Длина песколовки, м</td>
+									<td>{this.lengthOfSandTrap ? this.lengthOfSandTrap.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{(type === SandTrapTypes.horizontalForward ||
-						type === SandTrapTypes.horizontalCircle)
-						? <>
-							<tr><td>Объем бункера одного отделения песколовки, м3</td>
-								<td>{this.volumeOfSandTrapSection ? this.volumeOfSandTrapSection.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{(type === SandTrapTypes.horizontalForward ||
+							type === SandTrapTypes.horizontalCircle)
+							? <>
+								<tr><td>Объем бункера одного отделения песколовки, м3</td>
+									<td>{this.volumeOfSandTrapSection ? this.volumeOfSandTrapSection.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{type === SandTrapTypes.horizontalForward || type === SandTrapTypes.aerated
-						? <>
-							<tr><td>Ширина одного отделения песколовки, м</td>
-								<td>{this.widthOfSandTrap ? this.widthOfSandTrap.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{type === SandTrapTypes.horizontalForward || type === SandTrapTypes.aerated
+							? <>
+								<tr><td>Ширина одного отделения песколовки, м</td>
+									<td>{this.widthOfSandTrap ? this.widthOfSandTrap.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{type === SandTrapTypes.horizontalForward
-						? <>
-							<tr><td>Скорость течения сточных вод в песколовке при минимальном притоке, м/с</td>
-								<td>{this.minSpeedFlow ? this.minSpeedFlow.toFixed(3) : undefined}</td></tr>
-							<tr><td>Скорость течения сточных вод в песколовке при максимальном притоке, м/с</td>
-								<td>{this.maxSpeedFlow ? this.maxSpeedFlow.toFixed(3) : undefined}</td></tr>
-							<tr><td>Продолжительность протекания сточных вод, с</td>
-								<td>{this.waterFlowPeriod ? this.waterFlowPeriod.toFixed(3) : undefined}</td></tr>
-							<tr><td>Глубина бункера песколовки, м</td>
-								<td>{this.deepSandTrapSection ? this.deepSandTrapSection.toFixed(3) : undefined}</td></tr>
-							<tr><td>Высота слоя осадка на дне песколовки, м</td>
-								<td>{this.heightSedimentLayout ? this.heightSedimentLayout.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{type === SandTrapTypes.horizontalForward
+							? <>
+								<tr><td>Скорость течения сточных вод в песколовке при минимальном притоке, м/с</td>
+									<td>{this.minSpeedFlow ? this.minSpeedFlow.toFixed(3) : undefined}</td></tr>
+								<tr><td>Скорость течения сточных вод в песколовке при максимальном притоке, м/с</td>
+									<td>{this.maxSpeedFlow ? this.maxSpeedFlow.toFixed(3) : undefined}</td></tr>
+								<tr><td>Продолжительность протекания сточных вод, с</td>
+									<td>{this.waterFlowPeriod ? this.waterFlowPeriod.toFixed(3) : undefined}</td></tr>
+								<tr><td>Глубина бункера песколовки, м</td>
+									<td>{this.deepSandTrapSection ? this.deepSandTrapSection.toFixed(3) : undefined}</td></tr>
+								<tr><td>Высота слоя осадка на дне песколовки, м</td>
+									<td>{this.heightSedimentLayout ? this.heightSedimentLayout.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{type === SandTrapTypes.horizontalCircle
-						? <>
-							<tr><td>Средний диаметр, м</td>
-								<td>{this.middleDiameter ? this.middleDiameter.toFixed(3) : undefined}</td></tr>
-							<tr><td>Продолжительность протекания, с</td>
-								<td>{this.waterFlowPeriodMaxPressure ? this.waterFlowPeriodMaxPressure.toFixed(3) : undefined}</td></tr>
-							<tr><td>Наружный диаметр, м</td>
-								<td>{this.outputDiameter ? this.outputDiameter.toFixed(3) : undefined}</td></tr>
-							<tr><td>Высота конической части бункера, м</td>
-								<td>{this.bunkerHeightConusPart ? this.bunkerHeightConusPart.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{type === SandTrapTypes.horizontalCircle
+							? <>
+								<tr><td>Средний диаметр, м</td>
+									<td>{this.middleDiameter ? this.middleDiameter.toFixed(3) : undefined}</td></tr>
+								<tr><td>Продолжительность протекания, с</td>
+									<td>{this.waterFlowPeriodMaxPressure ? this.waterFlowPeriodMaxPressure.toFixed(3) : undefined}</td></tr>
+								<tr><td>Наружный диаметр, м</td>
+									<td>{this.outputDiameter ? this.outputDiameter.toFixed(3) : undefined}</td></tr>
+								<tr><td>Высота конической части бункера, м</td>
+									<td>{this.bunkerHeightConusPart ? this.bunkerHeightConusPart.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{type === SandTrapTypes.aerated
-						? <>
-							<tr><td>Глубина песколовки, м</td>
-								<td>{this.deepOfSandTrap ? this.deepOfSandTrap.toFixed(3) : undefined}</td></tr>
-							<tr><td>Расход промывной воды при гидромеханическом удалении песка, л/с</td>
-								<td>{this.hydroMechanicWaterFlow ? this.hydroMechanicWaterFlow.toFixed(3) : undefined}</td></tr>
-							<tr><td>Напор в начале смывного трубопровода, м</td>
-								<td>{this.outputPipePressure ? this.outputPipePressure.toFixed(3) : undefined}</td></tr>
-							<tr><td>Общий расход воздуха для аэрирования, м3/ч</td>
-								<td>{this.generalAirFlow ? this.generalAirFlow.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{type === SandTrapTypes.aerated
+							? <>
+								<tr><td>Глубина песколовки, м</td>
+									<td>{this.deepOfSandTrap ? this.deepOfSandTrap.toFixed(3) : undefined}</td></tr>
+								<tr><td>Расход промывной воды при гидромеханическом удалении песка, л/с</td>
+									<td>{this.hydroMechanicWaterFlow ? this.hydroMechanicWaterFlow.toFixed(3) : undefined}</td></tr>
+								<tr><td>Напор в начале смывного трубопровода, м</td>
+									<td>{this.outputPipePressure ? this.outputPipePressure.toFixed(3) : undefined}</td></tr>
+								<tr><td>Общий расход воздуха для аэрирования, м3/ч</td>
+									<td>{this.generalAirFlow ? this.generalAirFlow.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					{(type === SandTrapTypes.tangential || type === SandTrapTypes.vertical)
-						? <>
-							<tr><td>Диаметр каждого отделения, м</td>
-								<td>{this.diameterOfEachCompartment ? this.diameterOfEachCompartment.toFixed(3) : undefined}</td></tr>
-							<tr><td>Глубина бункера, м</td>
-								<td>{this.deepOfTheBunker ? this.deepOfTheBunker.toFixed(3) : undefined}</td></tr>
-							<tr><td>Высота бункера, м</td>
-								<td>{this.heightOfTheBunker ? this.heightOfTheBunker.toFixed(3) : undefined}</td></tr>
-							<tr><td>Период между выгрузками осадка из песколовок, сут</td>
-								<td>{this.periodBetweenSedimentOutput ? this.periodBetweenSedimentOutput.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+						{(type === SandTrapTypes.tangential || type === SandTrapTypes.vertical)
+							? <>
+								<tr><td>Диаметр каждого отделения, м</td>
+									<td>{this.diameterOfEachCompartment ? this.diameterOfEachCompartment.toFixed(3) : undefined}</td></tr>
+								<tr><td>Глубина бункера, м</td>
+									<td>{this.deepOfTheBunker ? this.deepOfTheBunker.toFixed(3) : undefined}</td></tr>
+								<tr><td>Высота бункера, м</td>
+									<td>{this.heightOfTheBunker ? this.heightOfTheBunker.toFixed(3) : undefined}</td></tr>
+								<tr><td>Период между выгрузками осадка из песколовок, сут</td>
+									<td>{this.periodBetweenSedimentOutput ? this.periodBetweenSedimentOutput.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 
-					<tr><td>Суточный объем осадка накапливаемого в песколовках, м3/сут.</td>
-						<td>{this.dailyVolumeOfSediment ? this.dailyVolumeOfSediment.toFixed(3) : undefined}</td></tr>
+						<tr><td>Суточный объем осадка накапливаемого в песколовках, м3/сут.</td>
+							<td>{this.dailyVolumeOfSediment ? this.dailyVolumeOfSediment.toFixed(3) : undefined}</td></tr>
 
-					{!(type === SandTrapTypes.aerated)
-						? <tr><td>Полная строительная высота песколовки, м</td>
-						<td>{this.fullSandTrapHeight ? this.fullSandTrapHeight.toFixed(3) : undefined}</td></tr>
-						: null}
-				</tbody>
-			</Table>
-		</div>;
+						{!(type === SandTrapTypes.aerated)
+							? <tr><td>Полная строительная высота песколовки, м</td>
+							<td>{this.fullSandTrapHeight ? this.fullSandTrapHeight.toFixed(3) : undefined}</td></tr>
+							: null}
+					</tbody>
+				</Table>
+			</div>
+		);
 	}
 
 	// Отрисовка кнопки расчета
@@ -709,29 +711,32 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 
 	render() {
 		const { type } = this.props;
-		return <div>
-			<div className={'title-container'}>
-				{type === SandTrapTypes.horizontalForward ?
-					<div className={'count-title'}>Горизонтальные с прямолинейным движением воды</div> :
-					type === SandTrapTypes.horizontalCircle ?
-						<div className={'count-title'}>Горизонтальные с круговым движением воды</div> :
-						type === SandTrapTypes.vertical ?
-							<div className={'count-title'}>Вертикальные</div> :
-							type === SandTrapTypes.tangential ?
-								<div className={'count-title'}>Тангенциальные</div> :
-								<div className={'count-title'}>Аэрируемые</div>}
-				{this.renderToolbar()}
-			</div>
-			<div className={'device-container'}>
-				<div className={'device-input'}>
-					{this.renderBaseData()}
-					{this.renderInputArea()}
+		return (
+			<>
+				<div className={'title-container'}>
+					{type === SandTrapTypes.horizontalForward ?
+						<div className={'count-title'}>Горизонтальные с прямолинейным движением воды</div> :
+						type === SandTrapTypes.horizontalCircle ?
+							<div className={'count-title'}>Горизонтальные с круговым движением воды</div> :
+							type === SandTrapTypes.vertical ?
+								<div className={'count-title'}>Вертикальные</div> :
+								type === SandTrapTypes.tangential ?
+									<div className={'count-title'}>Тангенциальные</div> :
+									<div className={'count-title'}>Аэрируемые</div>}
+					{this.renderToolbar()}
 				</div>
-				<div className={'device-result'}>
-					<div className={'input-data-title'}>Результаты расчета</div>
-					{this.renderResult()}
+				<div className={'device-container'}>
+					<div className={'device-input'}>
+						{this.renderBaseData()}
+						{this.renderInputArea()}
+					</div>
+					<div className={'device-result'}>
+						<div className={'input-data-title'}>Результаты расчета</div>
+						{this.renderResult()}
+					</div>
 				</div>
-			</div>
-		</div>;
+			</>
+		);
 	}
+
 }

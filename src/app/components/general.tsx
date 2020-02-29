@@ -4,11 +4,12 @@ import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutL
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
-import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes } from './general-resources';
+import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes, SumpTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 import { SandTrapComponent } from './sandTrap/sandTrap';
 import { GeneralResult } from './result/result';
+import { SumpComponent } from './sump/sump';
 
 interface State {
 	deviceWatcher: number;
@@ -249,7 +250,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 					</Tab> : null}
 				{this.sump.selected ?
 					<Tab eventKey={this.sump.key} title={this.sump.name}>
-						{'Will be sump'}
+						{this.renderSumpComponent(this.sump)}
 					</Tab> : null}
 				{this.average.selected ?
 					<Tab eventKey={this.average.key} title={this.average.name}>
@@ -288,7 +289,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			onResultMode={this.onResultMode}/>;
 	}
 
-	private renderSandTrapComponent = (sandTrap: any) => {
+	private renderSandTrapComponent = (sandTrap: Device) => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
 		return <SandTrapComponent
 			secondMaxFlow={secondMaxFlow}
@@ -302,6 +303,21 @@ export class GeneralComponent extends React.Component<{}, State> {
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
 		></SandTrapComponent>;
+	}
+
+	private renderSumpComponent = (sump: Device) => {
+		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		return <SumpComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				sump.selectedType.key === SumpTypes.horizontal ? SumpTypes.horizontal :
+				sump.selectedType.key === SumpTypes.radial ? SumpTypes.radial :
+				sump.selectedType.key === SumpTypes.vertical ? SumpTypes.vertical : SumpTypes.verticalUpDownFlow
+			}
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
+		></SumpComponent>;
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
