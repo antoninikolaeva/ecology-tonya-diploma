@@ -14,7 +14,7 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	render() {
 		return (
 			<div>
-				Here you will see result, sometimes!!
+				Here you will see result, sometime...
 			</div>
 		);
 	}

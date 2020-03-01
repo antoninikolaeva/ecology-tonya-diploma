@@ -41,6 +41,35 @@ export namespace SumpSource {
 	}
 	export enum HighLightEffectDiapason {
 		low = 50,
-		high = 70
+		high = 70,
 	}
+	export enum WorkingThreadSpeed {
+		min = 5,
+		middle = 10,
+		max = 15
+	}
+	export enum WidthSectionCoefficient {
+		min = 2,
+		max = 5,
+	}
+	export const minAmountOfSection = 2;
+	export enum TurbulentCoefficient {
+		min = 0,
+		middle = 0.05,
+		max= 0.1,
+	}
+	export enum BorderHeight {
+		min = 0.3,
+		max = 0.5,
+	}
+	export enum SedimentWet {
+		min = 94,
+		max = 96,
+	}
+	export enum Alpha {
+		min = 50,
+		max = 55,
+	}
+	export const heightOfNeutralLayer = 0.3;
+	export const sedimentDensity = 1 * Math.pow(10, 4);
 }

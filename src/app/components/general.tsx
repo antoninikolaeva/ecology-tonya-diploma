@@ -359,8 +359,13 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private isDataExisted = () => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
-		const listOfSelectedDevice = listOfDevices.filter(device => device.selected && device.selectedType && device.selectedType.key);
-		if (!secondMaxFlow || !dailyWaterFlow || listOfSelectedDevice.length === 0) {
+		const listOfSelectedDevice = listOfDevices.filter(device => device.selected);
+		const listOfSelectedDeviceTypes = listOfDevices.filter(device => device.selected && device.selectedType && device.selectedType.key);
+		if (!secondMaxFlow ||
+			!dailyWaterFlow ||
+			listOfSelectedDevice.length === 0 ||
+			listOfSelectedDeviceTypes.length === 0 ||
+			listOfSelectedDevice.length !== listOfSelectedDeviceTypes.length) {
 			return false;
 		} else {
 			return true;
