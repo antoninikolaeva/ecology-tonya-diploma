@@ -36,18 +36,24 @@ export namespace SumpSource {
 	}
 	export const layerHeight = 0.5;
 	export enum WorkingDeep {
-		min =  1.5,
-		max = 4,
+		min_horizontal_radial =  1.5,
+		max_horizontal = 4,
+		min_vertical_up_down = 2.7,
+		max_vertical_up_down = 3.8,
+		max_radial = 5,
 	}
 	export enum HighLightEffectDiapason {
 		low = 50,
 		high = 70,
 	}
 	export enum WorkingThreadSpeed {
+		downUpMin = 2,
+		downUpMax = 3,
 		min = 5,
 		middle = 10,
 		max = 15
 	}
+	export const minWorkingThreadSpeedGeneralPipe = 0.03;
 	export enum WidthSectionCoefficient {
 		min = 2,
 		max = 5,
@@ -68,8 +74,15 @@ export namespace SumpSource {
 	}
 	export enum Alpha {
 		min = 50,
-		max = 55,
+		middle = 55,
+		max = 60,
 	}
 	export const heightOfNeutralLayer = 0.3;
 	export const sedimentDensity = 1 * Math.pow(10, 4);
+	export const speedInGap = 0.02;
+	export enum SumpDiameters {
+		min = 4,
+		middle = 6,
+		max = 9,
+	}
 }
