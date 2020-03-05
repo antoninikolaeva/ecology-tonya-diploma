@@ -75,7 +75,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const list = listOfDevices.map((device, index) => {
 			return <Card>
 				<Accordion.Toggle eventKey={`${index}`}>
-					<div style={{display: 'flex', justifyContent: 'space-between'}}>
+					<div style={{ display: 'flex', justifyContent: 'space-between' }}>
 						<Form key={`${device.key}-${index}`}>
 							<Form.Check className={'checkbox'}
 								id={`${device.key}-${index}`}
@@ -175,7 +175,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private renderBaseInput = () => {
 		return <Container>
-			<Row className={'justify-content-md-center general-container'} style={{flexDirection: 'row'}}>
+			<Row className={'justify-content-md-center general-container'} style={{ flexDirection: 'row' }}>
 				<Col xs lg='6'>
 					<InputTemplate title={'Секундный максимальный расход, м3/с'}
 						placeholder={''}
@@ -296,7 +296,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 						GrateTypes.crusher
 			}
 			onCountMode={this.onCountMode}
-			onResultMode={this.onResultMode}/>;
+			onResultMode={this.onResultMode} />;
 	}
 
 	private renderSandTrapComponent = (sandTrap: Device) => {
@@ -306,9 +306,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 			dailyWaterFlow={dailyWaterFlow}
 			type={
 				sandTrap.selectedType.key === SandTrapTypes.horizontalForward ? SandTrapTypes.horizontalForward :
-				sandTrap.selectedType.key === SandTrapTypes.horizontalCircle ? SandTrapTypes.horizontalCircle :
-				sandTrap.selectedType.key === SandTrapTypes.tangential ? SandTrapTypes.tangential :
-				sandTrap.selectedType.key === SandTrapTypes.vertical ? SandTrapTypes.vertical : SandTrapTypes.aerated
+					sandTrap.selectedType.key === SandTrapTypes.horizontalCircle ? SandTrapTypes.horizontalCircle :
+						sandTrap.selectedType.key === SandTrapTypes.tangential ? SandTrapTypes.tangential :
+							sandTrap.selectedType.key === SandTrapTypes.vertical ? SandTrapTypes.vertical : SandTrapTypes.aerated
 			}
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
@@ -322,8 +322,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 			dailyWaterFlow={dailyWaterFlow}
 			type={
 				sump.selectedType.key === SumpTypes.horizontal ? SumpTypes.horizontal :
-				sump.selectedType.key === SumpTypes.radial ? SumpTypes.radial :
-				sump.selectedType.key === SumpTypes.vertical ? SumpTypes.vertical : SumpTypes.verticalUpDownFlow
+					sump.selectedType.key === SumpTypes.radial ? SumpTypes.radial :
+						sump.selectedType.key === SumpTypes.vertical ? SumpTypes.vertical : SumpTypes.verticalUpDownFlow
 			}
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
@@ -370,7 +370,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 	private isDataExisted = () => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
 		const listOfSelectedDevice = listOfDevices.filter(device => device.selected);
-		const listOfSelectedDeviceTypes = listOfDevices.filter(device => device.selected && device.selectedType && device.selectedType.key);
+		const listOfSelectedDeviceTypes = listOfDevices.filter(device =>
+			device.selected && device.selectedType && device.selectedType.key);
 		if (!secondMaxFlow ||
 			!dailyWaterFlow ||
 			listOfSelectedDevice.length === 0 ||
@@ -395,7 +396,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 						'@type': 'Element',
 						'@id': device.iri,
 						iri: device.iri,
-						position: {x: (index * 300 - 300), y: 100},
+						position: { x: (index * 300 - 300), y: 100 },
 					});
 				}
 				if (element) {
@@ -403,14 +404,14 @@ export class GeneralComponent extends React.Component<{}, State> {
 						'@type': 'Element',
 						'@id': device.selectedType.iri,
 						iri: device.selectedType.iri,
-						position: {x: (index * 300 - 300), y: 400},
+						position: { x: (index * 300 - 300), y: 400 },
 					});
 					links.push({
 						'@type': 'Link',
 						'@id': `http://tonya-diploma.com/device/consists_of/${Math.random() * 1000000}`,
 						property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-						source: {'@id': device.iri},
-						target: {'@id': device.selectedType.iri}
+						source: { '@id': device.iri },
+						target: { '@id': device.selectedType.iri }
 					});
 				}
 			}
@@ -424,7 +425,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 				links: links,
 			}
 		};
-		this.setState({deviceDiagram: testDiagram});
+		this.setState({ deviceDiagram: testDiagram });
 	}
 
 	private onWorkspaceMounted = (workspace: Workspace) => {
@@ -451,15 +452,15 @@ export class GeneralComponent extends React.Component<{}, State> {
 			</Navbar>
 			{
 				countMode
-				? this.renderListOfDevicesForCount()
-				: resultMode
-				? this.renderResult()
-				: <div>
-					{this.renderBaseInput()}
-					{this.renderDevicesList()}
-					{this.renderCountCtrlButtons()}
-					{this.renderOntodia()}
-				</div>
+					? this.renderListOfDevicesForCount()
+					: resultMode
+						? this.renderResult()
+						: <div>
+							{this.renderBaseInput()}
+							{this.renderDevicesList()}
+							{this.renderCountCtrlButtons()}
+							{this.renderOntodia()}
+						</div>
 			}
 		</div>;
 	}

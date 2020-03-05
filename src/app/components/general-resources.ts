@@ -1,4 +1,4 @@
-import { ElementIri } from "ontodia";
+import { ElementIri } from 'ontodia';
 
 // sump - отстойник для воды
 // average - усреднитель
@@ -32,12 +32,18 @@ export interface DeviceType {
 
 export enum GrateTypes { mechanic = 'mechanic', hand = 'hand', crusher = 'crusher' }
 export const grateTypes: DeviceType[] = [
-	{ iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
-		key: GrateTypes.mechanic, name: 'Механическая очистка', ref: undefined },
-	{ iri: 'http://tonya-diploma.com/device/grate/hand' as ElementIri,
-		key: GrateTypes.hand, name: 'Ручная очиска', ref: undefined },
-	{ iri: 'http://tonya-diploma.com/device/grate/crusher' as ElementIri,
-		key: GrateTypes.crusher, name: 'Дробилки', ref: undefined },
+	{
+		iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
+		key: GrateTypes.mechanic, name: 'Механическая очистка', ref: undefined
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/grate/hand' as ElementIri,
+		key: GrateTypes.hand, name: 'Ручная очиска', ref: undefined
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/grate/crusher' as ElementIri,
+		key: GrateTypes.crusher, name: 'Дробилки', ref: undefined
+	},
 ];
 export enum SandTrapTypes {
 	horizontalForward = 'horizontalForward',
@@ -47,64 +53,110 @@ export enum SandTrapTypes {
 	aerated = 'aerated'
 }
 export const sandTrapTypes: DeviceType[] = [
-	{ iri: 'http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move' as ElementIri,
+	{
+		iri: 'http://tonya-diploma.com/device/sandTrap/horizontal-forward-water-move' as ElementIri,
 		key: SandTrapTypes.horizontalForward, name: 'Горизонтальные с прямолинейным движением воды',
-		ref: undefined, minDailyWaterFlow: 10000, maxDailyWaterFlow: 1000000 },
-	{ iri: 'http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move' as ElementIri,
+		ref: undefined, minDailyWaterFlow: 10000, maxDailyWaterFlow: 1000000
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/sandTrap/horizontal-circle-water-move' as ElementIri,
 		key: SandTrapTypes.horizontalCircle, name: 'Горизонтальные с круговым движением воды',
-		ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000 },
-	{ iri: 'http://tonya-diploma.com/device/sandTrap/tangential' as ElementIri,
-		key: SandTrapTypes.tangential, name: 'Тангенциальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000 },
-	{ iri: 'http://tonya-diploma.com/device/sandTrap/vertical' as ElementIri,
-		key: SandTrapTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 10000 },
-	{ iri: 'http://tonya-diploma.com/device/sandTrap/aerated' as ElementIri,
-		key: SandTrapTypes.aerated, name: 'Аэрируемые', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000 },
+		ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 75000
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/sandTrap/tangential' as ElementIri,
+		key: SandTrapTypes.tangential, name: 'Тангенциальные', ref: undefined,
+		minDailyWaterFlow: 100, maxDailyWaterFlow: 75000,
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/sandTrap/vertical' as ElementIri,
+		key: SandTrapTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 100, maxDailyWaterFlow: 10000
+	},
+	{
+		iri: 'http://tonya-diploma.com/device/sandTrap/aerated' as ElementIri,
+		key: SandTrapTypes.aerated, name: 'Аэрируемые', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000
+	},
 ];
-export enum SumpTypes { horizontal = 'horizontal', vertical = 'vertical', verticalUpDownFlow = 'verticalUpDownFlow', radial = 'radial' };
+export enum SumpTypes {
+	horizontal = 'horizontal',
+	vertical = 'vertical',
+	verticalUpDownFlow = 'verticalUpDownFlow',
+	radial = 'radial',
+};
 export const sumpTypes: DeviceType[] = [
-	{ iri: '' as ElementIri,
-		key: SumpTypes.horizontal, name: 'Горизонтальные', ref: undefined, minDailyWaterFlow: 15000, maxDailyWaterFlow: 100000 },
-	{ iri: '' as ElementIri,
-		key: SumpTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000 },
-	{ iri: '' as ElementIri,
+	{
+		iri: '' as ElementIri,
+		key: SumpTypes.horizontal, name: 'Горизонтальные', ref: undefined, minDailyWaterFlow: 15000, maxDailyWaterFlow: 100000
+	},
+	{
+		iri: '' as ElementIri,
+		key: SumpTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000
+	},
+	{
+		iri: '' as ElementIri,
 		key: SumpTypes.verticalUpDownFlow, name: 'Вертикальные с нисходящим-восходящим потоком',
-		ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000 },
-	{ iri: '' as ElementIri,
-		key: SumpTypes.radial, name: 'Радиальные', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000 },
+		ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000
+	},
+	{
+		iri: '' as ElementIri,
+		key: SumpTypes.radial, name: 'Радиальные', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000
+	},
 ];
 export enum AverageTypes { volleyDischarge = 'volleyDischarge', cycleFluctuation = 'cycleFluctuation' }
 export const averageTypes: DeviceType[] = [
-	{ iri: '' as ElementIri,
-		key: AverageTypes.volleyDischarge, name: 'Залповый сброс', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: AverageTypes.cycleFluctuation, name: 'Циклические колебания', ref: undefined },
+	{
+		iri: '' as ElementIri,
+		key: AverageTypes.volleyDischarge, name: 'Залповый сброс', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: AverageTypes.cycleFluctuation, name: 'Циклические колебания', ref: undefined
+	},
 ];
 export enum OilTrapTypes { horizontal = 'horizontal', vertical = 'vertical' };
 export const oilTrapTypes: DeviceType[] = [
-	{ iri: '' as ElementIri,
-		key: OilTrapTypes.horizontal, name: 'Горизонтальные', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: OilTrapTypes.vertical, name: 'Вертикальные', ref: undefined },
+	{
+		iri: '' as ElementIri,
+		key: OilTrapTypes.horizontal, name: 'Горизонтальные', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: OilTrapTypes.vertical, name: 'Вертикальные', ref: undefined
+	},
 ];
 export enum FilterTypes { grainy = 'grainy', microFilter = 'microFilter', drumNets = 'drumNets' }
 export const filterTypes: DeviceType[] = [
-	{ iri: '' as ElementIri,
-		key: FilterTypes.grainy, name: 'Зернистые', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: FilterTypes.microFilter, name: 'Микрофильтры', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: FilterTypes.drumNets, name: 'Барабанные сетки', ref: undefined },
+	{
+		iri: '' as ElementIri,
+		key: FilterTypes.grainy, name: 'Зернистые', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: FilterTypes.microFilter, name: 'Микрофильтры', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: FilterTypes.drumNets, name: 'Барабанные сетки', ref: undefined
+	},
 ];
 export enum CentrifugeTypes { opened = 'opened', pressure = 'pressure', continuous = 'continuous', determinate = 'determinate' };
 export const centrifugeTypes: DeviceType[] = [
-	{ iri: '' as ElementIri,
-		key: CentrifugeTypes.opened, name: 'Открытые гидроциклоны', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: CentrifugeTypes.pressure, name: 'Напорные гидроциклоны', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: CentrifugeTypes.continuous, name: 'Центрифуги непрерывного действия', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: CentrifugeTypes.determinate, name: 'Центрифуги периодического действия', ref: undefined },
+	{
+		iri: '' as ElementIri,
+		key: CentrifugeTypes.opened, name: 'Открытые гидроциклоны', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: CentrifugeTypes.pressure, name: 'Напорные гидроциклоны', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: CentrifugeTypes.continuous, name: 'Центрифуги непрерывного действия', ref: undefined
+	},
+	{
+		iri: '' as ElementIri,
+		key: CentrifugeTypes.determinate, name: 'Центрифуги периодического действия', ref: undefined
+	},
 ];
 
 export interface Device {
@@ -124,7 +176,7 @@ export interface Device {
 
 export const listOfDevices: Device[] = [
 	{
-		iri: 'http://tonya-diploma.com/device/grate' as ElementIri ,
+		iri: 'http://tonya-diploma.com/device/grate' as ElementIri,
 		name: 'Решетки',
 		key: KindOfDevices.grate,
 		ref: undefined,
@@ -134,7 +186,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/sandTrap' as ElementIri ,
+		iri: 'http://tonya-diploma.com/device/sandTrap' as ElementIri,
 		name: 'Песколовки',
 		key: KindOfDevices.sandTrap,
 		ref: undefined,
@@ -144,7 +196,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: '' as ElementIri ,
+		iri: '' as ElementIri,
 		name: 'Отстойники',
 		key: KindOfDevices.sump,
 		ref: undefined,
@@ -154,7 +206,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: '' as ElementIri ,
+		iri: '' as ElementIri,
 		name: 'Усреднители',
 		key: KindOfDevices.average,
 		ref: undefined,
@@ -164,7 +216,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: '' as ElementIri ,
+		iri: '' as ElementIri,
 		name: 'Нефтеловушки',
 		key: KindOfDevices.oilTrap,
 		ref: undefined,
@@ -174,7 +226,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: '' as ElementIri ,
+		iri: '' as ElementIri,
 		name: 'Фильтры',
 		key: KindOfDevices.filter,
 		ref: undefined,
@@ -184,7 +236,7 @@ export const listOfDevices: Device[] = [
 		selectedType: undefined,
 	},
 	{
-		iri: '' as ElementIri ,
+		iri: '' as ElementIri,
 		name: 'Гидроциклоны и центрифуги',
 		key: KindOfDevices.centrifuge,
 		ref: undefined,
