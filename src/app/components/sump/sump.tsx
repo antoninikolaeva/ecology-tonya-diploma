@@ -138,35 +138,45 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 						onInput={(value) => { this.setState({ finalConcentrate: value }); }} />
 					: null}
 
-				<InputTemplate title={`Рабочая глубина отстойной части, мг/л,
-					диапазон[${type === SumpTypes.horizontal || type === SumpTypes.radial
-						? SumpSource.WorkingDeep.min_horizontal_radial
-						: SumpSource.WorkingDeep.min_vertical_up_down}
-						-
-						${type === SumpTypes.horizontal
-						? SumpSource.WorkingDeep.max_horizontal
-						: type === SumpTypes.radial
-							? SumpSource.WorkingDeep.max_radial
-							: SumpSource.WorkingDeep.max_vertical_up_down}]`}
-					range={{
-						minValue: type === SumpTypes.horizontal || type === SumpTypes.radial
+				{baseConcentrate && finalConcentrate
+					? <InputTemplate title={`Рабочая глубина отстойной части, мг/л,
+						диапазон[${type === SumpTypes.horizontal || type === SumpTypes.radial
 							? SumpSource.WorkingDeep.min_horizontal_radial
-							: SumpSource.WorkingDeep.min_vertical_up_down,
-						maxValue: type === SumpTypes.horizontal
+							: SumpSource.WorkingDeep.min_vertical_up_down}
+							-
+							${type === SumpTypes.horizontal
 							? SumpSource.WorkingDeep.max_horizontal
 							: type === SumpTypes.radial
 								? SumpSource.WorkingDeep.max_radial
-								: SumpSource.WorkingDeep.max_vertical_up_down
-					}}
-					placeholder={'Введите рабочую глубину отстойной части...'}
-					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-					onInputRef={(input) => { this.workingDeepSumpPartRef = input; }}
-					onInput={(value) => {
-						if (type === SumpTypes.verticalUpDownFlow) {
-							this.countingHydraulicHugest(SumpSource.CoefficientUsingVolume.downUpFlow);
-						}
-						this.setState({ workingDeepSumpPart: value });
-					}} />
+								: SumpSource.WorkingDeep.max_vertical_up_down}]`}
+						range={{
+							minValue: type === SumpTypes.horizontal || type === SumpTypes.radial
+								? SumpSource.WorkingDeep.min_horizontal_radial
+								: SumpSource.WorkingDeep.min_vertical_up_down,
+							maxValue: type === SumpTypes.horizontal
+								? SumpSource.WorkingDeep.max_horizontal
+								: type === SumpTypes.radial
+									? SumpSource.WorkingDeep.max_radial
+									: SumpSource.WorkingDeep.max_vertical_up_down
+						}}
+						placeholder={'Введите рабочую глубину отстойной части...'}
+						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+						onInputRef={(input) => { this.workingDeepSumpPartRef = input; }}
+						onInput={(value) => {
+							if (type === SumpTypes.verticalUpDownFlow) {
+								this.countingHydraulicHugest(SumpSource.CoefficientUsingVolume.downUpFlow, value);
+							}
+							this.setState({ workingDeepSumpPart: value });
+						}} />
+					: null}
+
+				{type === SumpTypes.horizontal &&
+				this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.min &&
+				this.checkWorkingThreadSpeed < SumpSource.WorkingThreadSpeed.middle
+					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed},
+					должна быть в пределах диапазона ${SumpSource.WorkingThreadSpeed.min} - ${SumpSource.WorkingThreadSpeed.middle}.
+					Для урегулирования скорости измените рабочую глубину отстойника.`} />
+					: null}
 
 				{workingDeepSumpPart
 					? <InputTemplate title={`Ширина секции, м,
@@ -188,24 +198,24 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							? SumpSource.WorkingThreadSpeed.min
 							: type === SumpTypes.vertical
 								? SumpSource.minWorkingThreadSpeedGeneralPipe
-								: (SumpSource.WorkingThreadSpeed.downUpMin * (this.hydraulicHugest ? this.hydraulicHugest : 0))}
+								: (SumpSource.WorkingThreadSpeed.downUpMin * (this.hydraulicHugest ? this.hydraulicHugest : 0)).toFixed(2)}
 							-
 							${type === SumpTypes.horizontal || type === SumpTypes.radial
 							? SumpSource.WorkingThreadSpeed.middle
 							: type === SumpTypes.vertical
 								? SumpSource.WorkingThreadSpeed.max
-								: (SumpSource.WorkingThreadSpeed.downUpMax * (this.hydraulicHugest ? this.hydraulicHugest : 0))}]`}
+								: (SumpSource.WorkingThreadSpeed.downUpMax * (this.hydraulicHugest ? this.hydraulicHugest : 0)).toFixed(2)}]`}
 						range={{
 							minValue: type === SumpTypes.horizontal || type === SumpTypes.radial
 								? SumpSource.WorkingThreadSpeed.min
 								: type === SumpTypes.vertical
 									? SumpSource.minWorkingThreadSpeedGeneralPipe
-									: (SumpSource.WorkingThreadSpeed.downUpMin * (this.hydraulicHugest ? this.hydraulicHugest : 0)),
+									: Number((SumpSource.WorkingThreadSpeed.downUpMin * (this.hydraulicHugest ? this.hydraulicHugest : 0)).toFixed(2)),
 							maxValue: type === SumpTypes.horizontal || type === SumpTypes.radial
 								? SumpSource.WorkingThreadSpeed.middle
 								: type === SumpTypes.vertical
 									? SumpSource.WorkingThreadSpeed.max
-									: (SumpSource.WorkingThreadSpeed.downUpMax * (this.hydraulicHugest ? this.hydraulicHugest : 0))
+									: Number((SumpSource.WorkingThreadSpeed.downUpMax * (this.hydraulicHugest ? this.hydraulicHugest : 0)).toFixed(2))
 						}}
 						placeholder={'Введите скорость рабочего потока...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -213,6 +223,11 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 						onInput={(value) => { this.setState({ workingThreadSpeed: value }); }} />
 					: null}
 
+				{type === SumpTypes.radial && this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.middle
+					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed},
+					должна быть меньше табличной скорости потока : ${SumpSource.WorkingThreadSpeed.middle}.
+					Для урегулирования скорости измените количество отделений отстойников.`} />
+					: null}
 
 				<InputTemplate title={`Влажность осадка, %,
 					диапазон[${SumpSource.SedimentWet.min} - ${SumpSource.SedimentWet.max}]`}
@@ -227,14 +242,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					должно быть не менее ${SumpSource.minAmountOfSection}`} />
 					: null}
 
-				{this.checkWorkingThreadSpeed < SumpSource.minAmountOfSection
-					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed},
-					должна быть в пределах диапазона ${SumpSource.WorkingThreadSpeed.min} - ${SumpSource.WorkingThreadSpeed.middle}.
-					Для урегулирования скорости измените
-					${type === SumpTypes.horizontal ? 'рабочую глубину отстойника' : 'количество отделений отстойника'}.`} />
-					: null}
-
-				{type === SumpTypes.horizontal
+				{type === SumpTypes.horizontal || type === SumpTypes.radial
 					? <InputTemplate title={`Высота борта над слоем воды, м,
 							диапазон[${SumpSource.BorderHeight.min} - ${SumpSource.BorderHeight.max}]`}
 							range={{ minValue: SumpSource.BorderHeight.min, maxValue: SumpSource.BorderHeight.max }}
@@ -288,16 +296,19 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		}
 	}
 
-	private countingHydraulicHugest = (Kset: number) => {
+	private countingHydraulicHugest = (Kset: number, workingDeepSumpPartValue?: number) => {
 		const { baseConcentrate, workingDeepSumpPart, finalConcentrate, } = this.state;
-		if (baseConcentrate && workingDeepSumpPart && finalConcentrate) {
+		if (baseConcentrate && finalConcentrate) {
 			// Common formula 1: Э = 100 * (Cen - Cex) / Cen
 			this.highLightEffect = 100 * (baseConcentrate - finalConcentrate) / baseConcentrate;
 			const periodOfSettling = findPeriodOfSettling(baseConcentrate, this.highLightEffect);
 			const exponentValue = selectExponentValue(baseConcentrate, this.highLightEffect);
 			// Сommon formula 2: u0 = (1000 * Hset * Kset) / (tset * (Kset * Hset / h1));
-			this.hydraulicHugest = (1000 * workingDeepSumpPart * Kset) / (periodOfSettling *
-				Math.pow(Kset * workingDeepSumpPart / SumpSource.layerHeight, exponentValue));
+			const Hset = workingDeepSumpPart ? workingDeepSumpPart : workingDeepSumpPartValue;
+			if (Hset) {
+				this.hydraulicHugest = (1000 * Hset * Kset) / (periodOfSettling *
+					Math.pow(Kset * Hset / SumpSource.layerHeight, exponentValue));
+			}
 		}
 
 	}
@@ -321,8 +332,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		this.summaWidthAllSection = (1000 * secondMaxFlow) / (workingThreadSpeed * workingDeepSumpPart);
 		// Сommon formula 4: n = Summa(B) / Bset;
 		if (type === SumpTypes.verticalUpDownFlow) {
-			this.amountOfSection = convertSecondMaxFlowToHour(secondMaxFlow) /
-				(1.41 * Kset * Math.pow(this.sumpDiameter, 2) * this.hydraulicHugest);
+			this.amountOfSection = Math.ceil(convertSecondMaxFlowToHour(secondMaxFlow) /
+				(1.41 * Kset * Math.pow(this.sumpDiameter, 2) * this.hydraulicHugest));
 		} else {
 			this.amountOfSection = Math.ceil(this.summaWidthAllSection / widthSection);
 		}

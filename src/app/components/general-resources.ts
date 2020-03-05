@@ -72,14 +72,12 @@ export const sumpTypes: DeviceType[] = [
 	{ iri: '' as ElementIri,
 		key: SumpTypes.radial, name: 'Радиальные', ref: undefined, minDailyWaterFlow: 20000, maxDailyWaterFlow: 1000000 },
 ];
-export enum AverageTypes { volleyDischarge = 'volleyDischarge', cycleFluctuation = 'cycleFluctuation', randomFluctuation = 'randomFluctuation' }
+export enum AverageTypes { volleyDischarge = 'volleyDischarge', cycleFluctuation = 'cycleFluctuation' }
 export const averageTypes: DeviceType[] = [
 	{ iri: '' as ElementIri,
 		key: AverageTypes.volleyDischarge, name: 'Залповый сброс', ref: undefined },
 	{ iri: '' as ElementIri,
 		key: AverageTypes.cycleFluctuation, name: 'Циклические колебания', ref: undefined },
-	{ iri: '' as ElementIri,
-		key: AverageTypes.randomFluctuation, name: 'Произвольный характер колебаний', ref: undefined },
 ];
 export enum OilTrapTypes { horizontal = 'horizontal', vertical = 'vertical' };
 export const oilTrapTypes: DeviceType[] = [

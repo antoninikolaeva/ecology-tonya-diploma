@@ -189,7 +189,17 @@ export class GeneralComponent extends React.Component<{}, State> {
 						range={{ minValue: 0, maxValue: 1000000 }}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
-						onInput={(value) => { this.setState({ dailyWaterFlow: value }); }} />
+						onInput={(value) => {
+							listOfDevices.forEach(device => {
+								if (device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) {
+									device.selectedType = undefined;
+									device.listOfTypes.forEach(type => {
+										if (type.ref) { type.ref.checked = false; }
+									});
+								}
+							});
+							this.setState({ dailyWaterFlow: value });
+						}} />
 				</Col>
 			</Row>
 		</Container>;
