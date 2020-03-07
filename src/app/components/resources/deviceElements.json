@@ -505,5 +505,255 @@
                 "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
             }
         }
+    },
+
+
+    "http://tonya-diploma.com/device/sump": {
+        "id": "http://tonya-diploma.com/device/sump",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Отстойник", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sump/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sump/horizontal": {
+        "id": "http://tonya-diploma.com/device/sump/horizontal",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Горизонтальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sump/horizontal/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sump/vertical-down-up-low": {
+        "id": "http://tonya-diploma.com/device/sump/vertical-down-up-low",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Вертикальные с нисходящим-восходящим потоком", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sump/vertical-down-up-low/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sump/vertical": {
+        "id": "http://tonya-diploma.com/device/sump/vertical",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sump/vertical/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/sump/radial": {
+        "id": "http://tonya-diploma.com/device/sump/radial",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Радиальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/sump/radial/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+
+
+    "http://tonya-diploma.com/device/average": {
+        "id": "http://tonya-diploma.com/device/average",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Усреднитель", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/average/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/average/volley-discharge": {
+        "id": "http://tonya-diploma.com/device/average/volley-discharge",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Залповый сброс", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/average/volley-discharge/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/average/cycle-fluctuation": {
+        "id": "http://tonya-diploma.com/device/average/cycle-fluctuation",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Циклические колебания", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/average/cycle-fluctuation/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+
+
+    "http://tonya-diploma.com/device/oilTrap": {
+        "id": "http://tonya-diploma.com/device/oilTrap",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Нефтеловушка", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/oilTrap/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/oilTrap/horizontal": {
+        "id": "http://tonya-diploma.com/device/oilTrap/horizontal",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Горизонтальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/oilTrap/horizontal/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/oilTrap/vertical": {
+        "id": "http://tonya-diploma.com/device/oilTrap/vertical",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/oilTrap/vertical/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+
+
+    "http://tonya-diploma.com/device/filter": {
+        "id": "http://tonya-diploma.com/device/filter",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Отстойник", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/filter/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/filter/grainy": {
+        "id": "http://tonya-diploma.com/device/filter/grainy",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Зернистые", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/filter/grainy/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/filter/micro-filter": {
+        "id": "http://tonya-diploma.com/device/filter/micro-filter",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Микрофильтры", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/filter/micro-filter/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/filter/drum-nets": {
+        "id": "http://tonya-diploma.com/device/filter/drum-nets",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Барабанные сетки", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/filter/drum-nets/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+
+
+    "http://tonya-diploma.com/device/centrifuge": {
+        "id": "http://tonya-diploma.com/device/centrifuge",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Гидроциклоны и центрифуги", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/centrifuge/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/centrifuge/opened": {
+        "id": "http://tonya-diploma.com/device/centrifuge/opened",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Открытые гидроциклоны", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/centrifuge/opened/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/centrifuge/pressure": {
+        "id": "http://tonya-diploma.com/device/centrifuge/pressure",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Напорные гидроциклоны", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/centrifuge/pressure/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/centrifuge/continuous": {
+        "id": "http://tonya-diploma.com/device/centrifuge/continuous",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Центрифуги непрерывного действия", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/centrifuge/continuous/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
+    },
+    "http://tonya-diploma.com/device/centrifuge/determinate": {
+        "id": "http://tonya-diploma.com/device/centrifuge/determinate",
+        "types": [ "http://tonya-diploma.com/type/Device" ],
+        "image": "",
+        "label": { "values": [ { "value": "Центрифуги периодического действия", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/centrifuge/determinate/description": {
+                "type": "string",
+                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
+            }
+        }
     }
 }

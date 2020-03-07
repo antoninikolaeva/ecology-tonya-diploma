@@ -6,6 +6,7 @@ import { Table } from 'react-bootstrap';
 import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';
 import { transferRadiansToDegrees } from '../grate/grate.service';
+import { SumpResultData, dataModel } from '../data-model';
 
 export interface SumpProps {
 	secondMaxFlow: number;
@@ -310,7 +311,18 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					Math.pow(Kset * Hset / SumpSource.layerHeight, exponentValue));
 			}
 		}
+	}
 
+	private setSumpResult = () => {
+		const sumpResult: SumpResultData = {
+			amountOfSection: this.amountOfSection,
+			fullSumpHeight: this.fullSumpHeight,
+			highLightEffect: this.highLightEffect,
+			hydraulicHugest: this.hydraulicHugest,
+			sedimentAmountDaily: this.sedimentAmountDaily,
+			summaWidthAllSection: this.summaWidthAllSection,
+		};
+		dataModel.setSumpResult(sumpResult);
 	}
 
 	private resultCounting = () => {
@@ -340,7 +352,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		// turbulentCoefficient
 		const turbulentCoefficient = selectTurbulentCoefficient(workingThreadSpeed);
 		// Formula horizontal 4: Qmud = Q * (Cen - Cex) / ((100 - pmud)* gamma * 10^4);
-		this.sedimentAmountDaily = (dailyWaterFlow * (baseConcentrate - finalConcentrate)) / ((100 - sedimentWet) * SumpSource.sedimentDensity);
+		this.sedimentAmountDaily = (dailyWaterFlow * (baseConcentrate - finalConcentrate)) /
+			((100 - sedimentWet) * SumpSource.sedimentDensity);
 
 		if (type === SumpTypes.horizontal) {
 			// Formula horizontal 1: vw = 1000 * qmax / Hset * Bset * n; should be (5 - 10) else change Hset
@@ -403,6 +416,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			// Formula horizontal/radial 3: H = Hset + H1 + H2;
 			this.fullSumpHeight = workingDeepSumpPart + borderHeight + SumpSource.heightOfNeutralLayer;
 		}
+
+		this.setSumpResult();
 
 		this.setState({ isResult: true });
 	}
@@ -476,8 +491,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							</>
 							: null}
 
-							<tr><td>Общая высота отстойника, м</td>
-								<td>{this.fullSumpHeight ? this.fullSumpHeight.toFixed(3) : undefined}</td></tr>
+						<tr><td>Общая высота отстойника, м</td>
+							<td>{this.fullSumpHeight ? this.fullSumpHeight.toFixed(3) : undefined}</td></tr>
 					</tbody>
 				</Table>
 			</div>

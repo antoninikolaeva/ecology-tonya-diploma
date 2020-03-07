@@ -12,6 +12,7 @@ import { SandTrapSource } from './sandTrap-resources';
 import { SourceOfWasteWater } from '../grate/grate-resources';
 import { Table } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
+import { SandTrapResultData, dataModel } from '../data-model';
 
 export interface SandTrapProps {
 	secondMaxFlow: number;
@@ -397,7 +398,8 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		const { alpha } = this.state;
 		let coefficientOfSandTrapLength;
 		if (type === SandTrapTypes.aerated) {
-			coefficientOfSandTrapLength = alpha === SandTrapSource.Alpha.low && hydraulicFinenessSand ===  SandTrapSource.HydraulicFinenessSand.low
+			coefficientOfSandTrapLength = (alpha === SandTrapSource.Alpha.low &&
+				hydraulicFinenessSand ===  SandTrapSource.HydraulicFinenessSand.low)
 			? SandTrapSource.CoefficientOfLengthAlpha.alphaLowHydroLow
 			: alpha === SandTrapSource.Alpha.low && hydraulicFinenessSand ===  SandTrapSource.HydraulicFinenessSand.middle
 			? SandTrapSource.CoefficientOfLengthAlpha.alphaLowHydroMiddle
@@ -424,6 +426,62 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		if (this.dailyVolumeOfSedimentRef) { this.dailyVolumeOfSedimentRef.value = NULLSTR; }
 		this.dailyVolumeOfSediment = undefined;
 		this.setState({ sourceWaterList: sourceWaterList as SourceOfWasteWater, population: undefined });
+	}
+
+	private setCurrentResult = () => {
+		const { type } = this.props;
+		const sandTrapResult: SandTrapResultData = dataModel.getSandTrapResult();
+		if (type === SandTrapTypes.horizontalForward) {
+			sandTrapResult.horizontalForward = {
+				amountOfSandTrapSection: this.amountOfSandTrapSection,
+				deepSandTrapSection: this.deepSandTrapSection,
+				fullSandTrapHeight: this.fullSandTrapHeight,
+				lengthOfSandTrap: this.lengthOfSandTrap,
+				widthOfSandTrap: this.widthOfSandTrap,
+			};
+		}
+		if (type === SandTrapTypes.horizontalCircle) {
+			sandTrapResult.horizontalCircle = {
+				amountOfSandTrapSection: this.amountOfSandTrapSection,
+				bunkerHeightConusPart: this.bunkerHeightConusPart,
+				fullSandTrapHeight: this.fullSandTrapHeight,
+				lengthOfSandTrap: this.lengthOfSandTrap,
+				middleDiameter: this.middleDiameter,
+				outputDiameter: this.outputDiameter,
+			};
+		}
+		if (type === SandTrapTypes.tangential) {
+			sandTrapResult.tangential = {
+				amountOfSandTrapSection: this.amountOfSandTrapSection,
+				deepOfTheBunker: this.deepOfTheBunker,
+				diameterOfEachCompartment: this.diameterOfEachCompartment,
+				fullSandTrapHeight: this.fullSandTrapHeight,
+				heightOfTheBunker: this.heightOfTheBunker,
+				squareOfEachCompartment: this.squareOfEachCompartment,
+			};
+		}
+		if (type === SandTrapTypes.vertical) {
+			sandTrapResult.vertical = {
+				amountOfSandTrapSection: this.amountOfSandTrapSection,
+				deepOfTheBunker: this.deepOfTheBunker,
+				diameterOfEachCompartment: this.diameterOfEachCompartment,
+				fullSandTrapHeight: this.fullSandTrapHeight,
+				heightOfTheBunker: this.heightOfTheBunker,
+				squareOfEachCompartment: this.squareOfEachCompartment,
+			};
+		}
+		if (type === SandTrapTypes.aerated) {
+			sandTrapResult.aerated = {
+				amountOfSandTrapSection: this.amountOfSandTrapSection,
+				deepSandTrapSection: this.deepSandTrapSection,
+				generalAirFlow: this.generalAirFlow,
+				hydroMechanicWaterFlow: this.hydroMechanicWaterFlow,
+				lengthOfSandTrap: this.lengthOfSandTrap,
+				outputPipePressure: this.outputPipePressure,
+				widthOfSandTrap: this.widthOfSandTrap,
+			};
+		}
+		dataModel.setSandTrapResult(sandTrapResult);
 	}
 
 	private resultCounting = () => {
@@ -465,7 +523,8 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			// formula (Aereted): B = alpha * H;
 			this.deepOfSandTrap = alpha * this.widthOfSandTrap;
 			// formula (Aereted): Ls = 1000 * Ks * Hs * vs / u0;
-			this.lengthOfSandTrap = 1000 * coefficientOfSandTrapLength * (this.widthOfSandTrap / 2) * speedOfWaterFlow / hydraulicFinenessSand;
+			this.lengthOfSandTrap = 1000 * coefficientOfSandTrapLength * (this.widthOfSandTrap / 2) * speedOfWaterFlow /
+				hydraulicFinenessSand;
 			// formula (Aereted): qh = vh * lsc * bsc;
 			this.hydroMechanicWaterFlow = SandTrapSource.riseWaterSpeed *
 				(this.lengthOfSandTrap - this.deepOfSandTrap) * SandTrapSource.widthSandBox;
@@ -560,6 +619,8 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			this.fullSandTrapHeight = this.deepOfTheBunker + this.heightOfTheBunker + 0.5;
 		}
 
+		this.setCurrentResult();
+
 		this.setState({ isResult: true });
 	}
 
@@ -577,7 +638,10 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 						type === SandTrapTypes.aerated)
 							? <>
 								<tr><td>Необходимая площадь живого сечения одного отделения песколовки, м2</td>
-									<td>{this.squareOneCompartmentOfSandTrap ? this.squareOneCompartmentOfSandTrap.toFixed(3) : undefined}</td></tr>
+									<td>
+										{this.squareOneCompartmentOfSandTrap ? this.squareOneCompartmentOfSandTrap.toFixed(3) : undefined}
+									</td>
+								</tr>
 								<tr><td>Длина песколовки, м</td>
 									<td>{this.lengthOfSandTrap ? this.lengthOfSandTrap.toFixed(3) : undefined}</td></tr>
 							</>

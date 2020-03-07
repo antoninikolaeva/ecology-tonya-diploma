@@ -14,6 +14,31 @@
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/sandTrap"
   },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sump"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/average"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/oilTrap"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/filter"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/centrifuge"
+  },
 
   
   {
@@ -303,5 +328,90 @@
     "sourceId": "http://tonya-diploma.com/device/sandTrap",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
     "targetId": "http://tonya-diploma.com/device/sandTrap/aerated"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/sump",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sump/horizontal"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sump",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sump/vertical-down-up-low"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sump",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sump/vertical"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/sump",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/sump/radial"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/average",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/average/volley-discharge"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/average",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/average/cycle-fluctuation"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/oilTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/oilTrap/horizontal"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/oilTrap",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/oilTrap/vertical"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/filter",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/filter/grainy"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/filter",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/filter/micro-filter"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/filter",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/filter/drum-nets"
+  },
+
+
+  {
+    "sourceId": "http://tonya-diploma.com/device/centrifuge",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/centrifuge/opened"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/centrifuge",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/centrifuge/pressure"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/centrifuge",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/centrifuge/continuous"
+  },
+  {
+    "sourceId": "http://tonya-diploma.com/device/centrifuge",
+    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
+    "targetId": "http://tonya-diploma.com/device/centrifuge/determinate"
   }
 ]

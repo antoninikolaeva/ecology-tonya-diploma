@@ -2,7 +2,9 @@ import * as React from 'react';
 import { Button, Table } from 'react-bootstrap';
 
 import { GRATE_CONST as _, getUniqueWidthSection, getUniqueRodThickness, transferRadiansToDegrees } from './grate.service';
-import { SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, Grate, TypeOfGrates, grateCrushers, GrateCrusher } from './grate-resources';
+import {
+	SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, Grate, TypeOfGrates, grateCrushers, GrateCrusher
+} from './grate-resources';
 import { labelTemplate, InputTemplate, ItemList, SelectTemplate, NULLSTR, resetSelectToDefault } from '../utils';
 import { GrateTypes } from '../general-resources';
 import { ErrorAlert } from '../error/error';
@@ -248,7 +250,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 				amountOfSuitableGrates++;
 			}
 		}
-		const checkedSuitableGrates = suitableGrates.filter(grate => this.checkWaterSpeedCounting(grate, amountOfSuitableGrates));
+		const checkedSuitableGrates = suitableGrates.filter(grate =>
+			this.checkWaterSpeedCounting(grate, amountOfSuitableGrates));
 		if (checkedSuitableGrates.length === 0) {
 			this.setState({
 				amountOfSuitableGrates, suitableGrates: checkedSuitableGrates,
@@ -265,10 +268,14 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 	}
 
 	// Проверка решеток на удовлетворяемость всем заданным требованиям
-	private checkWaterSpeedCounting = (currentSuitableGrate: Grate, amountOfSuitableGratesAfterCount?: number): boolean => {
+	private checkWaterSpeedCounting = (
+		currentSuitableGrate: Grate, amountOfSuitableGratesAfterCount?: number
+	): boolean => {
 		const { secondMaxFlow, type } = this.props;
 		const { amountOfSuitableGrates, flowRestrictionRake, speedOfWaterInChannel, currentWidthSection } = this.state;
-		const amountOfSuitableGratesReal = amountOfSuitableGratesAfterCount ? amountOfSuitableGratesAfterCount : amountOfSuitableGrates;
+		const amountOfSuitableGratesReal = amountOfSuitableGratesAfterCount
+			? amountOfSuitableGratesAfterCount
+			: amountOfSuitableGrates;
 		let checkSpeedOfWater;
 		if (type === GrateTypes.mechanic) {
 			checkSpeedOfWater = (flowRestrictionRake * secondMaxFlow) /
@@ -301,7 +308,9 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 	// Расчет все длин
 	private countingLengths = () => {
 		const { secondMaxFlow } = this.props;
-		const { speedOfWaterInChannel, inclineAngle, currentStandardWidthOfChannel, currentTypeOfGrates, currentSuitableGrate } = this.state;
+		const {
+			speedOfWaterInChannel, inclineAngle, currentStandardWidthOfChannel, currentTypeOfGrates, currentSuitableGrate
+		} = this.state;
 		const sizeOfInputChannelPart = (currentSuitableGrate.size.width - currentStandardWidthOfChannel) /
 			(2 * Math.tan(transferRadiansToDegrees(_.PFI)));
 		const sizeOfOutputChannelPart = 0.5 * sizeOfInputChannelPart;
@@ -444,13 +453,30 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 
 	private renderGrate = () => {
 		const { type, secondMaxFlow } = this.props;
-		const { listOfRodThickness, checkGrateCrusherSpeed, amountGrateOfCrushers, currentGrateCrusher } = this.state;
+		const {
+			listOfRodThickness, checkGrateCrusherSpeed, amountGrateOfCrushers, currentGrateCrusher,
+			currentSuitableGrate, valueOfLedgeInstallationPlace, amountOfHammerCrushers, amountOfSuitableGrates,
+			sizeOfInputChannelPart, sizeOfOutputChannelPart, lengthOfIncreaseChannelPart, commonLengthOfChamberGrate,
+			amountOfWaste,
+		} = this.state;
 		if (listOfRodThickness && listOfRodThickness.length !== 0) {
 			this.rodThicknessList = listOfRodThickness.map(thickness => {
 				return { value: thickness, label: `${thickness}` };
 			});
 			this.rodThicknessList.unshift({ value: undefined, label: 'Выберите толщину стержня' });
 		}
+		dataModel.setGrateResult({
+			currentSuitableGrate,
+			currentGrateCrusher,
+			valueOfLedgeInstallationPlace,
+			amountOfHammerCrushers,
+			amountOfSuitableGrates,
+			sizeOfInputChannelPart,
+			sizeOfOutputChannelPart,
+			lengthOfIncreaseChannelPart,
+			commonLengthOfChamberGrate,
+			amountOfWaste,
+		});
 		return <div className={'device-input'}>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
@@ -532,18 +558,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 			suitableGrates,
 			limitedStandardWidthOfChannel,
 			currentSuitableGrate,
+			currentGrateCrusher,
 		} = this.state;
-		dataModel.setGrateResult({
-			currentSuitableGrate,
-			valueOfLedgeInstallationPlace,
-			amountOfHammerCrushers,
-			amountOfSuitableGrates,
-			sizeOfInputChannelPart,
-			sizeOfOutputChannelPart,
-			lengthOfIncreaseChannelPart,
-			commonLengthOfChamberGrate,
-			amountOfWaste,
-		});
 		if (suitableGrates && suitableGrates.length !== 0) {
 			this.suitableGrateList = suitableGrates.map(grate => {
 				return { value: grate.mark, label: grate.mark };
@@ -561,8 +577,8 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 				<div className={'input-data-title'}>Результаты расчета</div>
 				{checkSpeedOfWater ?
 					labelTemplate('Проверка решеток на соответствие:', `
-                        ${_.MIN_CHECK_SPEED_WATER} <= ${checkSpeedOfWater.toFixed(3)} <= ${_.MAX_CHECK_SPEED_WATER} :
-                        ${_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater ? 'Соответствует' : 'Не соответствует'}`) :
+            ${_.MIN_CHECK_SPEED_WATER} <= ${checkSpeedOfWater.toFixed(3)} <= ${_.MAX_CHECK_SPEED_WATER} :
+            ${_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater ? 'Соответствует' : 'Не соответствует'}`) :
 					null}
 				{suitableGrates && suitableGrates.length !== 0 ?
 					<div>
@@ -581,8 +597,10 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 							<div className={'table-result'}>
 								<Table bordered hover>
 									<tbody>
-										<tr><td>Величина уступа в месте установки решетки, м</td><td>{valueOfLedgeInstallationPlace.toFixed(3)}</td></tr>
-										<tr><td className={'input-label left-title-column'}>Молотковые дробилки</td><td className={'right-title-column'}></td></tr>
+										<tr><td>Величина уступа в месте установки решетки, м</td>
+											<td>{valueOfLedgeInstallationPlace.toFixed(3)}</td></tr>
+										<tr><td className={'input-label left-title-column'}>Молотковые дробилки</td>
+											<td className={'right-title-column'}></td></tr>
 										<tr>
 											<td>Количество технической воды, подводимой к дробилками, м3/ч</td>
 											<td>{(_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3)}</td>
@@ -591,13 +609,15 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 											<td>Количество молотковых дробилок необходимых для очистки, шт</td>
 											<td>{amountOfHammerCrushers}</td>
 										</tr>
-										<tr><td className={'input-label left-title-column'}>Решетки</td><td className={'right-title-column'}></td></tr>
+										<tr><td className={'input-label left-title-column'}>Решетки</td>
+											<td className={'right-title-column'}></td></tr>
 										<tr><td>Количество рабочих решеток, шт</td><td>{amountOfSuitableGrates}</td></tr>
 										<tr>
 											<td>Количество резервных решеток, шт</td>
 											<td>{amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1}</td>
 										</tr>
-										<tr><td className={'input-label left-title-column'}>Основные длины</td><td className={'right-title-column'}></td></tr>
+										<tr><td className={'input-label left-title-column'}>Основные длины</td>
+											<td className={'right-title-column'}></td></tr>
 										<tr><td>Длина входной части канала, м</td><td>{sizeOfInputChannelPart.toFixed(3)}</td></tr>
 										<tr><td>Длина выходной части канала, м</td><td>{sizeOfOutputChannelPart.toFixed(3)}</td></tr>
 										<tr><td>Длина расширенной части канала, м</td><td>{lengthOfIncreaseChannelPart.toFixed(3)}</td></tr>
