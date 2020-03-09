@@ -62,10 +62,15 @@ export interface SumpResultData {
 	sedimentAmountDaily: number;
 }
 
+export interface AverageResultData {
+
+}
+
 export class GeneralDataModel {
 	private grateResult: GrateResultData;
 	private sandTrapResult: SandTrapResultData;
 	private sumpResult: SumpResultData;
+	private averageResult: AverageResultData;
 
 	constructor() {
 		this.initDataModel();
@@ -158,6 +163,14 @@ export class GeneralDataModel {
 
 	public getSumpResult(): SumpResultData {
 		return this.sumpResult;
+	}
+
+	public setAverageResult(result: AverageResultData) {
+		this.averageResult = result;
+	}
+
+	public getAverageResult(): AverageResultData {
+		return this.averageResult;
 	}
 
 	public resetResultData() {

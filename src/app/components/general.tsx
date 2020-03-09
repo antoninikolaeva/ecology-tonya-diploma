@@ -4,12 +4,13 @@ import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutL
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
-import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes, SumpTypes } from './general-resources';
+import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes, SumpTypes, AverageTypes } from './general-resources';
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 import { SandTrapComponent } from './sandTrap/sandTrap';
 import { GeneralResult } from './result/result';
 import { SumpComponent } from './sump/sump';
+import { AverageComponent } from './average/average';
 
 interface State {
 	deviceWatcher: number;
@@ -264,7 +265,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 					</Tab> : null}
 				{this.average.selected ?
 					<Tab eventKey={this.average.key} title={this.average.name}>
-						{'Will be average'}
+						{this.renderAverageComponent(this.average)}
 					</Tab> : null}
 				{this.oilTrap.selected ?
 					<Tab eventKey={this.oilTrap.key} title={this.oilTrap.name}>
@@ -328,6 +329,21 @@ export class GeneralComponent extends React.Component<{}, State> {
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
 		></SumpComponent>;
+	}
+
+	private renderAverageComponent = (average: Device) => {
+		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		return <AverageComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				average.selectedType.key === AverageTypes.volleyDischarge
+				? AverageTypes.volleyDischarge
+				: AverageTypes.cycleFluctuation
+			}
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
+		></AverageComponent>;
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
