@@ -4,13 +4,19 @@ import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutL
 
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
-import { listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes, SumpTypes, AverageTypes } from './general-resources';
+import {
+	listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes,
+	SumpTypes, AverageTypes, OilTrapTypes, FilterTypes, CentrifugeTypes
+} from './general-resources';
 import { GrateComponent } from './grate/grate';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from './resources/resources';
 import { SandTrapComponent } from './sandTrap/sandTrap';
 import { GeneralResult } from './result/result';
 import { SumpComponent } from './sump/sump';
 import { AverageComponent } from './average/average';
+import { OilTrapComponent } from './oilTrap/oilTrap';
+import { FilterComponent } from './filter/filter';
+import { CentrifugeComponent } from './centrifuge/centrifuge';
 
 interface State {
 	deviceWatcher: number;
@@ -269,15 +275,15 @@ export class GeneralComponent extends React.Component<{}, State> {
 					</Tab> : null}
 				{this.oilTrap.selected ?
 					<Tab eventKey={this.oilTrap.key} title={this.oilTrap.name}>
-						{'Will be oilTrap'}
+						{this.renderOilTrapComponent(this.oilTrap)}
 					</Tab> : null}
 				{this.filter.selected ?
 					<Tab eventKey={this.filter.key} title={this.filter.name}>
-						{'Will be filter'}
+						{this.renderFilterComponent(this.filter)}
 					</Tab> : null}
 				{this.centrifuge.selected ?
 					<Tab eventKey={this.centrifuge.key} title={this.centrifuge.name}>
-						{'Will be centrifuge'}
+						{this.renderCentrifugeComponent(this.centrifuge)}
 					</Tab> : null}
 			</Tabs>
 		</div>;
@@ -344,6 +350,57 @@ export class GeneralComponent extends React.Component<{}, State> {
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
 		></AverageComponent>;
+	}
+
+	private renderOilTrapComponent = (oilTrap: Device) => {
+		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		return <OilTrapComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				oilTrap.selectedType.key === OilTrapTypes.horizontal
+				? OilTrapTypes.horizontal
+				: OilTrapTypes.radial
+			}
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
+		></OilTrapComponent>;
+	}
+
+	private renderFilterComponent = (filter: Device) => {
+		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		return <FilterComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				filter.selectedType.key === FilterTypes.drumNets
+				? FilterTypes.drumNets
+				: filter.selectedType.key === FilterTypes.grainy
+					? FilterTypes.grainy
+					: FilterTypes.microFilter
+			}
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
+		></FilterComponent>;
+	}
+
+	private renderCentrifugeComponent = (centrifuge: Device) => {
+		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		return <CentrifugeComponent
+			secondMaxFlow={secondMaxFlow}
+			dailyWaterFlow={dailyWaterFlow}
+			type={
+				centrifuge.selectedType.key === CentrifugeTypes.opened
+				? CentrifugeTypes.opened
+				: centrifuge.selectedType.key === CentrifugeTypes.pressure
+					? CentrifugeTypes.pressure
+					: centrifuge.selectedType.key === CentrifugeTypes.continuous
+					? CentrifugeTypes.continuous
+					: CentrifugeTypes.determinate
+			}
+			onCountMode={this.onCountMode}
+			onResultMode={this.onResultMode}
+		></CentrifugeComponent>;
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {

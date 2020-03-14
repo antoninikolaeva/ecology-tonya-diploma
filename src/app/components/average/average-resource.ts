@@ -9,6 +9,10 @@ export namespace AverageSource {
 		min = 3,
 		max = 6,
 	}
+	export enum AverageChannelLengthDeep {
+		min = 0,
+		max = 2,
+	}
 	export const minAmountOfSection = 2;
 	export const checkSpeed = 0.0025;
 	export enum BubbleDeep {
@@ -26,6 +30,7 @@ export namespace AverageSource {
 		max = 3,
 	}
 	export const minAmountOfSectionChannel = 3;
+	export const minAmountOfSectionChannelLength = 4;
 	export enum SectionChannelWidth {
 		min = 1,
 		max = 6,
@@ -36,4 +41,8 @@ export namespace AverageSource {
 		side = 0.7,
 	}
 	export const gravityAcceleration = 9.8;
+	export enum ChannelWidth {
+		min = 1,
+		max = 10,
+	}
 }

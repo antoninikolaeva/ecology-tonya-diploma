@@ -113,15 +113,15 @@ export const averageTypes: DeviceType[] = [
 		key: AverageTypes.cycleFluctuation, name: 'Циклические колебания', ref: undefined
 	},
 ];
-export enum OilTrapTypes { horizontal = 'horizontal', vertical = 'vertical' }
+export enum OilTrapTypes { horizontal = 'horizontal', radial = 'radial' }
 export const oilTrapTypes: DeviceType[] = [
 	{
 		iri: 'http://tonya-diploma.com/device/oilTrap/horizontal' as ElementIri,
 		key: OilTrapTypes.horizontal, name: 'Горизонтальные', ref: undefined
 	},
 	{
-		iri: 'http://tonya-diploma.com/device/oilTrap/vertical' as ElementIri,
-		key: OilTrapTypes.vertical, name: 'Вертикальные', ref: undefined
+		iri: 'http://tonya-diploma.com/device/oilTrap/radial' as ElementIri,
+		key: OilTrapTypes.radial, name: 'Радиальные', ref: undefined
 	},
 ];
 export enum FilterTypes { grainy = 'grainy', microFilter = 'microFilter', drumNets = 'drumNets' }

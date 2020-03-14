@@ -367,8 +367,8 @@
                     },
 
                     {
-                        "id": "http://tonya-diploma.com/device/oilTrap/vertical",
-                        "label": {  "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+                        "id": "http://tonya-diploma.com/device/oilTrap/radial",
+                        "label": {  "values": [ { "value": "Радиальные", "language": "ru" } ] },
                         "children": []
                     }
                 ]

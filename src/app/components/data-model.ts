@@ -66,11 +66,26 @@ export interface AverageResultData {
 
 }
 
+export interface OilTrapResultData {
+
+}
+
+export interface FilterResultData {
+
+}
+
+export interface CentrifugeResultData {
+
+}
+
 export class GeneralDataModel {
 	private grateResult: GrateResultData;
 	private sandTrapResult: SandTrapResultData;
 	private sumpResult: SumpResultData;
 	private averageResult: AverageResultData;
+	private oilTrapResult: AverageResultData;
+	private filterResult: AverageResultData;
+	private centrifugeResult: AverageResultData;
 
 	constructor() {
 		this.initDataModel();
@@ -171,6 +186,30 @@ export class GeneralDataModel {
 
 	public getAverageResult(): AverageResultData {
 		return this.averageResult;
+	}
+
+	public setOilTrapResult(result: OilTrapResultData) {
+		this.oilTrapResult = result;
+	}
+
+	public getOilTrapResult(): OilTrapResultData {
+		return this.oilTrapResult;
+	}
+
+	public setFilterResult(result: FilterResultData) {
+		this.filterResult = result;
+	}
+
+	public getFilterResult(): FilterResultData {
+		return this.filterResult;
+	}
+
+	public setCentrifugeResult(result: CentrifugeResultData) {
+		this.centrifugeResult = result;
+	}
+
+	public getCentrifugeResult(): CentrifugeResultData {
+		return this.centrifugeResult;
 	}
 
 	public resetResultData() {

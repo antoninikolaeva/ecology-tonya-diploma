@@ -632,13 +632,13 @@
             }
         }
     },
-    "http://tonya-diploma.com/device/oilTrap/vertical": {
-        "id": "http://tonya-diploma.com/device/oilTrap/vertical",
+    "http://tonya-diploma.com/device/oilTrap/radial": {
+        "id": "http://tonya-diploma.com/device/oilTrap/radial",
         "types": [ "http://tonya-diploma.com/type/Device" ],
         "image": "",
-        "label": { "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+        "label": { "values": [ { "value": "Радиальные", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/oilTrap/vertical/description": {
+            "http://tonya-diploma.com/device/oilTrap/radial/description": {
                 "type": "string",
                 "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
             }
