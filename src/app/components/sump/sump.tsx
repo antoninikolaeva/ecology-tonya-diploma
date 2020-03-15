@@ -573,7 +573,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 
 }
 
-function selectValueFromDiapason(array: number[], valueToCompare: number): number {
+export function selectValueFromDiapason(array: number[], valueToCompare: number): number {
 	let value;
 	for (let index = 0; index < array.length; index++) {
 		if (valueToCompare >= array[index] && valueToCompare <= array[index + 1]) {
