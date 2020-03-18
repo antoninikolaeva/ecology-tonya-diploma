@@ -658,37 +658,13 @@
             }
         }
     },
-    "http://tonya-diploma.com/device/filter/grainy": {
-        "id": "http://tonya-diploma.com/device/filter/grainy",
+    "http://tonya-diploma.com/device/filter/base": {
+        "id": "http://tonya-diploma.com/device/filter/base",
         "types": [ "http://tonya-diploma.com/type/Device" ],
         "image": "",
-        "label": { "values": [ { "value": "Зернистые", "language": "ru" } ] },
+        "label": { "values": [ { "value": "Типовой", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/filter/grainy/description": {
-                "type": "string",
-                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
-            }
-        }
-    },
-    "http://tonya-diploma.com/device/filter/micro-filter": {
-        "id": "http://tonya-diploma.com/device/filter/micro-filter",
-        "types": [ "http://tonya-diploma.com/type/Device" ],
-        "image": "",
-        "label": { "values": [ { "value": "Микрофильтры", "language": "ru" } ] },
-        "properties": {
-            "http://tonya-diploma.com/device/filter/micro-filter/description": {
-                "type": "string",
-                "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
-            }
-        }
-    },
-    "http://tonya-diploma.com/device/filter/drum-nets": {
-        "id": "http://tonya-diploma.com/device/filter/drum-nets",
-        "types": [ "http://tonya-diploma.com/type/Device" ],
-        "image": "",
-        "label": { "values": [ { "value": "Барабанные сетки", "language": "ru" } ] },
-        "properties": {
-            "http://tonya-diploma.com/device/filter/drum-nets/description": {
+            "http://tonya-diploma.com/device/filter/base/description": {
                 "type": "string",
                 "values": [ { "value": "xxxxxxxxxxxxxxxx", "language": "ru" } ]
             }

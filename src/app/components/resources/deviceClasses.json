@@ -379,18 +379,8 @@
                 "count": "3",
                 "children": [
                     {
-                        "id": "http://tonya-diploma.com/device/filter/grainy",
-                        "label": {  "values": [ { "value": "Зернистые", "language": "ru" } ] },
-                        "children": []
-                    },
-                    {
-                        "id": "http://tonya-diploma.com/device/filter/micro-filter",
-                        "label": {  "values": [ { "value": "Микрофильтры", "language": "ru" } ] },
-                        "children": []
-                    },
-                    {
-                        "id": "http://tonya-diploma.com/device/filter/drum-nets",
-                        "label": {  "values": [ { "value": "Барабанные сетки", "language": "ru" } ] },
+                        "id": "http://tonya-diploma.com/device/filter/base",
+                        "label": {  "values": [ { "value": "Типовой", "language": "ru" } ] },
                         "children": []
                     }
                 ]

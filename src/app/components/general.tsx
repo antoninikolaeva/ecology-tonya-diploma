@@ -138,9 +138,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 		if (device.selected) {
 			return <div>
 				{(device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
-					&& dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow) ?
-					<ErrorAlert errorValue={errorOfMinWaterFlow} /> :
-					<div>
+					&& dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow)
+					? <ErrorAlert errorValue={errorOfMinWaterFlow} />
+					: <div>
 						{device.listOfTypes.map((type, index) => {
 							if ((device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) && dailyWaterFlow &&
 								(type.minDailyWaterFlow > dailyWaterFlow || type.maxDailyWaterFlow < dailyWaterFlow)) {
@@ -372,13 +372,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		return <FilterComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
-			type={
-				filter.selectedType.key === FilterTypes.drumNets
-				? FilterTypes.drumNets
-				: filter.selectedType.key === FilterTypes.grainy
-					? FilterTypes.grainy
-					: FilterTypes.microFilter
-			}
+			type={FilterTypes.base}
 			onCountMode={this.onCountMode}
 			onResultMode={this.onResultMode}
 		></FilterComponent>;

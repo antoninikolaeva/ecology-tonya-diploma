@@ -380,17 +380,7 @@
   {
     "sourceId": "http://tonya-diploma.com/device/filter",
     "linkTypeId": "http://tonya-diploma.com/device/consists_of",
-    "targetId": "http://tonya-diploma.com/device/filter/grainy"
-  },
-  {
-    "sourceId": "http://tonya-diploma.com/device/filter",
-    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
-    "targetId": "http://tonya-diploma.com/device/filter/micro-filter"
-  },
-  {
-    "sourceId": "http://tonya-diploma.com/device/filter",
-    "linkTypeId": "http://tonya-diploma.com/device/consists_of",
-    "targetId": "http://tonya-diploma.com/device/filter/drum-nets"
+    "targetId": "http://tonya-diploma.com/device/filter/base"
   },
 
 

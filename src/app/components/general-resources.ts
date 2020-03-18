@@ -124,20 +124,12 @@ export const oilTrapTypes: DeviceType[] = [
 		key: OilTrapTypes.radial, name: 'Радиальные', ref: undefined
 	},
 ];
-export enum FilterTypes { grainy = 'grainy', microFilter = 'microFilter', drumNets = 'drumNets' }
+export enum FilterTypes { base = 'base' }
 export const filterTypes: DeviceType[] = [
 	{
 		iri: 'http://tonya-diploma.com/device/filter/grainy' as ElementIri,
-		key: FilterTypes.grainy, name: 'Зернистые', ref: undefined
-	},
-	{
-		iri: 'http://tonya-diploma.com/device/filter/micro-filter' as ElementIri,
-		key: FilterTypes.microFilter, name: 'Микрофильтры', ref: undefined
-	},
-	{
-		iri: 'http://tonya-diploma.com/device/filter/drum-nets' as ElementIri,
-		key: FilterTypes.drumNets, name: 'Барабанные сетки', ref: undefined
-	},
+		key: FilterTypes.base, name: 'Типовой', ref: undefined
+	}
 ];
 export enum CentrifugeTypes { opened = 'opened', pressure = 'pressure', continuous = 'continuous', determinate = 'determinate' }
 export const centrifugeTypes: DeviceType[] = [
