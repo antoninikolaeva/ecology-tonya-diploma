@@ -10,7 +10,7 @@ export namespace FilterSource {
 		grainyTwoLayers = 'grainyTwoLayers',
 		grainyAerated = 'grainyAerated',
 		grainyCarcase = 'grainyCarcase',
-		grainySwimPressure = 'grainySwimPressure',
+		swimPressure = 'swimPressure',
 		microFilter = 'microFilter',
 		drumNets = 'drumNets',
 	}
@@ -39,7 +39,7 @@ export namespace FilterSource {
 		clearEffectBPK: {min: 70, max: 100}, clearEffectSubstance: {min: 80, max: 100}},
 		{name: 'Каркасно-засыпные', type: FilterTypes.grainyCarcase,
 		clearEffectBPK: {min: 70, max: 70}, clearEffectSubstance: {min: 60, max: 80}},
-		{name: 'С плавающей загрузкой', type: FilterTypes.grainySwimPressure,
+		{name: 'С плавающей загрузкой', type: FilterTypes.swimPressure,
 		clearEffectBPK: {min: 65, max: 75}, clearEffectSubstance: {min: 60, max: 85}},
 		{name: 'Микрофильтры', type: FilterTypes.microFilter,
 		clearEffectBPK: {min: 10, max: 30}, clearEffectSubstance: {min: 50, max: 60}},
@@ -102,4 +102,49 @@ export namespace FilterSource {
 			intensiveThird: { min: 14, max: 16 }, periodThird: { min: 3, max: 3 },
 		},
 	];
+	export enum CoefficientDrumNetsClean {
+		min = 0.003,
+		max = 0.005,
+	}
+	export const stayPeriodToClean = 20;
+	export const minAmountGrainySection = 4;
+	export enum FilteringSpeedNormal {
+		min = 8,
+		max = 10,
+	}
+	export const performanceForcedSpeed = 1.15;
+	export interface MicroFilter {
+		relation: {
+			width: number;
+			height: number;
+		}
+		square: number;
+		performance: number;
+	}
+	export const microFilters: MicroFilter[] = [
+		{square: 2.85, performance: 100, relation: {width: 1.5, height: 1.9}},
+		{square: 4.2, performance: 160, relation: {width: 1.5, height: 2.8}},
+		{square: 5.55, performance: 210, relation: {width: 1.5, height: 3.7}},
+		{square: 8.4, performance: 400, relation: {width: 3, height: 2.8}},
+		{square: 11.1, performance: 530, relation: {width: 3, height: 3.7}},
+		{square: 13.8, performance: 660, relation: {width: 3, height: 4.6}},
+	];
+	export enum PerformanceMicroFilters {
+		min = 100,
+		max = 660,
+	}
+	export enum CoefficientIncreasePerformance {
+		min = 1.03,
+		max = 1.05,
+	}
+	export enum MicroFilterSpeedFiltering {
+		min = 20,
+		max = 25,
+	}
+	export enum DrumDeep {
+		deepFirst = 0.6,
+		coefficientFirst = 0.55,
+		deepSecond = 0.7,
+		coefficientSecond = 0.63,
+	}
 }
