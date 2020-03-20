@@ -107,13 +107,16 @@ export namespace FilterSource {
 		max = 0.005,
 	}
 	export const stayPeriodToClean = 20;
-	export const minAmountGrainySection = 4;
+	export const minAmountFilterSection = 4;
+	export const minAmountDrumNetsSection = 6;
 	export enum FilteringSpeedNormal {
 		min = 8,
 		max = 10,
 	}
 	export const performanceForcedSpeed = 1.15;
 	export interface MicroFilter {
+		value: number;
+		label: string;
 		relation: {
 			width: number;
 			height: number;
@@ -122,17 +125,13 @@ export namespace FilterSource {
 		performance: number;
 	}
 	export const microFilters: MicroFilter[] = [
-		{square: 2.85, performance: 100, relation: {width: 1.5, height: 1.9}},
-		{square: 4.2, performance: 160, relation: {width: 1.5, height: 2.8}},
-		{square: 5.55, performance: 210, relation: {width: 1.5, height: 3.7}},
-		{square: 8.4, performance: 400, relation: {width: 3, height: 2.8}},
-		{square: 11.1, performance: 530, relation: {width: 3, height: 3.7}},
-		{square: 13.8, performance: 660, relation: {width: 3, height: 4.6}},
+		{value: 100, label: '1.5x1.9', square: 2.85, performance: 100, relation: {width: 1.5, height: 1.9}},
+		{value: 160, label: '1.5x2.8', square: 4.2, performance: 160, relation: {width: 1.5, height: 2.8}},
+		{value: 210, label: '1.5x3.7', square: 5.55, performance: 210, relation: {width: 1.5, height: 3.7}},
+		{value: 400, label: '3x2.8', square: 8.4, performance: 400, relation: {width: 3, height: 2.8}},
+		{value: 530, label: '3x3.7', square: 11.1, performance: 530, relation: {width: 3, height: 3.7}},
+		{value: 660, label: '3x4.6', square: 13.8, performance: 660, relation: {width: 3, height: 4.6}},
 	];
-	export enum PerformanceMicroFilters {
-		min = 100,
-		max = 660,
-	}
 	export enum CoefficientIncreasePerformance {
 		min = 1.03,
 		max = 1.05,
@@ -147,4 +146,28 @@ export namespace FilterSource {
 		deepSecond = 0.7,
 		coefficientSecond = 0.63,
 	}
+	export interface DrumNets {
+		value: number;
+		label: string;
+		performance: number;
+	}
+	export const drumNets: DrumNets[] = [
+		{label: '1.5x1.9', value: 350, performance: 350},
+		{label: '1.5x2.8', value: 550, performance: 550},
+		{label: '1.5x3.7', value: 750, performance: 750},
+		{label: '3x2.8', value: 1250, performance: 1250},
+		{label: '3x3.7', value: 1650, performance: 1650},
+		{label: '3x4.6', value: 2100, performance: 2100},
+	];
+	export const minMicroFilterPerformance = 100;
+	export const minDrumNetsPerformance = 350;
+	export enum AmountFilterWaterClean {
+		min = 8,
+		max = 12,
+	}
+	export enum CleanWaterFlow {
+		min = 0.3,
+		max = 0.5,
+	}
+	export const periodOfWaterClean = 5;
 }
