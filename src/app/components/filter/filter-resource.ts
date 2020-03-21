@@ -20,11 +20,11 @@ export namespace FilterSource {
 		clearEffectBPK: {
 			min: number;
 			max: number;
-		}
+		};
 		clearEffectSubstance: {
 			min: number;
 			max: number;
-		}
+		};
 	}
 	export const filterTypes: FilterType[] = [
 		{name: 'Однослойные мелкозернистые с нисходящим потоком', type: FilterTypes.grainyLittleOneLayerDownThread,

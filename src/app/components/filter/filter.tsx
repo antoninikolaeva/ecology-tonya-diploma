@@ -124,7 +124,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		resetSelectToDefault(this.periodFilterCycleListRef, this.periodFilterCycleList);
 		resetSelectToDefault(this.dumpDeepListRef, this.dumpDeepList);
 		resetSelectToDefault(this.necessaryMicroFiltersRef, this.necessaryMicroFilters);
-		resetSelectToDefault(this.necessaryMicroFiltersRef, this.necessaryMicroFilters);
+		resetSelectToDefault(this.necessaryDrumNetsRef, []);
 		this.setState({
 			baseSubstanceConcentrate: undefined,
 			finalSubstanceConcentrate: undefined,
@@ -143,6 +143,10 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			isValidateError: false,
 			isResult: false,
 		});
+		this.isGrainy = false;
+		this.isSwimPressure = false;
+		this.isMicroFilter = false;
+		this.isDrumNets = false;
 	}
 
 	private setFilterResult = () => {
@@ -234,7 +238,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							должно быть не меньше : ${FilterSource.minAmountFilterSection}.`} />
 							: null}
 
-						{this.forcedWaterSpeed < this.currentGrainyType.speedForced.max
+						{this.currentGrainyType && this.forcedWaterSpeed > this.currentGrainyType.speedForced.max
 							? <ErrorAlert errorMessage={`Скорость фильтрования при форсированном режиме работы: ${this.forcedWaterSpeed},
 							должно быть меньше : ${this.currentGrainyType.speedForced.max}, иначе необходимо изменить количество рабочих фильтров.`} />
 							: null}
@@ -272,7 +276,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.performanceFilterRef = input; }}
 							onInput={(value) => {
-								this.filterMictofilters();
+								this.filterMictofilters(value);
 								this.setState({ performanceFilter: value });
 							}} />
 
@@ -283,14 +287,14 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.coefficientIncreasePerformanceRef = input; }}
 							onInput={(value) => {
-								this.filterMictofilters();
+								this.filterMictofilters(value);
 								this.setState({ coefficientIncreasePerformance: value });
 							}} />
 
 						<SelectTemplate title={'Глубина погружения барабана, на часть от диаметра'}
 							itemList={this.dumpDeepList}
 							onSelect={(value) => {
-								this.filterMictofilters();
+								this.filterMictofilters(value as number);
 								this.setState({ coefficientSquareBackGround: value as number });
 							}}
 							onSelectRef={(optionList) => { this.dumpDeepListRef = optionList; }} />
@@ -302,7 +306,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.filteringSpeedRef = input; }}
 							onInput={(value) => {
-								this.filterMictofilters();
+								this.filterMictofilters(value);
 								this.setState({ filteringSpeed: value });
 							}} />
 
@@ -388,16 +392,17 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			this.levelOfCleanBPK = 100 * (baseBPKConcentrate - finalBPKConcentrate) / baseBPKConcentrate;
 		}
 		this.filterTypesList = [];
-		this.filterTypesList.push({ value: undefined, label: 'Выберите тип фильтра' })
+		this.filterTypesList.push({ value: undefined, label: 'Выберите тип фильтра' });
 		FilterSource.filterTypes.forEach(filterType => {
 			if (this.levelOfCleanSubstance >= this.levelOfCleanBPK) {
-				if (filterType.clearEffectSubstance.min < this.levelOfCleanSubstance &&
-					filterType.clearEffectSubstance.max > this.levelOfCleanSubstance) {
+				if (filterType.clearEffectSubstance.min <= this.levelOfCleanSubstance &&
+					filterType.clearEffectSubstance.max >= this.levelOfCleanSubstance) {
 					this.filterTypesList.push({ value: filterType.type, label: filterType.name });
 				}
 			}
 			if (this.levelOfCleanSubstance < this.levelOfCleanBPK) {
-				if (filterType.clearEffectBPK.min < this.levelOfCleanBPK && filterType.clearEffectBPK.max > this.levelOfCleanBPK) {
+				if (filterType.clearEffectBPK.min <= this.levelOfCleanBPK &&
+					filterType.clearEffectBPK.max >= this.levelOfCleanBPK) {
 					this.filterTypesList.push({ value: filterType.type, label: filterType.name });
 				}
 			}
@@ -415,26 +420,36 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		this.isMicroFilter = filterType === FilterSource.FilterTypes.microFilter;
 		this.isDrumNets = filterType === FilterSource.FilterTypes.drumNets;
 		this.currentFilterType = filterType;
+		this.forceUpdate();
 	}
 
-	private filterMictofilters = (periodFilterCycleNoState?: number) => {
+	private filterMictofilters = (updateValue?: number) => {
 		const {
 			periodFilterCycle, filteringSpeed, coefficientIncreasePerformance,
 			coefficientSquareBackGround, performanceFilter
 		} = this.state;
-		const period = periodFilterCycleNoState || periodFilterCycle;
-		const areParametersExist = period && filteringSpeed && coefficientIncreasePerformance &&
-			coefficientSquareBackGround && performanceFilter;
+		const performance = updateValue || performanceFilter;
+		const period = updateValue || periodFilterCycle;
+		const speed = updateValue || filteringSpeed;
+		const coefficientIncrease = updateValue || coefficientIncreasePerformance;
+		const coefficientSquare = updateValue || coefficientSquareBackGround;
+		const areParametersExist = period && speed && coefficientIncrease && coefficientSquare && performance;
 		if (!areParametersExist) {
 			return;
 		}
 		// formula 8 Fmf = (k1 * Q) / (k2 * T * vf)
-		this.filterSquare = (coefficientIncreasePerformance * performanceFilter) /
-			(coefficientSquareBackGround * period * filteringSpeed);
+		this.filterSquare = (coefficientIncrease * performance) / (coefficientSquare * period * speed);
 		this.necessaryMicroFilters = FilterSource.microFilters.filter(filter => {
 			const amountOfFilter = Math.ceil(this.filterSquare / filter.square);
 			const maxPerformance = filter.performance * amountOfFilter;
-			return maxPerformance > performanceFilter && amountOfFilter > 1;
+			return maxPerformance > performance;
+		});
+		this.necessaryMicroFilters.unshift({
+			label: 'Выберите табличный микрофильтр',
+			performance: undefined,
+			relation: {width: undefined, height: undefined},
+			square: undefined,
+			value: undefined,
 		});
 	}
 
@@ -443,10 +458,41 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			const amountOfFilters = Math.ceil(performanceFilter / drumNet.performance);
 			return amountOfFilters > 1;
 		});
+		this.necessaryDrumNets.unshift({
+			label: 'Выберите табличную барабанную сетку',
+			performance: undefined,
+			value: undefined,
+		});
 	}
 
 	private isInputReadyToCounting = (): boolean => {
-		return true;
+		const {
+			amountOfWaterClean, baseBPKConcentrate, baseSubstanceConcentrate,
+			cleanWaterFlow, coefficientDrumNetsClean, coefficientIncreasePerformance,
+			coefficientSquareBackGround, currentDrumNetsPerformance, currentMicroFilterPerformance,
+			filteringSpeed, finalBPKConcentrate, finalSubstanceConcentrate,
+			performanceFilter, periodFilterCycle
+		} = this.state;
+		const commonInputs = baseSubstanceConcentrate && baseBPKConcentrate && finalSubstanceConcentrate &&
+			finalBPKConcentrate ? true : false;
+		const grainyInputs = coefficientDrumNetsClean ? true : false;
+		const swimPressureInputs = periodFilterCycle && filteringSpeed ? true : false;
+		const microFilterInputs = performanceFilter && coefficientIncreasePerformance && coefficientSquareBackGround &&
+			filteringSpeed && periodFilterCycle && currentMicroFilterPerformance ? true : false;
+		const drumNetsInputs = amountOfWaterClean && currentDrumNetsPerformance && cleanWaterFlow &&
+			performanceFilter ? true : false;
+		if (this.isGrainy) {
+			return commonInputs && grainyInputs;
+		}
+		if (this.isSwimPressure) {
+			return commonInputs && swimPressureInputs;
+		}
+		if (this.isMicroFilter) {
+			return commonInputs && microFilterInputs;
+		}
+		if (this.isDrumNets) {
+			return commonInputs && drumNetsInputs;
+		}
 	}
 
 	private resultCounting = () => {
@@ -458,8 +504,8 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		} = this.state;
 
 		if (this.isGrainy) {
-			// formula 1 Qf = 20.4 * qw; qw = qmax * 3600 (1 hour)
-			this.countingWaterFlow = 20.4 * (secondMaxFlow * 3600);
+			// formula 1 Qf = 24 * qw; qw = qmax * 3600 (1 hour)
+			this.countingWaterFlow = 24 * (secondMaxFlow * 3600);
 			this.currentGrainyType = FilterSource.grainyFilters.find(filter => filter.type === this.currentFilterType);
 			// formula 2 n = 24 / Tf;
 			this.amountOfFilterClean = 24 / this.currentGrainyType.periodFilterCycle;
@@ -476,7 +522,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 				(vf * (this.currentGrainyType.periodFilterCycle - this.amountOfFilterClean * (FilterSource.stayPeriodToClean / 60)) -
 					0.06 * this.amountOfFilterClean * (w1 * t1 + w2 * t2 + w3 * t3));
 			// formula 4 N = 0.5 * sqrt(Ff);
-			this.amountOfFilterSection = 0.5 * Math.sqrt(this.filterSquare);
+			this.amountOfFilterSection = Math.ceil(0.5 * Math.sqrt(this.filterSquare));
 			// formula 5 F1 = Ff / N
 			this.filterSectionSquare = this.filterSquare / this.amountOfFilterSection;
 			// formula 6 vff = vf * N / (N - Np)
@@ -488,14 +534,14 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		}
 
 		if (this.isSwimPressure) {
-			// formula 1 Qf = 20.4 * qw; qw = qmax * 3600 (1 hour)
-			this.countingWaterFlow = 20.4 * (secondMaxFlow * 3600);
+			// formula 1 Qf = 24 * qw; qw = qmax * 3600 (1 hour)
+			this.countingWaterFlow = 24 * (secondMaxFlow * 3600);
 			// formula 2 n = 24 / Tf;
 			this.amountOfFilterClean = 24 / periodFilterCycle;
 			// formula 7 Ff = Qf * 24 / vf
 			this.filterSquare = (this.countingWaterFlow * 24) / filteringSpeed;
 			// formula 4 N = 0.5 * sqrt(Ff);
-			this.amountOfFilterSection = 0.5 * Math.sqrt(this.filterSquare);
+			this.amountOfFilterSection = Math.ceil(0.5 * Math.sqrt(this.filterSquare));
 			// formula 5 F1 = Ff / N
 			this.filterSectionSquare = this.filterSquare / this.amountOfFilterSection;
 			// formula 6 vff = vf * N / (N - Np)
@@ -534,6 +580,56 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			<div className={'table-result'}>
 				<Table bordered hover>
 					<tbody>
+						<tr><td>Уровень очистки для взвешенных веществ, %</td>
+							<td>{this.levelOfCleanSubstance ? this.levelOfCleanSubstance.toFixed(3) : undefined}</td></tr>
+						<tr><td>Уровень очистки для БПК, %</td>
+							<td>{this.levelOfCleanBPK ? this.levelOfCleanBPK.toFixed(3) : undefined}</td></tr>
+						{this.isGrainy || this.isSwimPressure
+							? <>
+								<tr><td>Расчетный расход сточной воды подаваемой на фильтры, м3/сут</td>
+									<td>{this.countingWaterFlow ? this.countingWaterFlow.toFixed(3) : undefined}</td></tr>
+								<tr><td>Общая площадь фильтров, м2</td>
+									<td>{this.filterSquare ? this.filterSquare.toFixed(3) : undefined}</td></tr>
+								<tr><td>Число секций фильтров, шт</td>
+									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
+								<tr><td>Площадь каждой секции, м2</td>
+									<td>{this.filterSectionSquare ? this.filterSectionSquare.toFixed(3) : undefined}</td></tr>
+								<tr><td>Скорость фильтрования воды при форсированном режиме, м/с</td>
+									<td>{this.forcedWaterSpeed ? this.forcedWaterSpeed.toFixed(3) : undefined}</td></tr>
+								<tr><td>Количество секций фильтров находящихся в ремонте, шт</td>
+									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
+							</>
+							: null}
+						{this.isMicroFilter
+							? <>
+								<tr><td>Площадь фильтрующей поверхности микрофильтра, м2</td>
+									<td>{this.filterSquare ? this.filterSquare.toFixed(3) : undefined}</td></tr>
+								<tr><td>Марка микрофильтра из типа МФБ, по типоразмеру</td>
+									<td>{this.currentMicroFilter ? this.currentMicroFilter.label : undefined}</td></tr>
+								<tr><td>Производительность м3/ч</td>
+									<td>{this.currentMicroFilter ? this.currentMicroFilter.performance : undefined}</td></tr>
+								<tr><td>Количество микрофильтров, шт</td>
+									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
+								<tr><td>Количество резервных микрофильтров, шт</td>
+									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
+								<tr><td>Суточное количество промывной воды, м3/сут</td>
+									<td>{this.dailyAmountOfWasteWater ? this.dailyAmountOfWasteWater.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
+						{this.isDrumNets
+							? <>
+								<tr><td>Марка барабанной сетки из типа БСБ, по типоразмеру</td>
+									<td>{this.currentDrumNet ? this.currentDrumNet.label : undefined}</td></tr>
+								<tr><td>Производительность м3/ч</td>
+									<td>{this.currentDrumNet ? this.currentDrumNet.performance : undefined}</td></tr>
+								<tr><td>Количество барабанных сеток, шт</td>
+									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
+								<tr><td>Количество резервных барабанных сеток, шт</td>
+									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
+								<tr><td>Суточное количество промывной воды, м3/сут</td>
+									<td>{this.dailyAmountOfWasteWater ? this.dailyAmountOfWasteWater.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 					</tbody>
 				</Table>
 			</div>

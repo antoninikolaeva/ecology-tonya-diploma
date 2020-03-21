@@ -131,7 +131,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	private typeList = (device: Device) => {
-		const { dailyWaterFlow } = this.state;
+		const { dailyWaterFlow, secondMaxFlow } = this.state;
 		const minValueOfDailyWaterFlow = Math.min(...device.listOfTypes.map(type => type.minDailyWaterFlow));
 		const maxValueOfDailyWaterFlow = Math.max(...device.listOfTypes.map(type => type.maxDailyWaterFlow));
 		const errorOfMinWaterFlow = new Error('Суточный расход воды слишком мал/велик, и использование данного оборудования нецелесообразно');
@@ -145,6 +145,14 @@ export class GeneralComponent extends React.Component<{}, State> {
 							if ((device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) && dailyWaterFlow &&
 								(type.minDailyWaterFlow > dailyWaterFlow || type.maxDailyWaterFlow < dailyWaterFlow)) {
 								return null;
+							}
+							if (device.key === KindOfDevices.centrifuge) {
+								if (type.key === CentrifugeTypes.continuous && secondMaxFlow > 0.0278) {
+									return null;
+								}
+								if (type.key === CentrifugeTypes.determinate && secondMaxFlow > 0.0056) {
+									return null;
+								}
 							}
 							return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
 								<input ref={radio => type.ref = radio} type={'radio'}
@@ -185,14 +193,14 @@ export class GeneralComponent extends React.Component<{}, State> {
 			<Row className={'justify-content-md-center general-container'} style={{ flexDirection: 'row' }}>
 				<Col xs lg='6'>
 					<InputTemplate title={'Секундный максимальный расход, м3/с'}
-						placeholder={''}
+						placeholder={'Введите секундный максимальный расход...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.maxSecondFlowRef = input; }}
 						onInput={(value) => { this.setState({ secondMaxFlow: value }); }} />
 				</Col>
 				<Col xs lg='6'>
-					<InputTemplate title={'Суточный расход воды, м3/сут'}
-						placeholder={''}
+					<InputTemplate title={`Суточный расход воды, м3/сут, диапазон [0 - 1000000]`}
+						placeholder={'Введите суточный расход воды...'}
 						range={{ minValue: 0, maxValue: 1000000 }}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}

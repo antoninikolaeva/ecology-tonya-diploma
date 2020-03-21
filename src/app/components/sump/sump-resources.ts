@@ -22,8 +22,8 @@ export namespace SumpSource {
 		{ highLightEffect: 60, concentrate: 300, period: 3600 },
 		{ highLightEffect: 60, concentrate: 400, period: 2700 },
 
-		{ highLightEffect: 70, concentrate: 200, period: 7200 },
-		{ highLightEffect: 70, concentrate: 300, period: 7200 },
+		{ highLightEffect: 70, concentrate: 200, period: 18720 },
+		{ highLightEffect: 70, concentrate: 300, period: 9360 },
 		{ highLightEffect: 70, concentrate: 400, period: 7200 },
 	];
 	export const highLightEffectFixedValues = [20, 30, 40, 50, 60, 70];
