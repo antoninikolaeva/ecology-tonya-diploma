@@ -483,10 +483,10 @@ export class GeneralComponent extends React.Component<{}, State> {
 					});
 					links.push({
 						'@type': 'Link',
-						'@id': `http://tonya-diploma.com/device/consists_of/${Math.random() * 1000000}`,
-						property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-						source: { '@id': device.iri },
-						target: { '@id': device.selectedType.iri }
+						'@id': `http://tonya-diploma.com/device/subtypeOf/${Math.random() * 1000000}`,
+						property: ('http://tonya-diploma.com/device/subtypeOf') as LinkTypeIri,
+						source: { '@id': device.selectedType.iri },
+						target: { '@id': device.iri }
 					});
 				}
 			}

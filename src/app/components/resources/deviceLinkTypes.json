@@ -1,7 +1,17 @@
 [
   {
-    "id": "http://tonya-diploma.com/device/consists_of",
-    "label": { "values": [ { "value": "состоит из", "language": "en" } ] },
+    "id": "http://tonya-diploma.com/device/consistOf",
+    "label": { "values": [ { "value": "входит в состав", "language": "ru" } ] },
+    "count": 0
+  },
+  {
+    "id": "http://tonya-diploma.com/device/subtypeOf",
+    "label": { "values": [ { "value": "является подтипом", "language": "ru" } ] },
+    "count": 0
+  },
+  {
+    "id": "http://tonya-diploma.com/device/instanceOf",
+    "label": { "values": [ { "value": "является экземпляром", "language": "ru" } ] },
     "count": 0
   }
 ]

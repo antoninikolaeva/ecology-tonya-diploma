@@ -30,6 +30,8 @@ interface AverageState {
 	amountOfSectionChannel: number;
 	waterSpeedInTray: number;
 	waterDeepInDistributeTray: number;
+	bubbleType: number;
+	formOfAverage: string;
 	isValidateError: boolean;
 	isResult: boolean;
 }
@@ -50,6 +52,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 	private waterSpeedInTrayRef: HTMLInputElement;
 	private waterDeepInDistributeTrayRef: HTMLInputElement;
 	private averageMechanismRef: HTMLOptionElement[] = [];
+	private bubbleTypeListRef: HTMLOptionElement[] = [];
+	private formOfAverageListRef: HTMLOptionElement[] = [];
 
 	private averageCoefficient: number;
 	private averageMechanismList: ItemList[] = [
@@ -57,6 +61,16 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		{ value: AverageSource.AverageMechanismType.bubbling, label: `Усреднитель смеситель барботажного типа` },
 		{ value: AverageSource.AverageMechanismType.multichannel_width, label: `Многоканальный усреднитель с каналами разной ширины` },
 		{ value: AverageSource.AverageMechanismType.multichannel_length, label: `Многоканальный усреднитель с каналами разной длины` },
+	];
+	private bubbleTypeList: ItemList[] = [
+		{ value: undefined, label: 'Выберите тип использования барботеров' },
+		{ value: AverageSource.BubbleType.averageConcentrate, label: 'Усреднение концентраций' },
+		{ value: AverageSource.BubbleType.stopDropSediment, label: 'Предотвращение выпадения взвесей' },
+	];
+	private formOfAverageList: ItemList[] = [
+		{ value: undefined, label: 'Выберите форму усреднителя в плане' },
+		{ value: AverageSource.FormOfAverage.prizma, label: 'Прямоугольный' },
+		{ value: AverageSource.FormOfAverage.circle, label: 'Круглый' },
 	];
 	private averageVolume: number;
 	private sectionSquare: number;
@@ -92,6 +106,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			amountOfSectionChannel: undefined,
 			waterSpeedInTray: undefined,
 			waterDeepInDistributeTray: undefined,
+			bubbleType: undefined,
+			formOfAverage: undefined,
 			isValidateError: false,
 			isResult: false,
 		};
@@ -113,6 +129,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		if (this.waterSpeedInTrayRef) { this.waterSpeedInTrayRef.value = NULLSTR; }
 		if (this.waterDeepInDistributeTrayRef) { this.waterDeepInDistributeTrayRef.value = NULLSTR; }
 		resetSelectToDefault(this.averageMechanismRef, this.averageMechanismList);
+		resetSelectToDefault(this.bubbleTypeListRef, this.bubbleTypeList);
+		resetSelectToDefault(this.formOfAverageListRef, this.formOfAverageList);
 		this.setState({
 			maxConcentrate: undefined,
 			finalConcentrate: undefined,
@@ -129,6 +147,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			amountOfSectionChannel: undefined,
 			waterSpeedInTray: undefined,
 			waterDeepInDistributeTray: undefined,
+			bubbleType: undefined,
+			formOfAverage: undefined,
 			isValidateError: false,
 			isResult: false,
 		});
@@ -145,7 +165,10 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 
 	private renderInputArea = () => {
 		const { type } = this.props;
-		const { maxConcentrate, finalConcentrate, averageMechanism, bubbleDeep, } = this.state;
+		const {
+			maxConcentrate, finalConcentrate, averageMechanism,
+			bubbleDeep, formOfAverage, amountOfIntervalBubble,
+		} = this.state;
 		let badWidth;
 		if (averageMechanism === AverageSource.AverageMechanismType.multichannel_width) {
 			badWidth = this.widthOfEachChannelCheck();
@@ -153,6 +176,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		return (
 			<>
 				<InputTemplate title={`Максимальная концентрация загрязнений в стоке, мг/л`}
+					range={{ minValue: 0, maxValue: Infinity }}
 					placeholder={'Введите максимальную концентрацию загрязнений в стоке...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					onInputRef={(input) => { this.maxConcentrateRef = input; }}
@@ -188,13 +212,29 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 					: null}
 
 				<InputTemplate title={`Период работы устройства усреднителя, ч`}
+					range={{ minValue: 0, maxValue: Infinity }}
 					placeholder={'Введите период работы устройства усреднителя...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					onInputRef={(input) => { this.deviceWorkingPeriodRef = input; }}
 					onInput={(value) => { this.setState({ deviceWorkingPeriod: value }); }} />
 
-				<InputTemplate title={`Глубина усреднителя, м, диапазон[${AverageSource.AverageDeep.min} - ${AverageSource.AverageDeep.max}]`}
-					range={{ minValue: AverageSource.AverageDeep.min, maxValue: AverageSource.AverageDeep.max }}
+				<InputTemplate title={`Глубина усреднителя, м, диапазон[${averageMechanism === AverageSource.AverageMechanismType.bubbling
+					? AverageSource.AverageDeep.min
+					: 0}
+					-
+					${averageMechanism === AverageSource.AverageMechanismType.bubbling
+						? AverageSource.AverageDeep.max
+						: averageMechanism === AverageSource.AverageMechanismType.multichannel_width
+							? AverageSource.AverageDeep.middle
+							: AverageSource.AverageDeep.less}]`}
+					range={{ minValue: averageMechanism === AverageSource.AverageMechanismType.bubbling
+						? AverageSource.AverageDeep.min
+						: 0,
+						maxValue: averageMechanism === AverageSource.AverageMechanismType.bubbling
+						? AverageSource.AverageDeep.max
+						: averageMechanism === AverageSource.AverageMechanismType.multichannel_width
+							? AverageSource.AverageDeep.middle
+							: AverageSource.AverageDeep.less }}
 					placeholder={'Введите глубину усреднителя...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					onInputRef={(input) => { this.averageDeepRef = input; }}
@@ -207,11 +247,36 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 					onInputRef={(input) => { this.amountOfSectionRef = input; }}
 					onInput={(value) => { this.setState({ amountOfSection: value }); }} />
 
-				<InputTemplate title={`Ширина секций, м`}
-					placeholder={'Введите ширину секций...'}
-					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-					onInputRef={(input) => { this.sectionWidthRef = input; }}
-					onInput={(value) => { this.setState({ sectionWidth: value }); }} />
+				{averageMechanism === AverageSource.AverageMechanismType.multichannel_length
+					? <>
+						<SelectTemplate title={'Форма усреднителя в плане'} itemList={this.formOfAverageList}
+							onSelect={(value) => { this.setState({ formOfAverage: value as string }); }}
+							onSelectRef={(optionList) => { this.formOfAverageListRef = optionList; }} />
+					</>
+					: null}
+
+				{averageMechanism === AverageSource.AverageMechanismType.multichannel_length &&
+					formOfAverage === AverageSource.FormOfAverage.prizma
+					? <>
+						<InputTemplate title={`Ширина секций, м`}
+							range={{ minValue: 0, maxValue: Infinity }}
+							placeholder={'Введите ширину секций...'}
+							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+							onInputRef={(input) => { this.sectionWidthRef = input; }}
+							onInput={(value) => { this.setState({ sectionWidth: value }); }} />
+					</>
+					: null}
+
+				{!(averageMechanism === AverageSource.AverageMechanismType.multichannel_length)
+					? <>
+						<InputTemplate title={`Ширина секций, м`}
+							range={{ minValue: 0, maxValue: Infinity }}
+							placeholder={'Введите ширину секций...'}
+							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+							onInputRef={(input) => { this.sectionWidthRef = input; }}
+							onInput={(value) => { this.setState({ sectionWidth: value }); }} />
+					</>
+					: null}
 
 				{averageMechanism === AverageSource.AverageMechanismType.bubbling
 					? <>
@@ -220,6 +285,10 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 									должно быть не более ${AverageSource.checkSpeed} м/с.
 									Для урегулирования значения скрости поменяйте количество секций или глубину усреднителя.`} />
 							: null}
+
+						<SelectTemplate title={'Тип использования барботеров'} itemList={this.bubbleTypeList}
+							onSelect={(value) => { this.setState({ bubbleType: value as number }); }}
+							onSelectRef={(optionList) => { this.bubbleTypeListRef = optionList; }} />
 
 						<InputTemplate title={`Глубина погружения барботеров, м,
 							диапазон[${AverageSource.BubbleDeep.min} - ${AverageSource.BubbleDeep.max}]`}
@@ -233,37 +302,46 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 							? <>
 								<InputTemplate title={`Расстояние между пристенными барботерами, м,
 									диапазон[${AverageSource.BubbleDistanceWall.min * bubbleDeep} - ${AverageSource.BubbleDistanceWall.max * bubbleDeep}]`}
-									range={{ minValue: (AverageSource.BubbleDistanceWall.min * bubbleDeep),
-										maxValue: (AverageSource.BubbleDistanceWall.max * bubbleDeep) }}
+									range={{
+										minValue: (AverageSource.BubbleDistanceWall.min * bubbleDeep),
+										maxValue: (AverageSource.BubbleDistanceWall.max * bubbleDeep)
+									}}
 									placeholder={'Введите расстояние между пристенными барботерамив...'}
 									onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 									onInputRef={(input) => { this.distanceBetweenWallBubbleRef = input; }}
 									onInput={(value) => { this.setState({ distanceBetweenWallBubble: value }); }} />
+							</>
+							: null}
 
+						<InputTemplate title={`Количество промежуточных барботеров, шт`}
+							range={{ minValue: 0, maxValue: Infinity }}
+							placeholder={'Введите количество промежуточных барботеров...'}
+							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+							onInputRef={(input) => { this.amountOfIntervalBubbleRef = input; }}
+							onInput={(value) => { this.setState({ amountOfIntervalBubble: value }); }} />
+
+						{bubbleDeep && amountOfIntervalBubble > 1
+							? <>
 								<InputTemplate title={`Расстояние между промежуточными барботерами, м,
 									диапазон[${AverageSource.BubbleDistanceInterval.min * bubbleDeep}
 									- ${AverageSource.BubbleDistanceInterval.max * bubbleDeep}]`}
-									range={{ minValue: AverageSource.BubbleDistanceInterval.min * bubbleDeep,
-										maxValue: AverageSource.BubbleDistanceInterval.max * bubbleDeep }}
+									range={{
+										minValue: AverageSource.BubbleDistanceInterval.min * bubbleDeep,
+										maxValue: AverageSource.BubbleDistanceInterval.max * bubbleDeep
+									}}
 									placeholder={'Введите расстояние между промежуточными барботерами...'}
 									onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 									onInputRef={(input) => { this.distanceBetweenIntervalBubbleRef = input; }}
 									onInput={(value) => { this.setState({ distanceBetweenIntervalBubble: value }); }} />
 							</>
 							: null}
-
-						<InputTemplate title={`Количество промежуточных барботеров, шт`}
-							placeholder={'Введите количество промежуточных барботеров...'}
-							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-							onInputRef={(input) => { this.amountOfIntervalBubbleRef = input; }}
-							onInput={(value) => { this.setState({ amountOfIntervalBubble: value }); }} />
 					</>
 					: null}
 
 				{averageMechanism === AverageSource.AverageMechanismType.multichannel_width
 					? <>
 						<InputTemplate title={`Количество каналов в одной секции усреднителя, шт, диапазон[${AverageSource.minAmountOfSectionChannel} - n]`}
-							range={{ minValue: AverageSource.minAmountOfSectionChannel, maxValue: 1000 }} // 1000 is artificial value, safety from broken system
+							range={{ minValue: AverageSource.minAmountOfSectionChannel, maxValue: Infinity }}
 							placeholder={'Введите количество каналов...'}
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.amountOfSectionChannelRef = input; }}
@@ -275,13 +353,14 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 							: null}
 
 						<InputTemplate title={`Скорость течения в лотке, м/с, диапазон[${AverageSource.minWaterSpeedInTray} - n]`}
-							range={{ minValue: AverageSource.minWaterSpeedInTray, maxValue: 1000 }} // 1000 is artificial value, safety from broken system
+							range={{ minValue: AverageSource.minWaterSpeedInTray, maxValue: Infinity }}
 							placeholder={'Введите скорость течения в лотке...'}
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.waterSpeedInTrayRef = input; }}
 							onInput={(value) => { this.setState({ waterSpeedInTray: value }); }} />
 
 						<InputTemplate title={`Глубина воды в распределительном лотке, м`}
+							range={{ minValue: 0, maxValue: Infinity }}
 							placeholder={'Введите глубина воды в распределительном лотке...'}
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.waterDeepInDistributeTrayRef = input; }}
@@ -291,16 +370,15 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 
 				{averageMechanism === AverageSource.AverageMechanismType.multichannel_length
 					? <>
-						<InputTemplate title={`Количество каналов в одной секции усреднителя, шт, диапазон[${AverageSource.minAmountOfSectionChannelLength} - n]`}
-							// 1000 is artificial value, safety from broken system
-							range={{ minValue: AverageSource.minAmountOfSectionChannelLength, maxValue: 1000 }}
+						<InputTemplate title={`Количество каналов в одной секции усреднителя, шт, диапазон[${AverageSource.minAmountOfSectionChannel} - n]`}
+							range={{ minValue: AverageSource.minAmountOfSectionChannel, maxValue: Infinity }}
 							placeholder={'Введите количество каналов...'}
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 							onInputRef={(input) => { this.amountOfSectionChannelRef = input; }}
 							onInput={(value) => { this.setState({ amountOfSectionChannel: value }); }} />
 
 						{(this.channelWidthPrizma < AverageSource.ChannelWidth.min || this.channelWidthPrizma > AverageSource.ChannelWidth.max) ||
-						(this.channelWidthCircle < AverageSource.ChannelWidth.min || this.channelWidthCircle > AverageSource.ChannelWidth.max)
+							(this.channelWidthCircle < AverageSource.ChannelWidth.min || this.channelWidthCircle > AverageSource.ChannelWidth.max)
 							? <ErrorAlert errorMessage={`Ширина канала: ${this.channelWidthPrizma} м - прямоугольный усреднитель и
 									${this.channelWidthCircle} м - круговой усреднитель,
 									должна быть в пределах от ${AverageSource.ChannelWidth.min} до ${AverageSource.ChannelWidth.max} м.`} />
@@ -319,19 +397,15 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			deviceWorkingPeriod, averageDeep, amountOfSection, sectionWidth,
 			bubbleDeep, distanceBetweenWallBubble, distanceBetweenIntervalBubble,
 			amountOfIntervalBubble, amountOfSectionChannel, waterSpeedInTray, waterDeepInDistributeTray,
+			bubbleType, formOfAverage,
 		} = this.state;
 		const commonInputs = maxConcentrate && finalConcentrate && middleConcentrate && averageMechanism
-				&& deviceWorkingPeriod && averageDeep && amountOfSection && sectionWidth ? true : false;
-		const onlyBubble = bubbleDeep && distanceBetweenWallBubble && distanceBetweenIntervalBubble && amountOfIntervalBubble ? true : false;
+			&& deviceWorkingPeriod && averageDeep && amountOfSection && sectionWidth ? true : false;
+		const onlyBubble = bubbleDeep && distanceBetweenWallBubble && amountOfIntervalBubble &&
+			(amountOfIntervalBubble > 1 ? distanceBetweenIntervalBubble : true) && bubbleType ? true : false;
 		const onlyChannelWidth = amountOfSectionChannel && waterSpeedInTray && waterDeepInDistributeTray ? true : false;
-		const onlyChannelLength = amountOfSectionChannel ? true : false;
-		if (averageMechanism === AverageSource.AverageMechanismType.bubbling) {
-			return commonInputs && onlyBubble;
-		} else if (averageMechanism === AverageSource.AverageMechanismType.multichannel_width) {
-			return commonInputs && onlyChannelWidth;
-		} else if (averageMechanism === AverageSource.AverageMechanismType.multichannel_length) {
-			return commonInputs && onlyChannelLength;
-		}
+		const onlyChannelLength = amountOfSectionChannel && formOfAverage ? true : false;
+		return (commonInputs && onlyBubble) || (commonInputs && onlyChannelLength) || (commonInputs && onlyChannelWidth);
 	}
 
 	private countingAverageCoefficient = (middleConcentrate: number) => {
@@ -340,11 +414,11 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		this.averageCoefficient = (maxConcentrate - middleConcentrate) / (finalConcentrate - middleConcentrate);
 	}
 
-	private widthOfEachChannelCheck = (): {index: number; value: number} => {
+	private widthOfEachChannelCheck = (): { index: number; value: number } => {
 		for (let i = 1; i < this.widthOfEachChannel.length + 1; i++) {
 			if (this.widthOfEachChannel[i] < AverageSource.SectionChannelWidth.min ||
 				this.widthOfEachChannel[i] > AverageSource.SectionChannelWidth.max) {
-				return {index: i, value: this.widthOfEachChannel[i]};
+				return { index: i, value: this.widthOfEachChannel[i] };
 			}
 		}
 	}
@@ -354,46 +428,53 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		const {
 			averageMechanism, deviceWorkingPeriod, sectionWidth,
 			amountOfSection, averageDeep, amountOfIntervalBubble,
-			amountOfSectionChannel, waterSpeedInTray, waterDeepInDistributeTray
+			amountOfSectionChannel, waterSpeedInTray, waterDeepInDistributeTray,
+			bubbleType,
 		} = this.state;
 
 		if (type === AverageTypes.volleyDischarge) {
 			if (averageMechanism === AverageSource.AverageMechanismType.bubbling) {
 				if (this.averageCoefficient < AverageSource.averageCoefficientBorder) {
 					// formula 2 Wz = (1,3 * qw * tz) / ln(Kav / (Kav - 1))
-					this.averageVolume = (1.3 * secondMaxFlow * deviceWorkingPeriod) / Math.log(this.averageCoefficient / (this.averageCoefficient - 1));
+					this.averageVolume = (1.3 * secondMaxFlow * 3600 * deviceWorkingPeriod) /
+						Math.log(this.averageCoefficient / (this.averageCoefficient - 1));
 				} else if (this.averageCoefficient > AverageSource.averageCoefficientBorder) {
 					// formula 3 Wz = 1,3 * qw * tz * Kav
-					this.averageVolume = 1.3 * secondMaxFlow * deviceWorkingPeriod * this.averageCoefficient;
+					this.averageVolume = Math.round(1.3 * secondMaxFlow * 3600 * deviceWorkingPeriod * this.averageCoefficient);
 				}
 			}
 			if (averageMechanism === AverageSource.AverageMechanismType.multichannel_width ||
 				averageMechanism === AverageSource.AverageMechanismType.multichannel_length) {
 				// formula 4 Wz = 0.5 * qw * tz * Kav
-				this.averageVolume = 0.5 * secondMaxFlow * deviceWorkingPeriod * this.averageCoefficient;
+				this.averageVolume = Math.round(0.5 * secondMaxFlow * 3600 * deviceWorkingPeriod * this.averageCoefficient);
 			}
 		}
 
 		if (type === AverageTypes.cycleFluctuation) {
 			if (this.averageCoefficient < AverageSource.averageCoefficientBorder) {
-				// formula 5 Wz = 0.21 * qw * tcir * sqrt(Kav^2 - 1)
-				this.averageVolume = 0.21 * secondMaxFlow * deviceWorkingPeriod * Math.sqrt(Math.pow(this.averageCoefficient, 2) - 1);
+				// formula 5 Wcir = 0.21 * qw * tcir * sqrt(Kav^2 - 1)
+				this.averageVolume = Math.round(0.21 * secondMaxFlow * 3600 * deviceWorkingPeriod *
+					Math.sqrt(Math.pow(this.averageCoefficient, 2) - 1));
 			} else if (this.averageCoefficient > AverageSource.averageCoefficientBorder) {
-				// formula 6 Wz = 1.3 * qw * tcir * Kav
-				this.averageVolume = 1.3 * secondMaxFlow * deviceWorkingPeriod * this.averageCoefficient;
+				// formula 6 Wcir = 1.3 * qw * tcir * Kav
+				this.averageVolume = Math.round(1.3 * secondMaxFlow * 3600 * deviceWorkingPeriod * this.averageCoefficient);
 			}
 		}
 
 		// formula 7 F = W / (n * H);
-		this.sectionSquare = this.averageVolume / (amountOfSection * averageDeep);
+		this.sectionSquare = Math.round(this.averageVolume / (amountOfSection * averageDeep));
 		// formula 8 L = F / B;
-		this.averageLength = this.sectionSquare / sectionWidth;
+		this.averageLength = Math.round(this.sectionSquare / sectionWidth);
 
 		if (averageMechanism === AverageSource.AverageMechanismType.bubbling) {
 			// formula 9 v = qmax / (3600 * B * H * n)
 			this.speedOfWaterFlow = secondMaxFlow / (3600 * sectionWidth * averageDeep * amountOfSection);
 			// formula 10 = Qair = (2 * qair + n'air * q'air) * n * L
-			this.commonAirFlow = (2 * AverageSource.intensiveWallBubble + amountOfIntervalBubble * AverageSource.intensiveIntervalBubble) /
+			const intensiveWallBubble = bubbleType;
+			const intensiveIntervalBubble = bubbleType === AverageSource.BubbleType.averageConcentrate
+				? AverageSource.BubbleType.averageConcentrateDerivative
+				: AverageSource.BubbleType.stopDropSedimentDerivative;
+			this.commonAirFlow = (2 * intensiveWallBubble + amountOfIntervalBubble * intensiveIntervalBubble) *
 				(amountOfSection * this.averageLength);
 		} else if (averageMechanism === AverageSource.AverageMechanismType.multichannel_width) {
 			// formula 11 bi = ((3 * (i-0.5) / (ncan * (ncan - 1)))) * (((2*ncan - 1) / ncan) - (2 * i) / (ncan + 1)) * B;
@@ -406,20 +487,20 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			// formula 12 qi = ((2 * ncan - 1) / (ncan * (ncan - 1))) - (((2 * i / (ncan^2 - 1)) * (qmax / n);
 			this.waterFlowOfEachChannel = [];
 			for (let i = 1; i < amountOfSectionChannel + 1; i++) {
-				const waterFlow = (((3 * amountOfSectionChannel - 1) / (amountOfSectionChannel * (amountOfSectionChannel - 1))) -
-					((2 * i) / (Math.pow(amountOfSectionChannel, 2) - 1))) * (secondMaxFlow / amountOfSection);
+				const waterFlow = (((2 * amountOfSectionChannel - 1) / (amountOfSectionChannel * (amountOfSectionChannel - 1))) -
+					((2 * i) / (Math.pow(amountOfSectionChannel, 2) - 1))) * (secondMaxFlow * 3600 / amountOfSection);
 				this.waterFlowOfEachChannel.push(waterFlow);
 			}
 			// formula 13 omega = qmax / 3600 * n * v
-			this.crossSectionalArea = secondMaxFlow / (3600 * amountOfSection * waterSpeedInTray);
-			// formula 13 omegai = (qi * mu) / (3600 * sqrt(2 * g * h0))
+			this.crossSectionalArea = secondMaxFlow / (amountOfSection * waterSpeedInTray);
+			// formula 13 omegai = (qi * mu) / (0,36 * sqrt(2 * g * h0))
 			this.squareBottomForEachChannel = [];
 			this.squareSideForEachChannel = [];
 			for (let i = 1; i < amountOfSectionChannel + 1; i++) {
 				const bottomSquare = (this.waterFlowOfEachChannel[i - 1] * AverageSource.CoefficientHoleFlow.bottom) /
-					(3600 * Math.sqrt(2 * AverageSource.gravityAcceleration * waterDeepInDistributeTray));
+					(0.36 * Math.sqrt(2 * AverageSource.gravityAcceleration * waterDeepInDistributeTray));
 				const sideSquare = (this.waterFlowOfEachChannel[i - 1] * AverageSource.CoefficientHoleFlow.side) /
-					(3600 * Math.sqrt(2 * AverageSource.gravityAcceleration * waterDeepInDistributeTray));
+					(0.36 * Math.sqrt(2 * AverageSource.gravityAcceleration * waterDeepInDistributeTray));
 				this.squareBottomForEachChannel.push(bottomSquare);
 				this.squareSideForEachChannel.push(sideSquare);
 			}
@@ -448,56 +529,67 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		if (!this.state.isResult) {
 			return;
 		}
-		const { averageMechanism, distanceBetweenWallBubble, distanceBetweenIntervalBubble } = this.state;
+		const {
+			averageMechanism, distanceBetweenWallBubble, distanceBetweenIntervalBubble, formOfAverage, amountOfIntervalBubble
+		} = this.state;
 		return (
 			<div className={'table-result'}>
 				<Table bordered hover>
 					<tbody>
 						<tr><td>Требуемый коэффициент усреднения, %</td>
-								<td>{this.averageCoefficient ? this.averageCoefficient.toFixed(3) : undefined}</td></tr>
+							<td>{this.averageCoefficient ? this.averageCoefficient.toFixed(3) : undefined}</td></tr>
 						<tr><td>Объем усреднителя, м3</td>
-							<td>{this.averageVolume ? this.averageVolume.toFixed(3) : undefined}</td></tr>
+							<td>{this.averageVolume ? this.averageVolume : undefined}</td></tr>
 						<tr><td>Площадь каждой секции усреднителя, м2</td>
-							<td>{this.sectionSquare ? this.sectionSquare.toFixed(3) : undefined}</td></tr>
+							<td>{this.sectionSquare ? this.sectionSquare : undefined}</td></tr>
 						{averageMechanism === AverageSource.AverageMechanismType.bubbling ||
-						averageMechanism === AverageSource.AverageMechanismType.multichannel_width
+							averageMechanism === AverageSource.AverageMechanismType.multichannel_width
 							? <tr><td>Длина усреднителя, м</td>
-								<td>{this.averageLength ? this.averageLength.toFixed(3) : undefined}</td></tr>
+								<td>{this.averageLength ? this.averageLength : undefined}</td></tr>
 							: null}
 						{averageMechanism === AverageSource.AverageMechanismType.bubbling
-						?	<>
+							? <>
 								<tr><td>Расстояние между барботерами для пристенных барботеров, м</td>
 									<td>{distanceBetweenWallBubble ? distanceBetweenWallBubble.toFixed(3) : undefined}</td></tr>
-								<tr><td>Расстояние между барботерами для промежуточных барботеров, м</td>
-									<td>{distanceBetweenIntervalBubble ? distanceBetweenIntervalBubble.toFixed(3) : undefined}</td></tr>
+								{amountOfIntervalBubble > 1
+									? <>
+										<tr><td>Расстояние между барботерами для промежуточных барботеров, м</td>
+											<td>{distanceBetweenIntervalBubble ? distanceBetweenIntervalBubble.toFixed(3) : undefined}</td></tr>
+									</>
+									: null}
 								<tr><td>Общий расход воздуха для барботирования, м3/ч</td>
 									<td>{this.commonAirFlow ? this.commonAirFlow.toFixed(3) : undefined}</td></tr>
-						</>
-						: null}
+							</>
+							: null}
 						{averageMechanism === AverageSource.AverageMechanismType.multichannel_width
 							? <>
 								<tr><td>Ширина каждого канала секции, м</td>
 									<td>{this.widthOfEachChannel.length !== 0 ? listOfArrayValues(this.widthOfEachChannel, 3) : undefined}</td></tr>
-								<tr><td>Расход воды в кадом канале, м3/ч</td>
+								<tr><td>Расход воды в каждом канале, м3/ч</td>
 									<td>{this.waterFlowOfEachChannel.length !== 0 ? listOfArrayValues(this.waterFlowOfEachChannel, 3) : undefined}</td></tr>
 								<tr><td>Площадь поперечного сечения распределительного лотка, м2</td>
 									<td>{this.crossSectionalArea ? this.crossSectionalArea.toFixed(3) : undefined}</td></tr>
 								<tr><td>Площадь донного отверстия в распределительном лотке, м2</td>
-									<td>{this.squareBottomForEachChannel.length !== 0 ? listOfArrayValues(this.squareBottomForEachChannel, 8) : undefined}</td></tr>
+									<td>{this.squareBottomForEachChannel.length !== 0 ? listOfArrayValues(this.squareBottomForEachChannel, 3) : undefined}</td></tr>
 								<tr><td>Площадь бокового отверстия в распределительном лотке, м2</td>
-									<td>{this.squareSideForEachChannel.length !== 0 ? listOfArrayValues(this.squareSideForEachChannel, 8) : undefined}</td></tr>
+									<td>{this.squareSideForEachChannel.length !== 0 ? listOfArrayValues(this.squareSideForEachChannel, 3) : undefined}</td></tr>
 							</>
 							: null}
 						{averageMechanism === AverageSource.AverageMechanismType.multichannel_length
 							? <>
-								<tr><td>Длина усреднителя для прямоугольного плана, м</td>
-									<td>{this.averageLength ? this.averageLength.toFixed(3) : undefined}</td></tr>
-								<tr><td>Диаметр усреднителя для кругового плана, м</td>
-									<td>{this.averageDiameter ? this.averageDiameter.toFixed(3) : undefined}</td></tr>
-								<tr><td>Ширина канала для прямоугольного усреднителя, м</td>
-									<td>{this.channelWidthPrizma ? this.channelWidthPrizma.toFixed(3) : undefined}</td></tr>
-								<tr><td>Ширина канала для кругового усреднителя, м</td>
-									<td>{this.channelWidthCircle ? this.channelWidthCircle.toFixed(3) : undefined}</td></tr>
+								{formOfAverage === AverageSource.FormOfAverage.prizma
+									? <>
+										<tr><td>Длина усреднителя для прямоугольного плана, м</td>
+											<td>{this.averageLength ? this.averageLength.toFixed(3) : undefined}</td></tr>
+										<tr><td>Ширина канала для прямоугольного усреднителя, м</td>
+											<td>{this.channelWidthPrizma ? this.channelWidthPrizma.toFixed(3) : undefined}</td></tr>
+									</>
+									: <>
+										<tr><td>Диаметр усреднителя для кругового плана, м</td>
+											<td>{this.averageDiameter ? this.averageDiameter.toFixed(3) : undefined}</td></tr>
+										<tr><td>Ширина канала для кругового усреднителя, м</td>
+											<td>{this.channelWidthCircle ? this.channelWidthCircle.toFixed(3) : undefined}</td></tr>
+									</>}
 							</>
 							: null}
 					</tbody>

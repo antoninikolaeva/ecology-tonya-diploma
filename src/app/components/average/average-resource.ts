@@ -6,7 +6,9 @@ export namespace AverageSource {
 	}
 	export const averageCoefficientBorder = 5;
 	export enum AverageDeep {
-		min = 3,
+		min = 0,
+		less = 2,
+		middle = 3,
 		max = 6,
 	}
 	export enum AverageChannelLengthDeep {
@@ -19,8 +21,6 @@ export namespace AverageSource {
 		min = 3,
 		max = 5,
 	}
-	export const intensiveWallBubble = 6;
-	export const intensiveIntervalBubble = 12;
 	export enum BubbleDistanceWall {
 		min = 1,
 		max = 1.5,
@@ -44,5 +44,15 @@ export namespace AverageSource {
 	export enum ChannelWidth {
 		min = 1,
 		max = 10,
+	}
+	export enum BubbleType {
+		averageConcentrate = 6,
+		averageConcentrateDerivative = 12,
+		stopDropSediment = 12,
+		stopDropSedimentDerivative = 24,
+	}
+	export enum FormOfAverage {
+		prizma = 'prizma',
+		circle = 'circle',
 	}
 }

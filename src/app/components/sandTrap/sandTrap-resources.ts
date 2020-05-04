@@ -1,6 +1,6 @@
 export namespace SandTrapSource {
-	export const minSpeedWaterFlow = 0.15;
-	export const maxSpeedWaterFlow = 0.3;
+	export const minSpeedWaterFlow = 0.1;
+	export const maxSpeedWaterFlow = 0.2;
 	export enum HydraulicFinenessSand {
 		low = 13.2,
 		middle = 18.7,
@@ -10,18 +10,14 @@ export namespace SandTrapSource {
 		HydraulicFinenessSand.low,
 		HydraulicFinenessSand.middle,
 	];
-	export const hydraulicFinenessSandListHigh = [
-		HydraulicFinenessSand.middle,
-		HydraulicFinenessSand.high,
-	];
 	export const hydraulicFinenessSandListFull = [
 		HydraulicFinenessSand.low,
 		HydraulicFinenessSand.middle,
 		HydraulicFinenessSand.high,
 	];
 	export enum CoefficientOfSandTrapLength {
-		middle = 1.7,
-		high = 1.3
+		min = 1.5,
+		max = 1.2
 	}
 	export enum SandTrapDeep {
 		horizontalMin = 0.5,
@@ -31,7 +27,7 @@ export namespace SandTrapSource {
 		tangential = 0.5,
 	}
 	export const minSpeedFlowLimit = 0.15;
-	export const maxSpeedFlowLimit = 0.3;
+	export const maxSpeedFlowLimit = 0.2;
 	export const minWaterFlowPeriod = 30;
 	export enum AmountOfBlockedSand {
 		horizontalAndTangential = 0.02,
@@ -40,7 +36,6 @@ export namespace SandTrapSource {
 	export const minPeriodRemoveSediment = 0;
 	export const maxPeriodRemoveSediment = 2;
 	export const coefficientDispersionOfSediment = 3;
-	export const widthCircleGutterForHorizontalCircle = [0.5, 0.8, 1, 1.4, 1.5, 1.8];
 	export const diameterLowBaseOfBunker = 0.4;
 	export const sandTrapPressureMinTangential = 90;
 	export const sandTrapPressureMinVertical = 70;
@@ -70,4 +65,15 @@ export namespace SandTrapSource {
 	export const aeratedIntensiveMax = 5;
 	export const startPipeWaterSpeed = 3;
 	export const gravityAcceleration = 9.8;
+
+	export const circleGutter = [
+		{secondFlow: 0.05695, width: 0.5},
+		{secondFlow: 0.08318, width: 0.5},
+		{secondFlow: 0.1353, width: 0.8},
+		{secondFlow: 0.18472, width: 0.8},
+		{secondFlow: 0.31088, width: 1},
+		{secondFlow: 0.44936, width: 1.4},
+		{secondFlow: 0.69907, width: 1.5},
+		{secondFlow: 1.110074, width: 1.8},
+	]
 }

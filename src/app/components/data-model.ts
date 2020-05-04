@@ -1,8 +1,8 @@
-import { Grate, GrateCrusher } from '../components/grate/grate-resources';
+import { GrateSource } from '../components/grate/grate-resources';
 
 export interface GrateResultData {
-	currentSuitableGrate: Grate;
-	currentGrateCrusher: GrateCrusher;
+	currentSuitableGrate: GrateSource.Grate;
+	currentGrateCrusher: GrateSource.GrateCrusher;
 	valueOfLedgeInstallationPlace: number;
 	amountOfHammerCrushers: number;
 	amountOfSuitableGrates: number;

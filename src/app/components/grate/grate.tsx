@@ -1,16 +1,19 @@
 import * as React from 'react';
-import { Button, Table } from 'react-bootstrap';
-
-import { GRATE_CONST as _, getUniqueWidthSection, getUniqueRodThickness, transferRadiansToDegrees } from './grate.service';
-import {
-	SourceOfWasteWater, HammerCrusher, hammerCrushers, FormOfRods, grates, Grate, TypeOfGrates, grateCrushers, GrateCrusher
-} from './grate-resources';
-import { labelTemplate, InputTemplate, ItemList, SelectTemplate, NULLSTR, resetSelectToDefault } from '../utils';
 import { GrateTypes } from '../general-resources';
+import {
+	InputTemplate,
+	labelTemplate,
+	SelectTemplate,
+	ItemList,
+	NULLSTR,
+	resetSelectToDefault
+} from '../utils';
+import { GrateSource } from './grate-resources';
+import { Table } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
-import { GeneralDataModel, dataModel } from '../data-model';
+import { dataModel, GrateResultData } from '../data-model';
 
-interface GrateComponentProps {
+export interface GrateProps {
 	secondMaxFlow: number;
 	dailyWaterFlow: number;
 	type: GrateTypes;
@@ -18,648 +21,445 @@ interface GrateComponentProps {
 	onResultMode(resultMode: boolean): void;
 }
 
-interface GrateComponentState {
-	sourceOfWasteWater: SourceOfWasteWater;
-	inputAmountOfWaste: number;
-	amountOfWaste: number;
-	amountOfHammerCrushers: number;
-	currentHammerCrusher: HammerCrusher;
+export interface GrateState {
 	speedOfWaterInChannel: number;
 	speedOfWaterInSection: number;
-	formOfRod: number;
+	widthSection: number;
+	rodThickness: number;
+	amountOfGrates: number;
 	inclineAngle: number;
-	flowRestrictionRake: number;
-	listOfRodThickness: number[];
-	currentRodThickness: number;
-	amountOfSuitableGrates: number;
-	currentTypeOfGrates: TypeOfGrates;
-	currentStandardWidthOfChannel: number;
-	valueOfLedgeInstallationPlace: number;
-	sizeOfInputChannelPart: number;
-	sizeOfOutputChannelPart: number;
-	lengthOfIncreaseChannelPart: number;
-	commonLengthOfChamberGrate: number;
-	currentGrateCrusher: GrateCrusher;
-	amountGrateOfCrushers: number;
-	checkGrateCrusherSpeed: number;
+	formOfRod: number;
+	middleValueBPK5: number;
+	middleVolumeWasteWater: number;
+	markOfGrate: string;
+	markOfHammerCrusher: string;
+	markOfGrateCrusher: string;
 	isValidateError: boolean;
-	checkSpeedOfWater: number;
-	currentWidthSection: number;
-	suitableGrates: Grate[];
-	limitedStandardWidthOfChannel: number[];
-	currentSuitableGrate: Grate;
+	isResult: boolean;
 }
 
-export class GrateComponent extends React.Component<GrateComponentProps, GrateComponentState> {
-	private dailyWasteGeneratedRef: HTMLInputElement = undefined;
-	private normOfWaterOutRef: HTMLInputElement = undefined;
+export class GrateComponent extends React.Component<GrateProps, GrateState> {
 	private speedOfWaterInChannelRef: HTMLInputElement = undefined;
 	private speedOfWaterInSectionRef: HTMLInputElement = undefined;
+	private widthSectionRef: HTMLInputElement = undefined;
+	private rodThicknessRef: HTMLInputElement = undefined;
+	private amountOfGratesRef: HTMLInputElement = undefined;
 	private inclineAngleRef: HTMLInputElement = undefined;
-	private flowRestrictionRakeRef: HTMLInputElement = undefined;
-	private sourceOfWasteWaterRef: HTMLOptionElement[] = [];
-	private selectSourceWaterList: ItemList[] = [
-		{ value: undefined, label: 'Выберите источник сточных вод' },
-		{ value: SourceOfWasteWater.manufacture, label: 'Производсвенный сток' },
-		{ value: SourceOfWasteWater.city, label: 'Городской сток' },
-	];
-	private hammerCrushersRef: HTMLOptionElement[] = [];
-	private selectHammerCrusherList: ItemList[] = hammerCrushers.map(crusher => {
-		return { value: crusher.performance, label: crusher.mark };
-	});
-	private formOfRodsRef: HTMLOptionElement[] = [];
-	private formOfRodList: ItemList[] = [
-		{ value: undefined, label: 'Выберите форму стержня' },
-		{ value: FormOfRods.prizma, label: 'Прямоугольная форма' },
-		{ value: FormOfRods.prizmaWithCircleEdge, label: 'Прямоугольная форма с закругленной лобовой частью' },
-		{ value: FormOfRods.circle, label: 'Круглая форма' },
-	];
-	private widthSectionsRef: HTMLOptionElement[] = [];
-	private widthSectionList: ItemList[] = [];
-	private rodThicknessesRef: HTMLOptionElement[] = [];
-	private rodThicknessList: ItemList[] = [];
-	private grateCrushersRef: HTMLOptionElement[] = [];
-	private grateCrusherList: ItemList[] = grateCrushers.map(crusher => {
-		return { value: crusher.mark, label: crusher.mark };
-	});
-	private suitableGratesRef: HTMLOptionElement[] = [];
-	private suitableGrateList: ItemList[] = [];
-	private limitedStandardChannelsWidthRef: HTMLOptionElement[] = [];
-	private limitedStandardChannelWidthList: ItemList[] = [];
-	private typeOfGratesRef: HTMLOptionElement[] = [];
-	private typeOfGrateList: ItemList[] = [
-		{ value: undefined, label: 'Выберите тип решетки' },
-		{ value: TypeOfGrates.vertical, label: 'Вертикальные решетки' },
-		{ value: TypeOfGrates.incline, label: 'Наклонные решетки' },
-	];
+	private middleValueBPK5Ref: HTMLInputElement = undefined;
+	private middleVolumeWasteWaterRef: HTMLInputElement = undefined;
+	private formOfRodListRef: HTMLOptionElement[] = [];
+	private markOfGrateListRef: HTMLOptionElement[] = [];
+	private grateCrusherListRef: HTMLOptionElement[] = [];
+	private hammerCrusherListRef: HTMLOptionElement[] = [];
 
-	constructor(props: GrateComponentProps) {
+	private formOfRodList: ItemList[] = [
+		{ value: undefined, label: 'Выберите форму стержней' },
+		{ value: GrateSource.FormOfRods.prizma, label: 'Прямоугольная форма' },
+		{ value: GrateSource.FormOfRods.prizmaWithCircleEdge, label: 'Прямоугольная форма с закругленной лобовой частью' },
+		{ value: GrateSource.FormOfRods.circle, label: 'Круглая форма' },
+	];
+	private markOfGrateList: ItemList[] = GrateSource.grates.map(grate => {
+		return {value: grate.mark, label: grate.mark};
+	});
+	private hammerCrusherList: ItemList[] = GrateSource.hammerCrushers.map(grate => {
+		return {value: grate.mark, label: grate.mark};
+	});
+	private grateCrusherList: ItemList[] = GrateSource.grateCrushers.map(grate => {
+		return {value: grate.mark, label: grate.mark};
+	});
+
+	private amountOfSection: number;
+	private generalGrateWidth: number;
+	private countingWidthOfGrate: number;
+	private countingAmountOfSection: number;
+	private realWaterSpeedInSection: number;
+	private amountAdditionalGrates: number;
+	private amountAdditionalHammerCrusher: number;
+	private sizeOfInputChannel: number;
+	private sizeOfOutputChannel: number;
+	private lengthOfExtendPartOfChannel: number;
+	private commonLengthOfCamera: number;
+	private sizeOfLedge: number;
+	private coefficientLocalPressure: number;
+	private volumeOfWaste: number;
+	private massOfWaste: number;
+	private amountOfDwellers: number;
+	private currentGrate: GrateSource.Grate;
+	private currentHammerCrusher: GrateSource.HammerCrusher;
+	private amountOfHammerCrusher: number;
+	private amountOfGrate: number;
+	private amountOfTechnicWaterFlow: number;
+	private currentGrateCrusher: GrateSource.GrateCrusher;
+	private amountOfGrateCrusher: number;
+
+	constructor(props: GrateProps) {
 		super(props);
-		this.selectHammerCrusherList.unshift({ value: undefined, label: 'Выберите молотковую дробилку' });
-		this.widthSectionList = getUniqueWidthSection().map(section => {
-			return { value: section, label: `${section}` };
-		});
-		this.widthSectionList.unshift({ value: undefined, label: 'Выберите ширину прозоров решетки' });
-		this.grateCrusherList.unshift({ value: undefined, label: 'Выберите тип решетки дробилки' });
+
+		this.markOfGrateList.unshift({value: undefined, label: 'Выберите марку решетки'});
+		this.hammerCrusherList.unshift({value: undefined, label: 'Выберите марку молотковой дробилки'});
+		this.grateCrusherList.unshift({value: undefined, label: 'Выберите марку решетки-дробилки'});
+
 		this.state = {
-			sourceOfWasteWater: undefined,
-			inputAmountOfWaste: undefined,
-			amountOfWaste: undefined,
-			amountOfHammerCrushers: undefined,
-			currentHammerCrusher: undefined,
 			speedOfWaterInChannel: undefined,
 			speedOfWaterInSection: undefined,
-			formOfRod: undefined,
+			widthSection: undefined,
+			rodThickness: undefined,
+			amountOfGrates: undefined,
 			inclineAngle: undefined,
-			flowRestrictionRake: undefined,
-			listOfRodThickness: undefined,
-			currentRodThickness: undefined,
-			amountOfSuitableGrates: undefined,
-			currentTypeOfGrates: undefined,
-			valueOfLedgeInstallationPlace: undefined,
-			sizeOfInputChannelPart: undefined,
-			sizeOfOutputChannelPart: undefined,
-			lengthOfIncreaseChannelPart: undefined,
-			commonLengthOfChamberGrate: undefined,
-			currentStandardWidthOfChannel: undefined,
-			currentGrateCrusher: undefined,
-			amountGrateOfCrushers: undefined,
-			checkGrateCrusherSpeed: undefined,
+			formOfRod: undefined,
+			middleValueBPK5: undefined,
+			middleVolumeWasteWater: undefined,
+			markOfGrate: NULLSTR,
+			markOfHammerCrusher: NULLSTR,
+			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
-			checkSpeedOfWater: undefined,
-			currentWidthSection: undefined,
-			suitableGrates: undefined,
-			limitedStandardWidthOfChannel: undefined,
-			currentSuitableGrate: undefined,
+			isResult: false,
 		};
 	}
 
 	private clearPage = () => {
-		if (this.dailyWasteGeneratedRef) { this.dailyWasteGeneratedRef.value = NULLSTR; }
-		if (this.normOfWaterOutRef) { this.normOfWaterOutRef.value = NULLSTR; }
 		if (this.speedOfWaterInChannelRef) { this.speedOfWaterInChannelRef.value = NULLSTR; }
 		if (this.speedOfWaterInSectionRef) { this.speedOfWaterInSectionRef.value = NULLSTR; }
+		if (this.widthSectionRef) { this.widthSectionRef.value = NULLSTR; }
+		if (this.rodThicknessRef) { this.rodThicknessRef.value = NULLSTR; }
+		if (this.amountOfGratesRef) { this.amountOfGratesRef.value = NULLSTR; }
 		if (this.inclineAngleRef) { this.inclineAngleRef.value = NULLSTR; }
-		if (this.flowRestrictionRakeRef) { this.flowRestrictionRakeRef.value = NULLSTR; }
-		resetSelectToDefault(this.sourceOfWasteWaterRef, this.selectSourceWaterList);
-		resetSelectToDefault(this.hammerCrushersRef, this.selectHammerCrusherList);
-		resetSelectToDefault(this.formOfRodsRef, this.formOfRodList);
-		resetSelectToDefault(this.widthSectionsRef, this.widthSectionList);
-		resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
-		resetSelectToDefault(this.grateCrushersRef, this.grateCrusherList);
-		resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
-		resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
-		resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
+		if (this.middleValueBPK5Ref) { this.middleValueBPK5Ref.value = NULLSTR; }
+		if (this.middleVolumeWasteWaterRef) { this.middleVolumeWasteWaterRef.value = NULLSTR; }
+		resetSelectToDefault(this.formOfRodListRef, this.formOfRodList);
+		resetSelectToDefault(this.markOfGrateListRef, this.markOfGrateList);
+		resetSelectToDefault(this.grateCrusherListRef, this.grateCrusherList);
+		resetSelectToDefault(this.hammerCrusherListRef, this.hammerCrusherList);
 		this.setState({
-			sourceOfWasteWater: undefined,
-			inputAmountOfWaste: undefined,
-			amountOfWaste: undefined,
-			amountOfHammerCrushers: undefined,
 			speedOfWaterInChannel: undefined,
 			speedOfWaterInSection: undefined,
-			formOfRod: undefined,
+			widthSection: undefined,
+			rodThickness: undefined,
+			amountOfGrates: undefined,
 			inclineAngle: undefined,
-			flowRestrictionRake: undefined,
-			listOfRodThickness: undefined,
-			currentRodThickness: undefined,
-			amountOfSuitableGrates: undefined,
-			currentTypeOfGrates: undefined,
-			valueOfLedgeInstallationPlace: undefined,
-			sizeOfInputChannelPart: undefined,
-			sizeOfOutputChannelPart: undefined,
-			lengthOfIncreaseChannelPart: undefined,
-			commonLengthOfChamberGrate: undefined,
-			currentStandardWidthOfChannel: undefined,
-			currentGrateCrusher: undefined,
-			amountGrateOfCrushers: undefined,
-			checkGrateCrusherSpeed: undefined,
+			formOfRod: undefined,
+			middleValueBPK5: undefined,
+			middleVolumeWasteWater: undefined,
+			markOfGrate: NULLSTR,
+			markOfHammerCrusher: NULLSTR,
+			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
-			checkSpeedOfWater: undefined,
-			currentWidthSection: undefined,
-			suitableGrates: undefined,
-			limitedStandardWidthOfChannel: undefined,
-			currentSuitableGrate: undefined,
+			isResult: false,
 		});
 	}
 
-	// Динамический расчет количества загрязнений и количества молотковых дробилок
-	private amountOfWasteGenerated = (value: number) => {
-		const { dailyWaterFlow } = this.props;
-		const { sourceOfWasteWater, currentHammerCrusher } = this.state;
-		if (!currentHammerCrusher) {
-			return;
-		}
-		// value - переменная используемая как для производства так и для городских стоков
-		// определяет либо количество отбросов, либо норму водоотведения
-		let amountOfWaste;
-		if (sourceOfWasteWater === SourceOfWasteWater.manufacture) {
-			amountOfWaste = _.WOTB_MANUFACTURE * value * _.K /
-				_.HOURS_IN_DAY;
-		} else {
-			const amountOfDwellers = _.TRANSFORM_LITER_TO_VOLUME_METER * dailyWaterFlow / value;
-			amountOfWaste = _.QOTB * amountOfDwellers / _.WOTB_CITY;
-		}
-		const amountOfHammerCrushers = (amountOfWaste / currentHammerCrusher.performance) > 1 ?
-			Math.ceil(amountOfWaste / currentHammerCrusher.performance) :
-			1;
-		sourceOfWasteWater === SourceOfWasteWater.manufacture ?
-			this.setState({ inputAmountOfWaste: value, amountOfWaste, amountOfHammerCrushers }) :
-			this.setState({ inputAmountOfWaste: value, amountOfWaste, amountOfHammerCrushers });
+	private renderBaseData = () => {
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
+		return <div>
+			<div className={'input-data-title'}>Входные данные</div>
+			{labelTemplate('Максимальный секундный расход сточных вод, м3/с', secondMaxFlow)}
+			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+		</div>;
 	}
 
-	// Основной расчет по нажатию на кнопку Подобрать марку решетки,
-	// производит расчет и делает выбор всех удовлетворяемых решеток.
-	// Возможны ситуации когда для заданных параметров нет удовлетворительных
-	// решеток, тогда нужно менять какие-либо параметры.
-	private grateCounting = () => {
-		const { secondMaxFlow, type } = this.props;
-		const {
-			flowRestrictionRake,
-			speedOfWaterInChannel,
-			speedOfWaterInSection,
-			currentRodThickness,
-			isValidateError,
-			currentWidthSection
+	private renderInputArea = () => {
+		const { type, dailyWaterFlow } = this.props;
+		const {  } = this.state;
+		return <div>
+			{type === GrateTypes.hand
+			? <>
+				<InputTemplate title={`Скорость течения воды в канале, м/с,
+					диапазон [${GrateSource.SpeedOfWaterInChannel.min} - ${GrateSource.SpeedOfWaterInChannel.max}]`}
+					placeholder={'Введите скорость течения воды...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.SpeedOfWaterInChannel.min, maxValue: GrateSource.SpeedOfWaterInChannel.max }}
+					onInputRef={(input) => { this.speedOfWaterInChannelRef = input; }}
+					onInput={(value) => { this.setState({ speedOfWaterInChannel: value }); }} />
+				<InputTemplate title={`Скорость движения воды в прозорах решетки, м/с,
+					диапазон [${GrateSource.SpeedOfWaterInSection.min} - ${GrateSource.SpeedOfWaterInSection.max}]`}
+					placeholder={'Введите скорость движения воды...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.SpeedOfWaterInSection.min, maxValue: GrateSource.SpeedOfWaterInSection.max }}
+					onInputRef={(input) => { this.speedOfWaterInSectionRef = input; }}
+					onInput={(value) => { this.setState({ speedOfWaterInSection: value }); }} />
+				<InputTemplate title={`Ширина прозоров решетки, м, диапазон [${GrateSource.WidthSection.min} - ${GrateSource.WidthSection.max}]`}
+					placeholder={'Введите ширину прозоров...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.WidthSection.min, maxValue: GrateSource.WidthSection.max }}
+					onInputRef={(input) => { this.widthSectionRef = input; }}
+					onInput={(value) => { this.setState({ widthSection: value }); }} />
+				<InputTemplate title={`Толщина стержней решетки, м, диапазон [${GrateSource.RodThickness.min} - ${GrateSource.RodThickness.max}]`}
+					placeholder={'Введите толщину стержней...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.RodThickness.min, maxValue: GrateSource.RodThickness.max }}
+					onInputRef={(input) => { this.rodThicknessRef = input; }}
+					onInput={(value) => { this.setState({ rodThickness: value }); }} />
+				<InputTemplate title={`Количество решеток, шт`}
+					placeholder={'Введите количество решеток...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: 1, maxValue: Infinity }}
+					onInputRef={(input) => { this.amountOfGratesRef = input; }}
+					onInput={(value) => { this.setState({ amountOfGrates: value }); }} />
+				<InputTemplate title={`Угол наклона решетки к горизонту, диапазон [${GrateSource.InclineAngle.min} - ${GrateSource.InclineAngle.max}]`}
+					placeholder={'Введите угол наклона решетки...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.InclineAngle.min, maxValue: GrateSource.InclineAngle.max }}
+					onInputRef={(input) => { this.inclineAngleRef = input; }}
+					onInput={(value) => { this.setState({ inclineAngle: value }); }} />
+				<SelectTemplate title={'Форма стержней'} itemList={this.formOfRodList}
+					onSelect={(value) => {this.setState({formOfRod: value as number}); }}
+					onSelectRef={(optionList) => { this.formOfRodListRef = optionList; }} />
+				{this.realWaterSpeedInSection < GrateSource.CheckSpeedInSection.min ||
+				this.realWaterSpeedInSection > GrateSource.CheckSpeedInSection.max
+				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
+					${this.realWaterSpeedInSection} м/с, должна быть в пределах от ${GrateSource.CheckSpeedInSection.min} до
+					${GrateSource.CheckSpeedInSection.max}`} />
+				: null}
+			</>
+			: null}
+			{type === GrateTypes.mechanic
+			? <>
+				<SelectTemplate title={'Марка решетки'} itemList={this.markOfGrateList}
+					onSelect={(value) => {this.setState({markOfGrate: value as string}); }}
+					onSelectRef={(optionList) => { this.markOfGrateListRef = optionList; }} />
+				<InputTemplate title={`Ширина прозоров решетки, м, диапазон [${GrateSource.WidthSection.min} - ${GrateSource.WidthSection.max}]`}
+					placeholder={'Введите ширину прозоров...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: GrateSource.WidthSection.min, maxValue: GrateSource.WidthSection.max }}
+					onInputRef={(input) => { this.widthSectionRef = input; }}
+					onInput={(value) => { this.setState({ widthSection: value }); }} />
+			</>
+			: null}
+			{type === GrateTypes.mechanic || type === GrateTypes.hand
+			? <>
+				<InputTemplate title={`Среднее значение БПК5, мг(О2)/л`}
+					placeholder={'Введите среднее значение БПК5...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: 0, maxValue: Infinity }}
+					onInputRef={(input) => { this.middleValueBPK5Ref = input; }}
+					onInput={(value) => { this.setState({ middleValueBPK5: value }); }} />
+				<InputTemplate title={`Среднегодовой объем сточных вод, м3`}
+					placeholder={'Введите среднегодовой объем...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					range={{ minValue: dailyWaterFlow, maxValue: Infinity }}
+					onInputRef={(input) => { this.middleVolumeWasteWaterRef = input; }}
+					onInput={(value) => { this.setState({ middleVolumeWasteWater: value }); }} />
+			</>
+			: null}
+			{type === GrateTypes.crusher
+			? <>
+				<SelectTemplate title={'Марка решетки'} itemList={this.grateCrusherList}
+					onSelect={(value) => {this.setState({markOfGrateCrusher: value as string}); }}
+					onSelectRef={(optionList) => { this.grateCrusherListRef = optionList; }} />
+				{(this.currentGrateCrusher && (this.realWaterSpeedInSection < this.currentGrateCrusher.speedWater.min ||
+				this.realWaterSpeedInSection > this.currentGrateCrusher.speedWater.max))
+				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
+					${this.realWaterSpeedInSection} м/с, должна быть в пределах от ${this.currentGrateCrusher.speedWater.min} до
+					${this.currentGrateCrusher.speedWater.max}`} />
+				: null}
+			</>
+			: null}
+			{type === GrateTypes.mechanic
+			? <>
+				<SelectTemplate title={'Марка молотковой дробилки'} itemList={this.hammerCrusherList}
+					onSelect={(value) => {this.setState({markOfHammerCrusher: value as string}); }}
+					onSelectRef={(optionList) => { this.hammerCrusherListRef = optionList; }} />
+			</>
+			: null}
+			{this.renderCheckingButton()}
+		</div>;
+	}
+
+	private isInputReadyToCounting = (): boolean => {
+		const { type } = this.props;
+		const {speedOfWaterInChannel, speedOfWaterInSection, formOfRod, inclineAngle,
+			middleValueBPK5, middleVolumeWasteWater, rodThickness, widthSection, amountOfGrates,
+			markOfGrate, markOfGrateCrusher, markOfHammerCrusher
 		} = this.state;
-		if (!this.isDataExisted() || isValidateError) { return; }
-		resetSelectToDefault(this.suitableGratesRef, this.suitableGrateList);
-		resetSelectToDefault(this.limitedStandardChannelsWidthRef, this.limitedStandardChannelWidthList);
-		resetSelectToDefault(this.typeOfGratesRef, this.typeOfGrateList);
-		let amountOfSection;
-		if (type === GrateTypes.mechanic) {
-			amountOfSection = (flowRestrictionRake * secondMaxFlow) /
-				(Math.sqrt(secondMaxFlow / speedOfWaterInChannel) *
-					speedOfWaterInSection * currentWidthSection);
-		} else if (type === GrateTypes.hand) {
-			amountOfSection = (_.FLOW_RESTRICTION_RAKE * secondMaxFlow) /
-				(Math.sqrt(secondMaxFlow / speedOfWaterInChannel) *
-					speedOfWaterInSection * currentWidthSection);
-		}
-		const commonWidthOfGrate = currentRodThickness * (amountOfSection - 1) + currentWidthSection * amountOfSection;
-		let amountOfSuitableGrates = 1;
-		let suitableGrates: Grate[] = [];
-		while (amountOfSuitableGrates > 0) {
-			suitableGrates = grates.filter(grate => {
-				const isSuitableGrate = commonWidthOfGrate <= (amountOfSuitableGrates * grate.size.width) &&
-					grate.widthSection === currentWidthSection && grate.rodThickness === currentRodThickness;
-				return isSuitableGrate;
-			});
-			if (suitableGrates.length > 0) {
-				break;
-			} else {
-				amountOfSuitableGrates++;
-			}
-		}
-		const checkedSuitableGrates = suitableGrates.filter(grate =>
-			this.checkWaterSpeedCounting(grate, amountOfSuitableGrates));
-		if (checkedSuitableGrates.length === 0) {
-			this.setState({
-				amountOfSuitableGrates, suitableGrates: checkedSuitableGrates,
-				currentSuitableGrate: undefined, currentStandardWidthOfChannel: undefined,
-				currentTypeOfGrates: undefined, valueOfLedgeInstallationPlace: undefined
-			});
-			return;
-		}
-		this.setState({
-			amountOfSuitableGrates, suitableGrates: checkedSuitableGrates,
-			currentSuitableGrate: undefined, currentStandardWidthOfChannel: undefined,
-			currentTypeOfGrates: undefined, valueOfLedgeInstallationPlace: undefined
-		});
+		const onlyHandGrate = type === GrateTypes.hand && speedOfWaterInChannel && speedOfWaterInSection &&
+			formOfRod && inclineAngle && rodThickness && widthSection && amountOfGrates ? true : false;
+		const onlyMechanicGrate = type === GrateTypes.mechanic && markOfGrate && markOfHammerCrusher ? true : false;
+		const onlyGrateCrusher = type === GrateTypes.crusher && markOfGrateCrusher ? true : false;
+		const handOrMechanic = type === GrateTypes.hand || type === GrateTypes.mechanic && middleValueBPK5 &&
+			middleVolumeWasteWater ? true : false;
+		return (onlyHandGrate && handOrMechanic) || (onlyMechanicGrate && handOrMechanic) || onlyGrateCrusher;
 	}
 
-	// Проверка решеток на удовлетворяемость всем заданным требованиям
-	private checkWaterSpeedCounting = (
-		currentSuitableGrate: Grate, amountOfSuitableGratesAfterCount?: number
-	): boolean => {
-		const { secondMaxFlow, type } = this.props;
-		const { amountOfSuitableGrates, flowRestrictionRake, speedOfWaterInChannel, currentWidthSection } = this.state;
-		const amountOfSuitableGratesReal = amountOfSuitableGratesAfterCount
-			? amountOfSuitableGratesAfterCount
-			: amountOfSuitableGrates;
-		let checkSpeedOfWater;
-		if (type === GrateTypes.mechanic) {
-			checkSpeedOfWater = (flowRestrictionRake * secondMaxFlow) /
-				(Math.sqrt(secondMaxFlow / speedOfWaterInChannel) *
-					currentSuitableGrate.numberOfSection * currentWidthSection *
-					amountOfSuitableGratesReal);
-		} else if (type === GrateTypes.hand) {
-			checkSpeedOfWater = (_.FLOW_RESTRICTION_RAKE * secondMaxFlow) /
-				(Math.sqrt(secondMaxFlow / speedOfWaterInChannel) *
-					currentSuitableGrate.numberOfSection * currentWidthSection *
-					amountOfSuitableGratesReal);
-		}
-		this.setState({ checkSpeedOfWater });
-		if (_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater) {
-			return true;
-		} else {
-			return false;
-		}
-	}
-
-	// Расчет величины уступа в месте установки решетки
-	private countingLedgeInstallationPlace = () => {
-		const { currentRodThickness, formOfRod, inclineAngle, checkSpeedOfWater, currentWidthSection } = this.state;
-		const dzeta = formOfRod * Math.sin(transferRadiansToDegrees(inclineAngle)) *
-			Math.pow(currentRodThickness / currentWidthSection, (4 / 3));
-		const valueOfLedgeInstallationPlace = dzeta * Math.pow(checkSpeedOfWater, 2) / (2 * _.G) * _.P;
-		this.setState({ valueOfLedgeInstallationPlace });
-	}
-
-	// Расчет все длин
-	private countingLengths = () => {
-		const { secondMaxFlow } = this.props;
-		const {
-			speedOfWaterInChannel, inclineAngle, currentStandardWidthOfChannel, currentTypeOfGrates, currentSuitableGrate
-		} = this.state;
-		const sizeOfInputChannelPart = (currentSuitableGrate.size.width - currentStandardWidthOfChannel) /
-			(2 * Math.tan(transferRadiansToDegrees(_.PFI)));
-		const sizeOfOutputChannelPart = 0.5 * sizeOfInputChannelPart;
-		let lengthOfIncreaseChannelPart;
-		if (currentTypeOfGrates === TypeOfGrates.vertical) {
-			lengthOfIncreaseChannelPart = _.CHANNEL_PORT * currentStandardWidthOfChannel;
-		} else {
-			lengthOfIncreaseChannelPart = (_.CHANNEL_PORT * currentStandardWidthOfChannel) +
-				Math.sqrt(secondMaxFlow / speedOfWaterInChannel) /
-				Math.tan(transferRadiansToDegrees(inclineAngle));
-		}
-		this.setState({
-			commonLengthOfChamberGrate:
-				sizeOfInputChannelPart + sizeOfOutputChannelPart + lengthOfIncreaseChannelPart,
-			sizeOfInputChannelPart,
-			sizeOfOutputChannelPart,
-			lengthOfIncreaseChannelPart
-		});
+	private setCurrentResult = () => {
+		const { type } = this.props;
+		const grateResult: GrateResultData = dataModel.getGrateResult();
+		dataModel.setGrateResult(grateResult);
 	}
 
 	private resultCounting = () => {
-		this.countingLedgeInstallationPlace();
-		this.countingLengths();
-	}
-
-	// Расчет решеток дробилок
-	private countingGrateCrusher = (currentGrateCrusher: GrateCrusher) => {
-		const { secondMaxFlow } = this.props;
-		let amountGrateOfCrushers = 1;
-		while (1) {
-			if ((amountGrateOfCrushers * currentGrateCrusher.maxPerformance) > secondMaxFlow) {
-				break;
-			}
-			amountGrateOfCrushers++;
-		}
-		const checkGrateCrusherSpeed = secondMaxFlow / (amountGrateOfCrushers * currentGrateCrusher.squareHeliumHole);
-		this.setState({ checkGrateCrusherSpeed, amountGrateOfCrushers });
-	}
-
-	// Выбор источника сточных вод
-	private selectSourceOfWasteWater = (value: string | number) => {
-		if (this.dailyWasteGeneratedRef) { this.dailyWasteGeneratedRef.value = ''; }
-		if (this.normOfWaterOutRef) { this.normOfWaterOutRef.value = ''; }
-		this.setState({ sourceOfWasteWater: value as SourceOfWasteWater, amountOfWaste: 0, amountOfHammerCrushers: 0 });
-	}
-
-	// Выбор решеток дробилок из списка
-	private selectHammerCrusher = (value: string | number) => {
-		const { amountOfWaste } = this.state;
-		if (typeof value === 'number') {
-			const currentHammerCrusher = hammerCrushers.filter(crusher => crusher.performance === value);
-			const amountOfHammerCrushers = (amountOfWaste / currentHammerCrusher[0].performance) > 1 ?
-				Math.ceil(amountOfWaste / currentHammerCrusher[0].performance) :
-				1;
-			this.setState({ amountOfHammerCrushers, currentHammerCrusher: currentHammerCrusher[0] });
-		}
-	}
-
-	// Выбор формы стержней решетки
-	private selectFormOfRods = (value: string | number) => {
-		if (typeof value === 'number') {
-			this.setState({ formOfRod: value });
-		}
-	}
-
-	// Выбор ширины прозоров
-	private selectWidthSection = (value: string | number) => {
-		if (typeof value === 'number') {
-			const listOfRodThickness = getUniqueRodThickness(value);
-			if (this.rodThicknessesRef) {
-				resetSelectToDefault(this.rodThicknessesRef, this.rodThicknessList);
-			}
-			this.setState({ listOfRodThickness, currentRodThickness: undefined, currentWidthSection: value });
-		}
-	}
-
-	// Выбор толщины стержней решетки
-	private selectCurrentRodThickness = (value: string | number) => {
-		if (typeof value === 'number') {
-			this.setState({ currentRodThickness: value });
-		}
-	}
-
-	// Выбор и перерасчет текущих удовлетворяемых решеток
-	private selectFromSuitableGrate = (value: string | number) => {
-		const { amountOfSuitableGrates, suitableGrates } = this.state;
-		const currentSuitableGrate = suitableGrates.find((grate: Grate) => grate.mark === value);
-		this.checkWaterSpeedCounting(currentSuitableGrate);
-		const limitedStandardWidthOfChannel = _.STANDARD_WIDTH_OF_CHANNEL.filter(
-			width => width < currentSuitableGrate.size.width * amountOfSuitableGrates);
-		this.setState({ limitedStandardWidthOfChannel, currentSuitableGrate });
-	}
-
-	// Выбор стандартной ширины канала подводящего воду к решеткам
-	private selectStandardWidthOfChannel = (value: string | number) => {
-		if (typeof value === 'number') {
-			this.setState({ currentStandardWidthOfChannel: value });
-		}
-	}
-
-	// Выбор типа решетки
-	private selectTypeOfGrate = (value: string | number) => {
-		this.setState({ currentTypeOfGrates: value as TypeOfGrates });
-	}
-
-	// Выбор решеток дробилок из списка
-	private selectGrateCrusher = (value: string | number) => {
-		const currentGrateCrusher = grateCrushers.find(grateCrusher => grateCrusher.mark === value);
-		this.countingGrateCrusher(currentGrateCrusher);
-		this.setState({ currentGrateCrusher });
-	}
-
-	// Отрисовка выбора источника грязной воды
-	private renderSourceOfWasteWater = () => {
-		const { dailyWaterFlow } = this.props;
-		const { sourceOfWasteWater } = this.state;
-		return <div>
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
-			<SelectTemplate title={'Выбор молотковых дробилок'} itemList={this.selectHammerCrusherList}
-				onSelect={(value) => this.selectHammerCrusher(value)}
-				onSelectRef={(optionList) => { this.hammerCrushersRef = optionList; }} />
-			<SelectTemplate title={'Источник сточных вод'} itemList={this.selectSourceWaterList}
-				onSelect={(value) => this.selectSourceOfWasteWater(value)}
-				onSelectRef={(optionList) => { this.sourceOfWasteWaterRef = optionList; }} />
-			{sourceOfWasteWater === SourceOfWasteWater.city ?
-				<InputTemplate title={'Норма водоотведения, л/(чел*сут)'}
-					placeholder={''}
-					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-					onInputRef={(input) => { this.normOfWaterOutRef = input; }}
-					onInput={(value) => { this.amountOfWasteGenerated(value); }} /> :
-				sourceOfWasteWater === SourceOfWasteWater.manufacture ?
-					<InputTemplate title={'Количество образующихся отбросов, м3/сут'}
-						placeholder={''}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						onInputRef={(input) => { this.dailyWasteGeneratedRef = input; }}
-						onInput={(value) => { this.amountOfWasteGenerated(value); }} /> :
-					null}
-		</div>;
-	}
-
-	private renderGrate = () => {
-		const { type, secondMaxFlow } = this.props;
-		const {
-			listOfRodThickness, checkGrateCrusherSpeed, amountGrateOfCrushers, currentGrateCrusher,
-			currentSuitableGrate, valueOfLedgeInstallationPlace, amountOfHammerCrushers, amountOfSuitableGrates,
-			sizeOfInputChannelPart, sizeOfOutputChannelPart, lengthOfIncreaseChannelPart, commonLengthOfChamberGrate,
-			amountOfWaste,
+		const { secondMaxFlow, type } = this.props;
+		const { speedOfWaterInChannel, speedOfWaterInSection, widthSection, rodThickness,
+			amountOfGrates, inclineAngle, formOfRod, middleValueBPK5,
+			middleVolumeWasteWater, markOfGrate, markOfGrateCrusher, markOfHammerCrusher,
 		} = this.state;
-		if (listOfRodThickness && listOfRodThickness.length !== 0) {
-			this.rodThicknessList = listOfRodThickness.map(thickness => {
-				return { value: thickness, label: `${thickness}` };
-			});
-			this.rodThicknessList.unshift({ value: undefined, label: 'Выберите толщину стержня' });
-		}
-		dataModel.setGrateResult({
-			currentSuitableGrate,
-			currentGrateCrusher,
-			valueOfLedgeInstallationPlace,
-			amountOfHammerCrushers,
-			amountOfSuitableGrates,
-			sizeOfInputChannelPart,
-			sizeOfOutputChannelPart,
-			lengthOfIncreaseChannelPart,
-			commonLengthOfChamberGrate,
-			amountOfWaste,
-		});
-		return <div className={'device-input'}>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{type === GrateTypes.mechanic || type === GrateTypes.hand ?
-				<div>
-					{this.renderSourceOfWasteWater()}
-					<InputTemplate title={'Скрость течения воды в канале, м/с, диапазон [1.5 - 2]'}
-						placeholder={'Введите значение Vk...'}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						range={{ minValue: _.SPEED_WATER_IN_CHANNEL_MIN, maxValue: _.SPEED_WATER_IN_CHANNEL_MAX }}
-						onInputRef={(input) => { this.speedOfWaterInChannelRef = input; }}
-						onInput={(value) => { this.setState({ speedOfWaterInChannel: value }); }} />
-					<InputTemplate title={'Скорость движения воды в прозорах решетки, м/с, диапазон [0.8 - 1]'}
-						placeholder={'Введите значение Vp...'}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						range={{ minValue: _.SPEED_WATER_IN_SECTION_MIN, maxValue: _.SPEED_WATER_IN_SECTION_MAX }}
-						onInputRef={(input) => { this.speedOfWaterInSectionRef = input; }}
-						onInput={(value) => { this.setState({ speedOfWaterInSection: value }); }} />
-					<SelectTemplate title={'Выбор формы стержней'} itemList={this.formOfRodList}
-						onSelect={(value) => this.selectFormOfRods(value)}
-						onSelectRef={(optionList) => { this.formOfRodsRef = optionList; }} />
-					<InputTemplate title={'Угол наклона решетки к горизонту, диапазон [60 - 70]'}
-						placeholder={'Введите значение α...'}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						range={{ minValue: _.INCLINE_ANGLE_MIN, maxValue: _.INCLINE_ANGLE_MAX }}
-						onInputRef={(input) => { this.inclineAngleRef = input; }}
-						onInput={(value) => { this.setState({ inclineAngle: value }); }} />
-					{type === GrateTypes.mechanic ?
-						<InputTemplate title={'Коэффициент, учитывающий стеснение потока механическими граблями, диапазон [1.05 - 1.1]'}
-							placeholder={'Введите значение Kst...'}
-							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-							range={{ minValue: _.FLOW_RESTRICTION_RAKE_MIN, maxValue: _.FLOW_RESTRICTION_RAKE_MAX }}
-							onInputRef={(input) => { this.flowRestrictionRakeRef = input; }}
-							onInput={(value) => { this.setState({ flowRestrictionRake: value }); }} /> :
-						null}
-					<SelectTemplate title={'Ширина прозоров решетки, м'} itemList={this.widthSectionList}
-						onSelect={(value) => this.selectWidthSection(value)}
-						onSelectRef={(optionList) => { this.widthSectionsRef = optionList; }} />
-					{this.rodThicknessList && this.rodThicknessList.length !== 0 ?
-						<SelectTemplate title={'Толщина стержней решетки, м'} itemList={this.rodThicknessList}
-							onSelect={(value) => { this.selectCurrentRodThickness(value); }}
-							onSelectRef={(optionList) => { this.rodThicknessesRef = optionList; }} /> : null}
-					<div className={'ctrl-buttons-panel'}>
-						{this.renderCountingButton()}
-					</div>
 
-				</div> :
-				<div>
-					<SelectTemplate title={'Выбор типа решетки дробилки'} itemList={this.grateCrusherList}
-						onSelect={(value) => { this.selectGrateCrusher(value); }}
-						onSelectRef={(optionList) => { this.grateCrushersRef = optionList; }} />
-					{checkGrateCrusherSpeed ?
-						<div>
-							{labelTemplate('Количество решеток дробилок необходимых для очистки, шт', amountGrateOfCrushers)}
-							{labelTemplate('Проверка дробилки, скорость должна входить в диапазон [1 - 1.2], м/с', checkGrateCrusherSpeed)}
-							{!(checkGrateCrusherSpeed > currentGrateCrusher.speedOfMoveInSectionMin) ||
-								!(checkGrateCrusherSpeed < currentGrateCrusher.speedOfMoveInSectionMax) ?
-								<ErrorAlert errorMessage={'Проверка прошла неудачно - данный тип решетки-дробилки ' +
-									'не подходит, либо скорость близка к нужному значению, ' +
-									'но таковой не является.'} /> : null}
-						</div> : null}
-				</div>
+		if (type === GrateTypes.hand) {
+			// formula 1 n = qmax / (hk * vp * b), hk = qmax / speedWaterInChannel
+			const hk = Math.sqrt(secondMaxFlow / speedOfWaterInChannel);
+			this.amountOfSection = Math.ceil(secondMaxFlow / (hk * speedOfWaterInSection * widthSection));
+			if (this.amountOfSection % 2 !== 0) {
+				this.amountOfSection++;
 			}
-		</div>;
+			// formula 2 Bp = S * (n - 1) + b * n
+			this.generalGrateWidth = rodThickness * (this.amountOfSection - 1) + widthSection * this.amountOfSection;
+			// formula 3 B1 = Bp / N, n1 = n / N
+			this.countingWidthOfGrate = this.generalGrateWidth / Math.ceil(amountOfGrates);
+			this.countingAmountOfSection = this.amountOfSection / Math.ceil(amountOfGrates);
+			// formula 4 vp = qmax / (hk * n1 * b * N)
+			this.realWaterSpeedInSection = secondMaxFlow / (hk * this.countingAmountOfSection * widthSection *  Math.ceil(amountOfGrates));
+			this.amountAdditionalGrates = this.selectAdditionalFacilities(Math.ceil(amountOfGrates));
+			// formula 5 l1 = (B1 - B) / 2 * tgFi, l2 = 0.5 * l1
+			const standardChannelWidth = selectValueFromDiapasonOfFilteredArray(
+				GrateSource.standardChannelWidth, this.countingWidthOfGrate, 'less');
+			this.sizeOfInputChannel = (this.countingWidthOfGrate - standardChannelWidth) /
+				(2 * Math.tan(GrateSource.transferRadiansToDegrees(GrateSource.anglePhi)));
+			this.sizeOfOutputChannel = 0.5 * this.sizeOfInputChannel;
+			// formula 6 l = 1.8 * B + hk / tgAlpha
+			this.lengthOfExtendPartOfChannel = 1.8 * standardChannelWidth + hk / Math.tan(GrateSource.transferRadiansToDegrees(inclineAngle));
+			// formula 7 L = l1 + l2 + l
+			this.commonLengthOfCamera = this.sizeOfInputChannel + this.sizeOfOutputChannel + this.lengthOfExtendPartOfChannel;
+			// formula 8 psi = beta * sinAlpha * (S / b)^(4/3)
+			this.coefficientLocalPressure = formOfRod * Math.sin(GrateSource.transferRadiansToDegrees(inclineAngle)) *
+				Math.pow((rodThickness / widthSection), 4 / 3);
+			// formula 9 hp = psi * vp^2 / (2 * g) * P
+			this.sizeOfLedge = this.coefficientLocalPressure * (Math.pow(this.realWaterSpeedInSection, 2) / (2 * GrateSource.gravityConst)) *
+				GrateSource.coefficientLooseIncrease;
+		}
+
+		if (type === GrateTypes.mechanic) {
+			this.currentGrate = GrateSource.grates.find(grate => markOfGrate === grate.mark);
+			// formula 12 Nреш = qmax / qреш1
+			const amount = secondMaxFlow / (this.currentGrate.countingFlow / 1000);
+			this.amountOfGrate = amount <= 1 ? 2 : Math.ceil(amount);
+			this.amountAdditionalGrates = this.selectAdditionalFacilities(this.amountOfGrate);
+		}
+
+		if (type === GrateTypes.crusher) {
+			this.currentGrateCrusher = GrateSource.grateCrushers.find(grate => markOfGrateCrusher === grate.mark);
+			this.amountOfGrateCrusher = Math.ceil(secondMaxFlow / (this.currentGrateCrusher.maxPerformance / 3600));
+			this.amountAdditionalGrates = this.selectAdditionalFacilities(this.amountOfGrateCrusher);
+			// formula 14 v = qmax / (F * N)
+			this.realWaterSpeedInSection = secondMaxFlow / (this.currentGrateCrusher.squareHeliumHole * this.amountOfGrateCrusher);
+		}
+
+		if (type === GrateTypes.hand || type === GrateTypes.mechanic) {
+			// formula 10 Npeq = (Cbpk5 * Wct) / (365 * 60)
+			this.amountOfDwellers = (middleValueBPK5 * middleVolumeWasteWater) / (365 * 60);
+			// formula 11 Wotb = qotb * Npeq / 365000, Potb = 750 * Wotb / 1000
+			const amountOfWaste = this.linearInterpalation(
+				GrateSource.AmountOfWaste.startX,
+				GrateSource.AmountOfWaste.endX,
+				GrateSource.AmountOfWaste.startY,
+				GrateSource.AmountOfWaste.endY,
+				widthSection
+			);
+			this.volumeOfWaste = (amountOfWaste * this.amountOfDwellers) / 365000;
+			this.massOfWaste = 750 * this.volumeOfWaste / 1000;
+		}
+
+		if (type === GrateTypes.mechanic) {
+			const necessaryPerformance = this.massOfWaste * 1000 / 24;
+			this.currentHammerCrusher = GrateSource.hammerCrushers.find(crusher => markOfHammerCrusher === crusher.mark);
+			this.amountOfHammerCrusher = Math.ceil(necessaryPerformance / this.currentHammerCrusher.performance.min);
+			this.amountAdditionalHammerCrusher = this.selectAdditionalFacilities(this.amountOfHammerCrusher);
+			// formula 13
+			this.amountOfTechnicWaterFlow = Math.round(40 * this.massOfWaste);
+		}
+
+		this.setCurrentResult();
+
+		this.setState({ isResult: true });
 	}
 
-	// Отрисовка вывода общих результатов первого и второго расчетов
-	private renderResultCounting = () => {
-		const {
-			amountOfSuitableGrates,
-			valueOfLedgeInstallationPlace,
-			amountOfWaste,
-			commonLengthOfChamberGrate,
-			sizeOfInputChannelPart,
-			sizeOfOutputChannelPart,
-			lengthOfIncreaseChannelPart,
-			amountOfHammerCrushers,
-			checkSpeedOfWater,
-			suitableGrates,
-			limitedStandardWidthOfChannel,
-			currentSuitableGrate,
-			currentGrateCrusher,
-		} = this.state;
-		if (suitableGrates && suitableGrates.length !== 0) {
-			this.suitableGrateList = suitableGrates.map(grate => {
-				return { value: grate.mark, label: grate.mark };
-			});
-			this.suitableGrateList.unshift({ value: undefined, label: 'Выберите решетку' });
+	private selectAdditionalFacilities(amountOfFacilities: number): number {
+		return amountOfFacilities <= GrateSource.AmountOfAdditionalGrates.limit
+		? GrateSource.AmountOfAdditionalGrates.min
+		: GrateSource.AmountOfAdditionalGrates.max;
+	}
+
+	private linearInterpalation(startX: number, endX: number, startY: number, endY: number, existX: number) {
+		return startY + ((endY - startY) / (endX - startX)) * (existX - startX);
+	}
+
+	private renderResult = () => {
+		if (!this.state.isResult) {
+			return;
 		}
-		if (limitedStandardWidthOfChannel && limitedStandardWidthOfChannel.length !== 0) {
-			this.limitedStandardChannelWidthList = limitedStandardWidthOfChannel.map(width => {
-				return { value: width, label: `${width}` };
-			});
-			this.limitedStandardChannelWidthList.unshift({ value: undefined, label: 'Выберите ширину канала' });
-		}
+		const { type } = this.props;
+		const { amountOfGrates } = this.state;
 		return (
-			<div className={'device-result'}>
-				<div className={'input-data-title'}>Результаты расчета</div>
-				{checkSpeedOfWater ?
-					labelTemplate('Проверка решеток на соответствие:', `
-            ${_.MIN_CHECK_SPEED_WATER} <= ${checkSpeedOfWater.toFixed(3)} <= ${_.MAX_CHECK_SPEED_WATER} :
-            ${_.MIN_CHECK_SPEED_WATER <= checkSpeedOfWater && _.MAX_CHECK_SPEED_WATER >= checkSpeedOfWater ? 'Соответствует' : 'Не соответствует'}`) :
-					null}
-				{suitableGrates && suitableGrates.length !== 0 ?
-					<div>
-						<SelectTemplate title={'Выбор решетки'} itemList={this.suitableGrateList}
-							onSelect={(value) => { this.selectFromSuitableGrate(value); }}
-							onSelectRef={(optionList) => { this.suitableGratesRef = optionList; }} />
-						{this.limitedStandardChannelWidthList && this.limitedStandardChannelWidthList.length !== 0 ?
-							<SelectTemplate title={'Выбор стандартной ширины канала, м'} itemList={this.limitedStandardChannelWidthList}
-								onSelect={(value) => { this.selectStandardWidthOfChannel(value); }}
-								onSelectRef={(optionList) => { this.limitedStandardChannelsWidthRef = optionList; }} /> : null}
-						<SelectTemplate title={'Выбор типа решетки'} itemList={this.typeOfGrateList}
-							onSelect={(value) => { this.selectTypeOfGrate(value); }}
-							onSelectRef={(optionList) => { this.typeOfGratesRef = optionList; }} />
-						{this.renderCheckingButton()}
-						{valueOfLedgeInstallationPlace ?
-							<div className={'table-result'}>
-								<Table bordered hover>
-									<tbody>
-										<tr><td>Величина уступа в месте установки решетки, м</td>
-											<td>{valueOfLedgeInstallationPlace.toFixed(3)}</td></tr>
-										<tr><td className={'input-label left-title-column'}>Молотковые дробилки</td>
-											<td className={'right-title-column'}></td></tr>
-										<tr>
-											<td>Количество технической воды, подводимой к дробилками, м3/ч</td>
-											<td>{(_.TECHNICAL_WATER * valueOfLedgeInstallationPlace).toFixed(3)}</td>
-										</tr>
-										<tr>
-											<td>Количество молотковых дробилок необходимых для очистки, шт</td>
-											<td>{amountOfHammerCrushers}</td>
-										</tr>
-										<tr><td className={'input-label left-title-column'}>Решетки</td>
-											<td className={'right-title-column'}></td></tr>
-										<tr><td>Количество рабочих решеток, шт</td><td>{amountOfSuitableGrates}</td></tr>
-										<tr>
-											<td>Количество резервных решеток, шт</td>
-											<td>{amountOfSuitableGrates > _.BASE_AMOUNT_OF_GRATES ? _.ADDITIONAL_AMOUNT_OF_GRATES : 1}</td>
-										</tr>
-										<tr><td className={'input-label left-title-column'}>Основные длины</td>
-											<td className={'right-title-column'}></td></tr>
-										<tr><td>Длина входной части канала, м</td><td>{sizeOfInputChannelPart.toFixed(3)}</td></tr>
-										<tr><td>Длина выходной части канала, м</td><td>{sizeOfOutputChannelPart.toFixed(3)}</td></tr>
-										<tr><td>Длина расширенной части канала, м</td><td>{lengthOfIncreaseChannelPart.toFixed(3)}</td></tr>
-										<tr><td>Общая длина камеры решетки, м</td><td>{commonLengthOfChamberGrate.toFixed(3)}</td></tr>
-										<tr><td className={'input-label left-title-column'}>Отходы</td><td className={'right-title-column'}></td></tr>
-										<tr><td>Количество отходов, кг/ч</td><td>{amountOfWaste}</td></tr>
-									</tbody>
-								</Table>
-							</div> :
-							null
-						}
-					</div> : null}
+			<div className={'table-result'}>
+				<Table bordered hover>
+					<tbody>
+					{(type === GrateTypes.hand)
+							? <>
+								<tr><td>Количество решеток, шт</td>
+									<td>{amountOfGrates ? amountOfGrates : undefined}</td></tr>
+								<tr><td>Количество резервных решеток, шт</td>
+									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
+								<tr><td>Ширина одной решетки, м</td>
+									<td>{this.countingWidthOfGrate ? this.countingWidthOfGrate.toFixed(2) : undefined}</td></tr>
+								<tr><td>Количество прозоров одной решетки, шт</td>
+									<td>{this.countingAmountOfSection ? this.countingAmountOfSection : undefined}</td></tr>
+								<tr><td>Общая длина камеры решетки, м</td>
+									<td>{this.commonLengthOfCamera ? this.commonLengthOfCamera.toFixed(2) : undefined}</td></tr>
+								<tr><td>Размер входной части канала, м</td>
+									<td>{this.sizeOfInputChannel ? this.sizeOfInputChannel.toFixed(3) : undefined}</td></tr>
+								<tr><td>Размер выходной части канала, м</td>
+									<td>{this.sizeOfOutputChannel ? this.sizeOfOutputChannel.toFixed(3) : undefined}</td></tr>
+								<tr><td>Длина расширенной части канала, м</td>
+									<td>{this.lengthOfExtendPartOfChannel ? this.lengthOfExtendPartOfChannel.toFixed(3) : undefined}</td></tr>
+								<tr><td>Величина уступа в месте установки решетки, м</td>
+									<td>{this.sizeOfLedge ? this.sizeOfLedge.toFixed(3) : undefined}</td></tr>
+								<tr><td>Объем снимаемых отбросов, м3/сут</td>
+									<td>{this.volumeOfWaste ? this.volumeOfWaste.toFixed(2) : undefined}</td></tr>
+							</>
+							: null}
+							{(type === GrateTypes.mechanic)
+							? <>
+								<tr><td>Марка решетки</td>
+									<td>{this.currentGrate ? this.currentGrate.mark : undefined}</td></tr>
+								<tr><td>Количество решеток, шт</td>
+									<td>{this.amountOfGrate ? this.amountOfGrate : undefined}</td></tr>
+								<tr><td>Количество резервных решеток, шт</td>
+									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
+								<tr><td>Марка молотковой дробилки</td>
+									<td>{this.currentHammerCrusher ? this.currentHammerCrusher.mark : undefined}</td></tr>
+								<tr><td>Количество молотковых дробилок, шт</td>
+									<td>{this.amountOfHammerCrusher ? this.amountOfHammerCrusher : undefined}</td></tr>
+								<tr><td>Количество резервных молотковых дробилок, шт</td>
+									<td>{this.amountAdditionalHammerCrusher ? this.amountAdditionalHammerCrusher : undefined}</td></tr>
+								<tr><td>Расход технической воды, подводимой к дробилкам, м3/сут</td>
+									<td>{this.amountOfTechnicWaterFlow ? this.amountOfTechnicWaterFlow : undefined}</td></tr>
+							</>
+							: null}
+							{(type === GrateTypes.crusher)
+							? <>
+								<tr><td>Марка решеток-дробилок</td>
+									<td>{this.currentGrateCrusher ? this.currentGrateCrusher.mark : undefined}</td></tr>
+								<tr><td>Количество решеток-дробилок, шт</td>
+									<td>{this.amountOfGrateCrusher ? this.amountOfGrateCrusher : undefined}</td></tr>
+								<tr><td>Количество резервных решеток-дробилок, шт</td>
+									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
+							</>
+							: null}
+							{(type === GrateTypes.hand || type === GrateTypes.mechanic)
+							? <>
+								<tr><td>Масса снимаемых отбросов за сутки, т/сут</td>
+									<td>{this.massOfWaste ? this.massOfWaste.toFixed(2) : undefined}</td></tr>
+							</>
+							: null}
+					</tbody>
+				</Table>
 			</div>
 		);
 	}
 
-	private returnToScheme = () => {
-		this.props.onCountMode(false);
-	}
-
-	private goToResult = () => {
-		this.props.onCountMode(false);
-		this.props.onResultMode(true);
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCountingButton = () => {
-		const { isValidateError } = this.state;
-		const isNotReadyToCount = !this.isDataExisted() || isValidateError;
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-				Подобрать марку решеток
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.grateCounting()}>
-				Подобрать марку решеток
-			</button>;
-	}
-
 	// Отрисовка кнопки расчета
 	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isCheckResultDataExisted();
+		const isNotReadyToCount = !this.isInputReadyToCounting();
 		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-				Показать результаты данной выборки
+			Показать результаты данной выборки
 			</button> :
 			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
 				Показать результаты данной выборки
@@ -690,60 +490,62 @@ export class GrateComponent extends React.Component<GrateComponentProps, GrateCo
 		</div>;
 	}
 
-	private isDataExisted = () => {
-		const { type } = this.props;
-		const { speedOfWaterInChannel,
-			speedOfWaterInSection, inclineAngle, flowRestrictionRake,
-			amountOfHammerCrushers, formOfRod, currentRodThickness,
-			currentGrateCrusher, currentWidthSection
-		} = this.state;
-		if (GrateTypes.mechanic === type && (!speedOfWaterInChannel ||
-			!speedOfWaterInSection || !inclineAngle || !currentWidthSection ||
-			!amountOfHammerCrushers || !formOfRod || !currentRodThickness || !flowRestrictionRake)) {
-			return false;
-		} else if (GrateTypes.hand === type && (!speedOfWaterInChannel ||
-			!speedOfWaterInSection || !inclineAngle || !currentWidthSection ||
-			!amountOfHammerCrushers || !formOfRod || !currentRodThickness)) {
-			return false;
-		} else if (GrateTypes.crusher === type && !currentGrateCrusher) {
-			return false;
-		} else {
-			return true;
-		}
+	private returnToScheme = () => {
+		this.props.onCountMode(false);
 	}
 
-	private isCheckResultDataExisted = () => {
-		const { currentSuitableGrate, currentStandardWidthOfChannel, currentTypeOfGrates } = this.state;
-		if (!currentSuitableGrate || !currentStandardWidthOfChannel || !currentTypeOfGrates) {
-			return false;
-		} else {
-			return true;
-		}
-	}
-
-	private renderGrateView = () => {
-		const { type } = this.props;
-		return (
-			<div>
-				<div className={'title-container'}>
-					{type === GrateTypes.mechanic ?
-						<div className={'count-title'}>Механическая очистка</div> :
-						type === GrateTypes.hand ?
-							<div className={'count-title'}>Ручная очистка</div> :
-							<div className={'count-title'}>Очистка решетками дробилками</div>}
-					{this.renderToolbar()}
-				</div>
-				<div className={'device-container'}>
-					{this.renderGrate()}
-					{type === GrateTypes.mechanic || type === GrateTypes.hand ?
-						this.renderResultCounting() :
-						null}
-				</div>
-			</div>
-		);
+	private goToResult = () => {
+		this.props.onCountMode(false);
+		this.props.onResultMode(true);
 	}
 
 	render() {
-		return this.renderGrateView();
+		const { type } = this.props;
+		return (
+			<>
+				<div className={'title-container'}>
+					{type === GrateTypes.mechanic ?
+						<div className={'count-title'}>Механизированная очистка</div> :
+						type === GrateTypes.hand ?
+							<div className={'count-title'}>Ручная очистка</div> :
+							<div className={'count-title'}>Решетки-дробилки</div>}
+					{this.renderToolbar()}
+				</div>
+				<div className={'device-container'}>
+					<div className={'device-input'}>
+						{this.renderBaseData()}
+						{this.renderInputArea()}
+					</div>
+					<div className={'device-result'}>
+						<div className={'input-data-title'}>Результаты расчета</div>
+						{this.renderResult()}
+					</div>
+				</div>
+			</>
+		);
+	}
+
+}
+
+export function selectValueFromDiapasonOfFilteredArray(
+	array: number[], valueToCompare: number, direction: 'greater' | 'less'
+): number {
+	for (let index = 0; index < array.length; index++) {
+		if (valueToCompare >= array[index] && valueToCompare <= array[index + 1]) {
+			if (((array[index + 1] + array[index]) / 2) > valueToCompare) {
+				if (direction === 'greater') {
+					return array[index + 1];
+				} else {
+					return array[index];
+				}
+			} else if (valueToCompare >= array[index]) {
+				if (index === array.length - 1) {
+					return array[index];
+				}
+				continue;
+			} else if (valueToCompare <= array[index]) {
+				return array[index];
+			}
+		}
 	}
 }

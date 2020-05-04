@@ -2,7 +2,7 @@
     "http://tonya-diploma.com/device": {
         "id": "http://tonya-diploma.com/device",
         "types": [ "http://tonya-diploma.com/type/GeneralEntity" ],
-        "label": { "values": [ { "value": "Очитное сооружение", "language": "ru" } ] },
+        "label": { "values": [ { "value": "Очистное сооружение", "language": "ru" } ] },
         "properties": {
             "http://tonya-diploma.com/device/description": {
                 "type": "string",
@@ -24,11 +24,11 @@
     "http://tonya-diploma.com/device/grate/mechanic": {
         "id": "http://tonya-diploma.com/device/grate/mechanic",
         "types": [  "http://tonya-diploma.com/type/Device" ],
-        "label": { "values": [ { "value": "Механическая решетка",  "language": "ru" } ] },
+        "label": { "values": [ { "value": "Решетка с механизированной очисткой",  "language": "ru" } ] },
         "properties": {
             "http://tonya-diploma.com/device/grate/mechanic/description": {
                 "type": "string",
-                "values": [ { "value": "Механическая решетка для очистки сточных вод от крупного мусора", "language": "ru" } ]
+                "values": [ { "value": "Решетка с механизированной очисткой сточных вод", "language": "ru" } ]
             }
         }
     },
@@ -54,310 +54,238 @@
             }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg5t": {
-        "id": "http://tonya-diploma.com/device/grate/mg5t",
+    "http://tonya-diploma.com/device/grate/rgm0608": {
+        "id": "http://tonya-diploma.com/device/grate/rgm0608",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ5Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)0608", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg5t/Ширина": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg5t/Высота": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/mg5t/Площадь": { "type": "string", "values": [ { "value": 6 } ] },
-            "http://tonya-diploma.com/device/grate/mg5t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg5t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg5t/Количество прозоров": { "type": "string", "values": [ { "value": 84 } ] }
+            "http://tonya-diploma.com/device/grate/rgm0608/Расчетный расход": { "type": "string", "values": [ { "value": 480 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg6t": {
-        "id": "http://tonya-diploma.com/device/grate/mg6t",
+    "http://tonya-diploma.com/device/grate/rgm0814": {
+        "id": "http://tonya-diploma.com/device/grate/rgm0814",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ6Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)0814", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg6t/Ширина": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg6t/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg6t/Площадь": { "type": "string", "values": [ { "value": 4 } ] },
-            "http://tonya-diploma.com/device/grate/mg6t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg6t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg6t/Количество прозоров": { "type": "string", "values": [ { "value": 84 } ] }
+            "http://tonya-diploma.com/device/grate/rgm0814/Расчетный расход": { "type": "string", "values": [ { "value": 610 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg7t": {
-        "id": "http://tonya-diploma.com/device/grate/mg7t",
+    "http://tonya-diploma.com/device/grate/rgm1010": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1010",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ7Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1010", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg7t/Ширина": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/mg7t/Высота": { "type": "string", "values": [ { "value": 1.4 } ] },
-            "http://tonya-diploma.com/device/grate/mg7t/Площадь": { "type": "string", "values": [ { "value": 1.12 } ] },
-            "http://tonya-diploma.com/device/grate/mg7t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg7t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg7t/Количество прозоров": { "type": "string", "values": [ { "value": 31 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1010/Расчетный расход": { "type": "string", "values": [ { "value": 610 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg8t": {
-        "id": "http://tonya-diploma.com/device/grate/mg8t",
+    "http://tonya-diploma.com/device/grate/rgm1012": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1012",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ8Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1012", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg8t/Ширина": { "type": "string", "values": [ { "value": 1.4 } ] },
-            "http://tonya-diploma.com/device/grate/mg8t/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg8t/Площадь": { "type": "string", "values": [ { "value": 2.8 } ] },
-            "http://tonya-diploma.com/device/grate/mg8t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg8t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg8t/Количество прозоров": { "type": "string", "values": [ { "value": 55 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1012/Расчетный расход": { "type": "string", "values": [ { "value": 690 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg9t": {
-        "id": "http://tonya-diploma.com/device/grate/mg9t",
+    "http://tonya-diploma.com/device/grate/rgm1016": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1016",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ9Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1016", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg9t/Ширина": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/mg9t/Высота": { "type": "string", "values": [ { "value": 1.2 } ] },
-            "http://tonya-diploma.com/device/grate/mg9t/Площадь": { "type": "string", "values": [ { "value": 1.2 } ] },
-            "http://tonya-diploma.com/device/grate/mg9t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg9t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg9t/Количество прозоров": { "type": "string", "values": [ { "value": 39 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1016/Расчетный расход": { "type": "string", "values": [ { "value": 1040 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg10t": {
-        "id": "http://tonya-diploma.com/device/grate/mg10t",
+    "http://tonya-diploma.com/device/grate/rgm1020": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1020",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ10Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1020", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg10t/Ширина": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/mg10t/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg10t/Площадь": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg10t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg10t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg10t/Количество прозоров": { "type": "string", "values": [ { "value": 39 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1020/Расчетный расход": { "type": "string", "values": [ { "value": 1390 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg11t": {
-        "id": "http://tonya-diploma.com/device/grate/mg11t",
+    "http://tonya-diploma.com/device/grate/rgm1420": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1420",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ11Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1420", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg11t/Ширина": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/mg11t/Высота": { "type": "string", "values": [ { "value": 1.6 } ] },
-            "http://tonya-diploma.com/device/grate/mg11t/Площадь": { "type": "string", "values": [ { "value": 1.6 } ] },
-            "http://tonya-diploma.com/device/grate/mg11t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg11t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg11t/Количество прозоров": { "type": "string", "values": [ { "value": 39 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1420/Расчетный расход": { "type": "string", "values": [ { "value": 1940 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/mg12t": {
-        "id": "http://tonya-diploma.com/device/grate/mg12t",
+    "http://tonya-diploma.com/device/grate/rgm1620": {
+        "id": "http://tonya-diploma.com/device/grate/rgm1620",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "МГ12Т", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)1620", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/mg12t/Ширина": { "type": "string", "values": [ { "value": 1.6 } ] },
-            "http://tonya-diploma.com/device/grate/mg12t/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/mg12t/Площадь": { "type": "string", "values": [ { "value": 3.2 } ] },
-            "http://tonya-diploma.com/device/grate/mg12t/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/mg12t/Толщина стержня": { "type": "string", "values": [ { "value": 0.008 } ] },
-            "http://tonya-diploma.com/device/grate/mg12t/Количество прозоров": { "type": "string", "values": [ { "value": 64 } ] }
+            "http://tonya-diploma.com/device/grate/rgm1620/Расчетный расход": { "type": "string", "values": [ { "value": 2080 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu1": {
-        "id": "http://tonya-diploma.com/device/grate/rmu1",
+    "http://tonya-diploma.com/device/grate/rgm2020": {
+        "id": "http://tonya-diploma.com/device/grate/rgm2020",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ1", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РГМ(Н)2020", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu1/Ширина": { "type": "string", "values": [ { "value": 0.6 } ] },
-            "http://tonya-diploma.com/device/grate/rmu1/Высота": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/rmu1/Площадь": { "type": "string", "values": [ { "value": 0.48 } ] },
-            "http://tonya-diploma.com/device/grate/rmu1/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu1/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu1/Количество прозоров": { "type": "string", "values": [ { "value": 21 } ] }
+            "http://tonya-diploma.com/device/grate/rgm2020/Расчетный расход": { "type": "string", "values": [ { "value": 2770 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu2": {
-        "id": "http://tonya-diploma.com/device/grate/rmu2",
+    "http://tonya-diploma.com/device/grate/rsm0507": {
+        "id": "http://tonya-diploma.com/device/grate/rsm0507",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ2", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ0507", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu2/Ширина": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rmu2/Высота": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rmu2/Площадь": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rmu2/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu2/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu2/Количество прозоров": { "type": "string", "values": [ { "value": 39 } ] }
+            "http://tonya-diploma.com/device/grate/rsm0507/Расчетный расход": { "type": "string", "values": [ { "value": 230 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu3": {
-        "id": "http://tonya-diploma.com/device/grate/rmu3",
+    "http://tonya-diploma.com/device/grate/rsm0710": {
+        "id": "http://tonya-diploma.com/device/grate/rsm0710",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ3", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ0710", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu3/Ширина": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rmu3/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu3/Площадь": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu3/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu3/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu3/Количество прозоров": { "type": "string", "values": [ { "value": 39 } ] }
+            "http://tonya-diploma.com/device/grate/rsm0710/Расчетный расход": { "type": "string", "values": [ { "value": 455 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu4": {
-        "id": "http://tonya-diploma.com/device/grate/rmu4",
+    "http://tonya-diploma.com/device/grate/rsm0812": {
+        "id": "http://tonya-diploma.com/device/grate/rsm0812",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ4", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ0812", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu4/Ширина": { "type": "string", "values": [ { "value": 1.5 } ] },
-            "http://tonya-diploma.com/device/grate/rmu4/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu4/Площадь": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/rmu4/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu4/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu4/Количество прозоров": { "type": "string", "values": [ { "value": 60 } ] }
+            "http://tonya-diploma.com/device/grate/rsm0812/Расчетный расход": { "type": "string", "values": [ { "value": 625 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu5": {
-        "id": "http://tonya-diploma.com/device/grate/rmu5",
+    "http://tonya-diploma.com/device/grate/rsm1012": {
+        "id": "http://tonya-diploma.com/device/grate/rsm1012",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ5", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ1012", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu5/Ширина": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu5/Высота": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu5/Площадь": { "type": "string", "values": [ { "value": 4 } ] },
-            "http://tonya-diploma.com/device/grate/rmu5/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu5/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu5/Количество прозоров": { "type": "string", "values": [ { "value": 84 } ] }
+            "http://tonya-diploma.com/device/grate/rsm1012/Расчетный расход": { "type": "string", "values": [ { "value": 780 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu6": {
-        "id": "http://tonya-diploma.com/device/grate/rmu6",
+    "http://tonya-diploma.com/device/grate/rsm1216": {
+        "id": "http://tonya-diploma.com/device/grate/rsm1216",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ6", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ1216", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu6/Ширина": { "type": "string", "values": [ { "value": 2 } ] },
-            "http://tonya-diploma.com/device/grate/rmu6/Высота": { "type": "string", "values": [ { "value": 2.5 } ] },
-            "http://tonya-diploma.com/device/grate/rmu6/Площадь": { "type": "string", "values": [ { "value": 5 } ] },
-            "http://tonya-diploma.com/device/grate/rmu6/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu6/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu6/Количество прозоров": { "type": "string", "values": [ { "value": 84 } ] }
+            "http://tonya-diploma.com/device/grate/rsm1216/Расчетный расход": { "type": "string", "values": [ { "value": 1250 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmu7": {
-        "id": "http://tonya-diploma.com/device/grate/rmu7",
+    "http://tonya-diploma.com/device/grate/rsm1620": {
+        "id": "http://tonya-diploma.com/device/grate/rsm1620",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМУ7", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ1620", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmu7/Ширина": { "type": "string", "values": [ { "value": 2.5 } ] },
-            "http://tonya-diploma.com/device/grate/rmu7/Высота": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/rmu7/Площадь": { "type": "string", "values": [ { "value": 7.5 } ] },
-            "http://tonya-diploma.com/device/grate/rmu7/Ширина прозоров": { "type": "string", "values": [ { "value": 0.016 } ] },
-            "http://tonya-diploma.com/device/grate/rmu7/Толщина стержня": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmu7/Количество прозоров": { "type": "string", "values": [ { "value": 107 } ] }
+            "http://tonya-diploma.com/device/grate/rsm1620/Расчетный расход": { "type": "string", "values": [ { "value": 2080 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmn10": {
-        "id": "http://tonya-diploma.com/device/grate/rmn10",
+    "http://tonya-diploma.com/device/grate/rsm2020": {
+        "id": "http://tonya-diploma.com/device/grate/rsm2020",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМН10", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ2020", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmn10/Ширина": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/rmn10/Высота": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/rmn10/Площадь": { "type": "string", "values": [ { "value": 2.4 } ] },
-            "http://tonya-diploma.com/device/grate/rmn10/Ширина прозоров": { "type": "string", "values": [ { "value": 0.01 } ] },
-            "http://tonya-diploma.com/device/grate/rmn10/Толщина стержня": { "type": "string", "values": [ { "value": 0.01 } ] },
-            "http://tonya-diploma.com/device/grate/rmn10/Количество прозоров": { "type": "string", "values": [ { "value": 40 } ] }
+            "http://tonya-diploma.com/device/grate/rsm2020/Расчетный расход": { "type": "string", "values": [ { "value": 2770 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rmn6": {
-        "id": "http://tonya-diploma.com/device/grate/rmn6",
+    "http://tonya-diploma.com/device/grate/rsm2125": {
+        "id": "http://tonya-diploma.com/device/grate/rsm2125",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РМН6", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РСМ2125", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rmn6/Ширина": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/rmn6/Высота": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/rmn6/Площадь": { "type": "string", "values": [ { "value": 2.4 } ] },
-            "http://tonya-diploma.com/device/grate/rmn6/Ширина прозоров": { "type": "string", "values": [ { "value": 0.006 } ] },
-            "http://tonya-diploma.com/device/grate/rmn6/Толщина стержня": { "type": "string", "values": [ { "value": 0.01 } ] },
-            "http://tonya-diploma.com/device/grate/rmn6/Количество прозоров": { "type": "string", "values": [ { "value": 50 } ] }
+            "http://tonya-diploma.com/device/grate/rsm2125/Расчетный расход": { "type": "string", "values": [ { "value": 3410 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rgd": {
-        "id": "http://tonya-diploma.com/device/grate/rgd",
+    "http://tonya-diploma.com/device/grate/rkm0608": {
+        "id": "http://tonya-diploma.com/device/grate/rkm0608",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РГД", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РКМ0608", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rgd/Ширина": { "type": "string", "values": [ { "value": 0.9 } ] },
-            "http://tonya-diploma.com/device/grate/rgd/Высота": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rgd/Площадь": { "type": "string", "values": [ { "value": 0.9 } ] },
-            "http://tonya-diploma.com/device/grate/rgd/Ширина прозоров": { "type": "string", "values": [ { "value": 0.01 } ] },
-            "http://tonya-diploma.com/device/grate/rgd/Толщина стержня": { "type": "string", "values": [ { "value": 0.01 } ] },
-            "http://tonya-diploma.com/device/grate/rgd/Количество прозоров": { "type": "string", "values": [ { "value": 45 } ] }
+            "http://tonya-diploma.com/device/grate/rkm0608/Расчетный расход": { "type": "string", "values": [ { "value": 480 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rfs1": {
-        "id": "http://tonya-diploma.com/device/grate/rfs1",
+    "http://tonya-diploma.com/device/grate/rkm0814": {
+        "id": "http://tonya-diploma.com/device/grate/rkm0814",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РФС-01", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РКМ0814", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rfs1/Ширина": { "type": "string", "values": [ { "value": 0.9 } ] },
-            "http://tonya-diploma.com/device/grate/rfs1/Высота": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rfs1/Площадь": { "type": "string", "values": [ { "value": 0.9 } ] },
-            "http://tonya-diploma.com/device/grate/rfs1/Ширина прозоров": { "type": "string", "values": [ { "value": 0.004 } ] },
-            "http://tonya-diploma.com/device/grate/rfs1/Толщина стержня": { "type": "string", "values": [ { "value": 0.003 } ] },
-            "http://tonya-diploma.com/device/grate/rfs1/Количество прозоров": { "type": "string", "values": [ { "value": 130 } ] }
+            "http://tonya-diploma.com/device/grate/rkm0814/Расчетный расход": { "type": "string", "values": [ { "value": 610 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rs16": {
-        "id": "http://tonya-diploma.com/device/grate/rs16",
+    "http://tonya-diploma.com/device/grate/rkm1010": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1010",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "RS-16", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РКМ1010", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rs16/Ширина": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/rs16/Высота": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rs16/Площадь": { "type": "string", "values": [ { "value": 0.8 } ] },
-            "http://tonya-diploma.com/device/grate/rs16/Ширина прозоров": { "type": "string", "values": [ { "value": 0.005 } ] },
-            "http://tonya-diploma.com/device/grate/rs16/Толщина стержня": { "type": "string", "values": [ { "value": 0.003 } ] },
-            "http://tonya-diploma.com/device/grate/rs16/Количество прозоров": { "type": "string", "values": [ { "value": 100 } ] }
+            "http://tonya-diploma.com/device/grate/rkm1010/Расчетный расход": { "type": "string", "values": [ { "value": 610 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rs35": {
-        "id": "http://tonya-diploma.com/device/grate/rs35",
+    "http://tonya-diploma.com/device/grate/rkm1012": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1012",
         "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "RS-35", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РКМ1012", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rs35/Ширина": { "type": "string", "values": [ { "value": 1.5 } ] },
-            "http://tonya-diploma.com/device/grate/rs35/Высота": { "type": "string", "values": [ { "value": 3 } ] },
-            "http://tonya-diploma.com/device/grate/rs35/Площадь": { "type": "string", "values": [ { "value": 4.5 } ] },
-            "http://tonya-diploma.com/device/grate/rs35/Ширина прозоров": { "type": "string", "values": [ { "value": 0.003 } ] },
-            "http://tonya-diploma.com/device/grate/rs35/Толщина стержня": { "type": "string", "values": [ { "value": 0.003 } ] },
-            "http://tonya-diploma.com/device/grate/rs35/Количество прозоров": { "type": "string", "values": [ { "value": 250 } ] }
+            "http://tonya-diploma.com/device/grate/rkm1012/Расчетный расход": { "type": "string", "values": [ { "value": 690 } ] }
         }
     },
-    "http://tonya-diploma.com/device/grate/rd100": {
-        "id": "http://tonya-diploma.com/device/grate/rd100",
-        "types": [ "http://tonya-diploma.com/type/GrateCrusher" ],
+    "http://tonya-diploma.com/device/grate/rkm1016": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1016",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
         "image": "",
-        "label": { "values": [ { "value": "РД-100", "language": "ru" } ] },
+        "label": { "values": [ { "value": "РКМ1016", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rd100/Максимальная производительность": { "type": "string", "values": [ { "value": 0.00833334 } ] },
-            "http://tonya-diploma.com/device/grate/rd100/Площадь гелиевого отверстия": { "type": "string", "values": [ { "value": 0.00764 } ] },
-            "http://tonya-diploma.com/device/grate/rd100/Мин. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rd100/Макс. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1.2 } ] }
+            "http://tonya-diploma.com/device/grate/rkm1016/Расчетный расход": { "type": "string", "values": [ { "value": 1040 } ] }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/rkm1020": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1020",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
+        "image": "",
+        "label": { "values": [ { "value": "РКМ1020", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/rkm1020/Расчетный расход": { "type": "string", "values": [ { "value": 1390 } ] }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/rkm1420": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1420",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
+        "image": "",
+        "label": { "values": [ { "value": "РКМ1420", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/rkm1420/Расчетный расход": { "type": "string", "values": [ { "value": 1940 } ] }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/rkm1620": {
+        "id": "http://tonya-diploma.com/device/grate/rkm1620",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
+        "image": "",
+        "label": { "values": [ { "value": "РКМ1620", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/rkm1620/Расчетный расход": { "type": "string", "values": [ { "value": 2080 } ] }
+        }
+    },
+    "http://tonya-diploma.com/device/grate/rkm2020": {
+        "id": "http://tonya-diploma.com/device/grate/rkm2020",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
+        "image": "",
+        "label": { "values": [ { "value": "РКМ2020", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/rkm2020/Расчетный расход": { "type": "string", "values": [ { "value": 2770 } ] }
         }
     },
     "http://tonya-diploma.com/device/grate/rd200": {
@@ -366,22 +294,7 @@
         "image": "",
         "label": { "values": [ { "value": "РД-200", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rd200/Максимальная производительность": { "type": "string", "values": [ { "value": 0.01666667 } ] },
-            "http://tonya-diploma.com/device/grate/rd200/Площадь гелиевого отверстия": { "type": "string", "values": [ { "value": 0.019 } ] },
-            "http://tonya-diploma.com/device/grate/rd200/Мин. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rd200/Макс. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1.2 } ] }
-        }
-    },
-    "http://tonya-diploma.com/device/grate/rd400": {
-        "id": "http://tonya-diploma.com/device/grate/rd400",
-        "types": [ "http://tonya-diploma.com/type/GrateCrusher" ],
-        "image": "",
-        "label": { "values": [ { "value": "РД-400", "language": "ru" } ] },
-        "properties": {
-            "http://tonya-diploma.com/device/grate/rd400/Максимальная производительность": { "type": "string", "values": [ { "value": 0.1166667 } ] },
-            "http://tonya-diploma.com/device/grate/rd400/Площадь гелиевого отверстия": { "type": "string", "values": [ { "value": 0.119 } ] },
-            "http://tonya-diploma.com/device/grate/rd400/Мин. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rd400/Макс. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1.2 } ] }
+            "http://tonya-diploma.com/device/grate/rd600/Производительность": { "type": "string", "values": [ { "value": 60 } ] }
         }
     },
     "http://tonya-diploma.com/device/grate/rd600": {
@@ -390,10 +303,7 @@
         "image": "",
         "label": { "values": [ { "value": "РД-600", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/rd600/Максимальная производительность": { "type": "string", "values": [ { "value": 0.55555556 } ] },
-            "http://tonya-diploma.com/device/grate/rd600/Площадь гелиевого отверстия": { "type": "string", "values": [ { "value": 0.455 } ] },
-            "http://tonya-diploma.com/device/grate/rd600/Мин. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1 } ] },
-            "http://tonya-diploma.com/device/grate/rd600/Макс. скорость движения в прозорах": { "type": "string", "values": [ { "value": 1.2 } ] }
+            "http://tonya-diploma.com/device/grate/rd600/Производительность": { "type": "string", "values": [ { "value": 2000 } ] }
         }
     },
     "http://tonya-diploma.com/device/hammer-crusher": {
@@ -414,10 +324,16 @@
         "image": "",
         "label": { "values": [ { "value": "Д-3б", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/d3b/Производительность": { "type": "string", "values": [ { "value": 600 } ] },
-            "http://tonya-diploma.com/device/grate/d3b/Частота вращения": { "type": "string", "values": [ { "value": 1450 } ] },
-            "http://tonya-diploma.com/device/grate/d3b/Масса": { "type": "string", "values": [ { "value": 623 } ] },
-            "http://tonya-diploma.com/device/grate/d3b/Мощность": { "type": "string", "values": [ { "value": 22 } ] }
+            "http://tonya-diploma.com/device/grate/d3b/Производительность": { "type": "string", "values": [ { "value": "300-600" } ] }
+        }
+    },
+    "http://tonya-diploma.com/device/hammer-crusher/dk05": {
+        "id": "http://tonya-diploma.com/device/hammer-crusher/dk05",
+        "types": [ "http://tonya-diploma.com/type/HammerCrusher" ],
+        "image": "",
+        "label": { "values": [ { "value": "ДК-0,5", "language": "ru" } ] },
+        "properties": {
+            "http://tonya-diploma.com/device/grate/dk05/Производительность": { "type": "string", "values": [ { "value": 500 } ] }
         }
     },
     "http://tonya-diploma.com/device/hammer-crusher/dk1-0": {
@@ -426,10 +342,7 @@
         "image": "",
         "label": { "values": [ { "value": "ДК-1,0", "language": "ru" } ] },
         "properties": {
-            "http://tonya-diploma.com/device/grate/dk1-0/Производительность": { "type": "string", "values": [ { "value": 1000 } ] },
-            "http://tonya-diploma.com/device/grate/dk1-0/Частота вращения": { "type": "string", "values": [ { "value": 1450 } ] },
-            "http://tonya-diploma.com/device/grate/dk1-0/Масса": { "type": "string", "values": [ { "value": 2000 } ] },
-            "http://tonya-diploma.com/device/grate/dk1-0/Мощность": { "type": "string", "values": [ { "value": 75 } ] }
+            "http://tonya-diploma.com/device/grate/dk1-0/Производительность": { "type": "string", "values": [ { "value": 1000 } ] }
         }
     },
 

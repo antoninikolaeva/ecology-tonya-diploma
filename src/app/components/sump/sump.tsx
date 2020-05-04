@@ -5,7 +5,7 @@ import { labelTemplate, InputTemplate, NULLSTR, SelectTemplate, ItemList, resetS
 import { Table } from 'react-bootstrap';
 import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';
-import { transferRadiansToDegrees } from '../grate/grate.service';
+import { GrateSource } from '../grate/grate-resources';
 import { SumpResultData, dataModel } from '../data-model';
 
 export interface SumpProps {
@@ -25,6 +25,7 @@ interface SumpState {
 	borderHeight: number;
 	sedimentWet: number;
 	alpha: number;
+	typeOfClean: string;
 	isValidateError: boolean;
 	isResult: boolean;
 }
@@ -38,7 +39,9 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 	private borderHeightRef: HTMLInputElement;
 	private sedimentWetRef: HTMLInputElement;
 	private alphaRef: HTMLInputElement;
+	private amountOfSectionRef: HTMLInputElement;
 	private sumpDiametersRef: HTMLOptionElement[] = [];
+	private typeOfCleanListRef: HTMLOptionElement[] = [];
 
 	private highLightEffect: number;
 	private hydraulicHugest: number;
@@ -63,6 +66,11 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		{ value: SumpSource.SumpDiameters.middle, label: `${SumpSource.SumpDiameters.middle}` },
 		{ value: SumpSource.SumpDiameters.max, label: `${SumpSource.SumpDiameters.max}` },
 	];
+	private typeOfCleanList: ItemList[] = [
+		{value: undefined, label: 'Выберите способ удаления осадка из отстойника' },
+		{value: SumpSource.PeriodBetweenClean.hydrostatic, label: 'Гидростатическое давление' },
+		{value: SumpSource.PeriodBetweenClean.mechanic, label: 'Механически' },
+	];
 	private diameterRingBorder: number;
 	private heightRingBorder: number;
 
@@ -78,6 +86,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			borderHeight: undefined,
 			sedimentWet: undefined,
 			alpha: undefined,
+			typeOfClean: NULLSTR,
 			isValidateError: false,
 			isResult: false,
 		};
@@ -91,8 +100,10 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		if (this.widthSectionRef) { this.widthSectionRef.value = NULLSTR; }
 		if (this.borderHeightRef) { this.borderHeightRef.value = NULLSTR; }
 		if (this.sedimentWetRef) { this.sedimentWetRef.value = NULLSTR; }
+		if (this.amountOfSectionRef) { this.amountOfSectionRef.value = NULLSTR; }
 		if (this.alphaRef) { this.alphaRef.value = NULLSTR; }
 		resetSelectToDefault(this.sumpDiametersRef, this.sumpDiametersList);
+		resetSelectToDefault(this.typeOfCleanListRef, this.typeOfCleanList);
 		this.setState({
 			baseConcentrate: undefined,
 			finalConcentrate: undefined,
@@ -118,9 +129,18 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 
 	private renderInputArea = () => {
 		const { type } = this.props;
-		const { baseConcentrate, workingDeepSumpPart, finalConcentrate, } = this.state;
+		const { baseConcentrate, workingDeepSumpPart, finalConcentrate, typeOfClean, } = this.state;
 		return (
 			<>
+				{type === SumpTypes.radial || type === SumpTypes.vertical
+					? <InputTemplate title={`Количество отделений отстойника, шт, диапазон[2 - n]`}
+						range={{ minValue: 2, maxValue: Infinity }}
+						placeholder={'Введите количество отделений отстойника...'}
+						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+						onInputRef={(input) => { this.amountOfSectionRef = input; }}
+						onInput={(value) => { this.amountOfSection = value; }} />
+					: null}
+
 				<InputTemplate title={`Начальная концентрация взвешенных веществ в сточной воде, мг/л,
 					диапазон[${SumpSource.minConcentrate} - ${SumpSource.maxConcentrate}]`}
 					range={{ minValue: SumpSource.minConcentrate, maxValue: SumpSource.maxConcentrate }}
@@ -179,10 +199,10 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					Для урегулирования скорости измените рабочую глубину отстойника.`} />
 					: null}
 
-				{workingDeepSumpPart
+				{type === SumpTypes.horizontal && workingDeepSumpPart
 					? <InputTemplate title={`Ширина секции, м,
 							диапазон[${(SumpSource.WidthSectionCoefficient.min * workingDeepSumpPart)} -
-							${(SumpSource.WidthSectionCoefficient.max * workingDeepSumpPart)}]`}
+							${(SumpSource.WidthSectionCoefficient.max * workingDeepSumpPart)}], рекомендуется величина, кратная 3`}
 							range={{
 								minValue: (SumpSource.WidthSectionCoefficient.min * workingDeepSumpPart),
 								maxValue: (SumpSource.WidthSectionCoefficient.max * workingDeepSumpPart)
@@ -193,7 +213,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							onInput={(value) => { this.setState({ widthSection: value }); }} />
 					: null}
 
-				{baseConcentrate && workingDeepSumpPart && finalConcentrate
+				{!(type === SumpTypes.verticalUpDownFlow) && baseConcentrate && workingDeepSumpPart && finalConcentrate
 					? <InputTemplate title={`Скорость рабочего потока, мм/с,
 						диапазон[${type === SumpTypes.horizontal || type === SumpTypes.radial
 							? SumpSource.WorkingThreadSpeed.min
@@ -259,19 +279,39 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 						onSelectRef={(optionList) => { this.sumpDiametersRef = optionList; }} />
 				: null}
 
-				<InputTemplate title={`Угол наклона стенок приямника, градусы,
+				{!(type === SumpTypes.radial)
+					? <InputTemplate title={`Угол наклона стенок приямника, градусы,
 					диапазон[${SumpSource.Alpha.min}
 					-
 					${type === SumpTypes.horizontal
-						? SumpSource.Alpha.middle
-						: type === SumpTypes.vertical
-							? SumpSource.Alpha.max
-							: SumpSource.Alpha.max}]`}
-					range={{ minValue: SumpSource.Alpha.min, maxValue: SumpSource.Alpha.max }}
-					placeholder={'Введите угол наклона стенок приямника...'}
-					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-					onInputRef={(input) => { this.alphaRef = input; }}
-					onInput={(value) => { this.setState({ alpha: value }); }} />
+							? SumpSource.Alpha.middle
+							: type === SumpTypes.vertical
+								? SumpSource.Alpha.max
+								: SumpSource.Alpha.max}]`}
+						range={{ minValue: SumpSource.Alpha.min, maxValue: SumpSource.Alpha.max }}
+						placeholder={'Введите угол наклона стенок приямника...'}
+						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+						onInputRef={(input) => { this.alphaRef = input; }}
+						onInput={(value) => { this.setState({ alpha: value }); }} />
+					: null}
+
+				{type === SumpTypes.horizontal
+					? <>
+						<SelectTemplate title={'Диаметр отстойника, м'} itemList={this.typeOfCleanList}
+							onSelect={(value) => { this.setState({typeOfClean: value as string}); }}
+							onSelectRef={(optionList) => { this.typeOfCleanListRef = optionList; }} />
+						{typeOfClean &&
+						((typeOfClean === SumpSource.PeriodBetweenClean.hydrostatic &&
+							this.sedimentCleanPeriod > SumpSource.PeriodBetweenCleanValues.hydrostatic) ||
+							(typeOfClean === SumpSource.PeriodBetweenClean.mechanic &&
+								this.sedimentCleanPeriod > SumpSource.PeriodBetweenCleanValues.mechanic))
+							? <ErrorAlert errorMessage={`Период между выгрузками осадка : ${this.sedimentCleanPeriod},
+									должнен быть не более ${typeOfClean === SumpSource.PeriodBetweenClean.hydrostatic
+										? SumpSource.PeriodBetweenCleanValues.hydrostatic
+										: SumpSource.PeriodBetweenCleanValues.mechanic}`} />
+							: null}
+					</>
+					: null}
 
 				{this.renderCheckingButton()}
 			</>
@@ -284,17 +324,13 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			baseConcentrate, finalConcentrate, workingDeepSumpPart, workingThreadSpeed,
 			widthSection, borderHeight, sedimentWet, alpha,
 		} = this.state;
-		const notRadial = (type !== SumpTypes.radial && alpha) ? true : false;
-		const onlyHorizontal = (type === SumpTypes.horizontal && borderHeight) ? true : false;
-		const commonInputs = (baseConcentrate && finalConcentrate && workingDeepSumpPart &&
-			workingThreadSpeed && widthSection && sedimentWet) ? true : false;
-		if (type === SumpTypes.horizontal) {
-			return commonInputs && onlyHorizontal && notRadial;
-		} else if (type !== SumpTypes.radial) {
-			return commonInputs && notRadial;
-		} else {
-			return commonInputs;
-		}
+		const onlyVerticalUpDown = (type === SumpTypes.verticalUpDownFlow && alpha) ? true : false;
+		const onlyRadial = (type === SumpTypes.radial && workingThreadSpeed) ? true : false;
+		const onlyVertical = (type === SumpTypes.vertical && workingThreadSpeed && alpha) ? true : false;
+		const onlyHorizontal = (type === SumpTypes.horizontal && borderHeight && widthSection && workingThreadSpeed && alpha) ? true : false;
+		const commonInputs = (baseConcentrate && finalConcentrate && workingDeepSumpPart && sedimentWet) ? true : false;
+		return (commonInputs && onlyHorizontal) || (commonInputs && onlyVertical) ||
+			(commonInputs && onlyVerticalUpDown) || (commonInputs && onlyRadial);
 	}
 
 	private countingHydraulicHugest = (Kset: number, workingDeepSumpPartValue?: number) => {
@@ -344,10 +380,12 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		this.summaWidthAllSection = (1000 * secondMaxFlow) / (workingThreadSpeed * workingDeepSumpPart);
 		// Сommon formula 4: n = Summa(B) / Bset;
 		if (type === SumpTypes.verticalUpDownFlow) {
-			this.amountOfSection = Math.ceil(convertSecondMaxFlowToHour(secondMaxFlow) /
-				(1.41 * Kset * Math.pow(this.sumpDiameter, 2) * this.hydraulicHugest));
-		} else {
-			this.amountOfSection = Math.ceil(this.summaWidthAllSection / widthSection);
+			const amount = Math.ceil((1000 * secondMaxFlow) /
+			(0.707 * Kset * Math.pow(this.sumpDiameter, 2) * this.hydraulicHugest));
+			this.amountOfSection = amount < 2 ? 2 : amount;
+		} else if (type === SumpTypes.horizontal) {
+			const amount = Math.ceil(this.summaWidthAllSection / widthSection);
+			this.amountOfSection = amount < 2 ? 2 : amount;
 		}
 		// turbulentCoefficient
 		const turbulentCoefficient = selectTurbulentCoefficient(workingThreadSpeed);
@@ -356,27 +394,28 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			((100 - sedimentWet) * SumpSource.sedimentDensity);
 
 		if (type === SumpTypes.horizontal) {
-			// Formula horizontal 1: vw = 1000 * qmax / Hset * Bset * n; should be (5 - 10) else change Hset
+			// Formula horizontal 1: vw = 1000 * qmax / (Hset * Bset * n); should be (5 - 10) else change Hset
 			this.checkWorkingThreadSpeed = 1000 * secondMaxFlow / (workingDeepSumpPart * widthSection * this.amountOfSection);
-			// Formula horizontal 2: Lset = (vw * Hset) / Kset * (u0 - vtb);
+			// Formula horizontal 2: Lset = (vw * Hset) / (Kset * (u0 - vtb));
 			this.sumpLength = (this.checkWorkingThreadSpeed * workingDeepSumpPart) /
 				(SumpSource.CoefficientUsingVolume.horizontal * (this.hydraulicHugest - turbulentCoefficient));
 			// Formula horizontal 5: Wmud = 1/6 * (Bset - 0.5)*(Bset^2 + 0.5 * Bset + 0.25) * tg(alpha);
 			this.oneSumpVolume = 1 / 6 * (widthSection - 0.5) * (Math.pow(widthSection, 2) + 0.5 * widthSection + 0.25) *
-				Math.tan(transferRadiansToDegrees(alpha));
-			// Formula horizontal 6: Lset = (24 * n * Wmud) / Qmud;
+				Math.tan(GrateSource.transferRadiansToDegrees(alpha));
+			// Formula horizontal 6: T = (24 * n * Wmud) / Qmud;
 			this.sedimentCleanPeriod = (24 * this.amountOfSection * this.oneSumpVolume) / this.sedimentAmountDaily;
 		}
 
 		if (type === SumpTypes.vertical) {
-			// Formula vertical 1: den = sqrt(4 * qmax / pi * n * ven);
-			this.diameterCentralPipe = Math.sqrt((4 * secondMaxFlow) / (Math.PI * this.amountOfSection * workingThreadSpeed));
-			// Formula vertical 2: Dset = sqrt(4000 * qmax / pi * n * Kset(u0 - vtb) + den^2);
-			this.sumpDiameter = Math.sqrt((4000 * secondMaxFlow) /
-				(Math.PI * this.amountOfSection * Kset * (this.hydraulicHugest - turbulentCoefficient)) +
-				Math.pow(this.diameterCentralPipe, 2));
+			// Formula vertical 1: den = sqrt(4 * qmax / (pi * n * ven));
+			const diameter = Math.sqrt((4 * secondMaxFlow) / (Math.PI * this.amountOfSection * workingThreadSpeed));
+			this.diameterCentralPipe = selectValueAliqout05(diameter);
+			// Formula vertical 2: Dset = sqrt(4000 * qmax / pi * n * Kset(u0 - vtb)) + den^2);
+			this.sumpDiameter = Math.round(Math.sqrt((4000 * secondMaxFlow) /
+				(Math.PI * this.amountOfSection * Kset * this.hydraulicHugest) +
+				Math.pow(this.diameterCentralPipe, 2)));
 			// Formula vertical 3: dp = 1.35 * den;
-			this.diameterOfTrumpet = 1.35 * this.sumpDiameter;
+			this.diameterOfTrumpet = 1.35 * this.diameterCentralPipe;
 			// Formula vertical 4: dщ = 1,3 * dp;
 			this.diameterOfReflectorShield = 1.3 * this.diameterOfTrumpet;
 			// Formula vertical 5: H1 = qmax / pi * n * dp * vщ;
@@ -398,8 +437,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 
 		if (type === SumpTypes.radial) {
 			// Formula radial 1: Dset = sqrt(4000 * qmax / pi * n * Kset(u0 - vtb));
-			this.sumpDiameter = Math.sqrt((4000 * secondMaxFlow) /
-				(Math.PI * this.amountOfSection * Kset * (this.hydraulicHugest - turbulentCoefficient)));
+			this.sumpDiameter = Math.round(Math.sqrt((4000 * secondMaxFlow) /
+				(Math.PI * this.amountOfSection * Kset * (this.hydraulicHugest - turbulentCoefficient))));
 			// Formula radial 2: v = (2 * qmax) / pi * n * Dset * Hset;
 			this.checkWorkingThreadSpeed = (2 * secondMaxFlow) /
 				(Math.PI * this.amountOfSection * this.sumpDiameter * workingDeepSumpPart);
@@ -407,8 +446,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 
 		if (type === SumpTypes.vertical || type === SumpTypes.verticalUpDownFlow) {
 			// Formula vertical/verticalUpDownFlow 7: Hk = 0.5 * Dset * tan(alpha);
-			this.conePartOfSump = 0.5 * this.sumpDiameter * Math.tan(transferRadiansToDegrees(alpha));
-			// Formula vertical/verticalUpDownFlow 8: Hц = Hц + Hk;
+			this.conePartOfSump = 0.5 * this.sumpDiameter * Math.tan(GrateSource.transferRadiansToDegrees(alpha));
+			// Formula vertical/verticalUpDownFlow 8: H = Hц + Hk;
 			this.fullSumpHeight = this.commonHeightCylinderSump + this.conePartOfSump;
 		}
 
@@ -433,43 +472,23 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					<tbody>
 						<tr><td>Необходимый эффект осветления в отстойниках, %</td>
 							<td>{this.highLightEffect ? this.highLightEffect.toFixed(3) : undefined}</td></tr>
-						<tr><td>Гидравлическая крупность, мм/с</td>
-							<td>{this.hydraulicHugest ? this.hydraulicHugest.toFixed(3) : undefined}</td></tr>
 						<tr><td>Количество отделений отстойника, шт</td>
 							<td>{this.amountOfSection ? this.amountOfSection : undefined}</td></tr>
-						<tr><td>Количество осадка выделяемого при отсаивании за сутки, м3/сут</td>
-							<td>{this.sedimentAmountDaily ? this.sedimentAmountDaily.toFixed(3) : undefined}</td></tr>
 
 						{type === SumpTypes.horizontal
 							? <>
 								<tr><td>Длина отстойника, м</td>
 									<td>{this.sumpLength ? this.sumpLength.toFixed(3) : undefined}</td></tr>
-								<tr><td>Вместимость приямника одного отстойника для сбора осадка, м3</td>
-									<td>{this.oneSumpVolume ? this.oneSumpVolume.toFixed(3) : undefined}</td></tr>
-								<tr><td>Период между выгрузками осадка из отстойника, ч</td>
-									<td>{this.sedimentCleanPeriod ? this.sedimentCleanPeriod.toFixed(3) : undefined}</td></tr>
 							</>
 							: null}
+
+						<tr><td>Общая высота отстойника, м</td>
+							<td>{this.fullSumpHeight ? this.fullSumpHeight.toFixed(3) : undefined}</td></tr>
 
 						{type === SumpTypes.vertical
 							? <>
-								<tr><td>Диаметр центральной трубы, м</td>
-									<td>{this.diameterCentralPipe ? this.diameterCentralPipe.toFixed(3) : undefined}</td></tr>
-								<tr><td>Диаметр раструба, м</td>
-									<td>{this.diameterOfTrumpet ? this.diameterOfTrumpet.toFixed(3) : undefined}</td></tr>
-								<tr><td>Диаметр отражательного щита, м</td>
-									<td>{this.diameterOfReflectorShield ? this.diameterOfReflectorShield.toFixed(3) : undefined}</td></tr>
 								<tr><td>Высота щели между низом центральной трубы и поверхностью отражательного щита, м</td>
 									<td>{this.gapHeightTrumpetAndShield ? this.gapHeightTrumpetAndShield.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.verticalUpDownFlow
-							? <>
-								<tr><td>Диаметр кольцевой перегородки, м</td>
-									<td>{this.diameterRingBorder ? this.diameterRingBorder.toFixed(3) : undefined}</td></tr>
-								<tr><td>Высота кольцевой перегородки, м</td>
-									<td>{this.heightRingBorder ? this.heightRingBorder.toFixed(3) : undefined}</td></tr>
 							</>
 							: null}
 
@@ -491,8 +510,37 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							</>
 							: null}
 
-						<tr><td>Общая высота отстойника, м</td>
-							<td>{this.fullSumpHeight ? this.fullSumpHeight.toFixed(3) : undefined}</td></tr>
+						{type === SumpTypes.vertical
+							? <>
+								<tr><td>Диаметр центральной трубы, м</td>
+									<td>{this.diameterCentralPipe ? this.diameterCentralPipe.toFixed(3) : undefined}</td></tr>
+								<tr><td>Диаметр раструба, м</td>
+									<td>{this.diameterOfTrumpet ? this.diameterOfTrumpet.toFixed(3) : undefined}</td></tr>
+								<tr><td>Диаметр отражательного щита, м</td>
+									<td>{this.diameterOfReflectorShield ? this.diameterOfReflectorShield.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
+
+						{type === SumpTypes.verticalUpDownFlow
+							? <>
+								<tr><td>Диаметр кольцевой перегородки, м</td>
+									<td>{this.diameterRingBorder ? this.diameterRingBorder.toFixed(3) : undefined}</td></tr>
+								<tr><td>Высота кольцевой перегородки, м</td>
+									<td>{this.heightRingBorder ? this.heightRingBorder.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
+
+						{type === SumpTypes.horizontal
+							? <>
+								<tr><td>Вместимость приямника одного отстойника для сбора осадка, м3</td>
+									<td>{this.oneSumpVolume ? this.oneSumpVolume.toFixed(3) : undefined}</td></tr>
+								<tr><td>Период между выгрузками осадка из отстойника, ч</td>
+									<td>{this.sedimentCleanPeriod ? this.sedimentCleanPeriod.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
+
+						<tr><td>Количество осадка выделяемого при отстаивании за сутки, м3/сут</td>
+							<td>{this.sedimentAmountDaily ? this.sedimentAmountDaily.toFixed(3) : undefined}</td></tr>
 					</tbody>
 				</Table>
 			</div>
@@ -579,8 +627,10 @@ export function selectValueFromDiapason(array: number[], valueToCompare: number)
 		if (valueToCompare >= array[index] && valueToCompare <= array[index + 1]) {
 			if (((array[index + 1] + array[index]) / 2) > valueToCompare) {
 				value = array[index];
+				break;
 			} else {
 				value = array[index + 1];
+				break;
 			}
 		} else if (valueToCompare >= array[index]) {
 			if (index === array.length - 1) {
@@ -611,7 +661,7 @@ function selectExponentValue(baseConcentrate: number, highLightEffect: number) {
 	const exponentMiddleValue = -0.692;
 	const exponentConstMax = 86.258;
 	const exponentMaxValue = -1.147;
-	if (highLightEffect < SumpSource.HighLightEffectDiapason.low) {
+	if (highLightEffect <= SumpSource.HighLightEffectDiapason.low) {
 		return exponentConstMin * Math.pow(baseConcentrate, exponentMinValue);
 	} else if (highLightEffect > SumpSource.HighLightEffectDiapason.low &&
 		highLightEffect < SumpSource.HighLightEffectDiapason.high) {
@@ -634,6 +684,14 @@ function selectTurbulentCoefficient(workingThreadSpeed: number): number {
 	}
 }
 
-function convertSecondMaxFlowToHour(secondMaxFlow: number) {
-	return 3600 * secondMaxFlow;
+export function selectValueAliqout05(value: number) {
+	if (value < 0.5) {
+		return 0.5;
+	} else {
+		if (Math.round(value) === Math.ceil(value)) {
+			return Math.ceil(value);
+		} else {
+			return Math.round(value) + 0.5;
+		}
+	}
 }

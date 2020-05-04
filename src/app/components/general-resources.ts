@@ -34,11 +34,11 @@ export enum GrateTypes { mechanic = 'mechanic', hand = 'hand', crusher = 'crushe
 export const grateTypes: DeviceType[] = [
 	{
 		iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
-		key: GrateTypes.mechanic, name: 'Механическая очистка', ref: undefined
+		key: GrateTypes.mechanic, name: 'Механизированная очистка', ref: undefined
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/grate/hand' as ElementIri,
-		key: GrateTypes.hand, name: 'Ручная очиска', ref: undefined
+		key: GrateTypes.hand, name: 'Ручная очистка', ref: undefined
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/grate/crusher' as ElementIri,

@@ -11,112 +11,137 @@
                 "children": [
                     {
                         "id": "http://tonya-diploma.com/device/grate/mechanic",
-                        "label": { "values": [ { "value": "Механическая решетка", "language": "ru" } ] },
-                        "count": 21,
+                        "label": { "values": [ { "value": "Решетка с механизированной очисткой", "language": "ru" } ] },
+                        "count": 26,
                         "children": [
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg5t",
-                                "label": {  "values": [  { "value": "МГ5Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm0608",
+                                "label": {  "values": [  { "value": "РГМ(Н)0608", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg6t",
-                                "label": {  "values": [  { "value": "МГ6Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm0814",
+                                "label": {  "values": [  { "value": "РГМ(Н)0814", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg7t",
-                                "label": {  "values": [  { "value": "МГ7Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1010",
+                                "label": {  "values": [  { "value": "РГМ(Н)1010", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg8t",
-                                "label": {  "values": [  { "value": "МГ8Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1012",
+                                "label": {  "values": [  { "value": "РГМ(Н)1012", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg9t",
-                                "label": {  "values": [  { "value": "МГ9Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1016",
+                                "label": {  "values": [  { "value": "РГМ(Н)1016", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg10t",
-                                "label": {  "values": [  { "value": "МГ10Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1020",
+                                "label": {  "values": [  { "value": "РГМ(Н)1020", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg11t",
-                                "label": {  "values": [  { "value": "МГ11Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1420",
+                                "label": {  "values": [  { "value": "РГМ(Н)1420", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/mg12t",
-                                "label": {  "values": [  { "value": "МГ12Т", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm1620",
+                                "label": {  "values": [  { "value": "РГМ(Н)1620", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu1",
-                                "label": {  "values": [  { "value": "РМУ1", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rgm2020",
+                                "label": {  "values": [  { "value": "РГМ(Н)2020", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu2",
-                                "label": {  "values": [  { "value": "РМУ2", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm0507",
+                                "label": {  "values": [  { "value": "РСМ0507", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu3",
-                                "label": {  "values": [  { "value": "РМУ3", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm0710",
+                                "label": {  "values": [  { "value": "РСМ0710", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu4",
-                                "label": {  "values": [  { "value": "РМУ4", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm0812",
+                                "label": {  "values": [  { "value": "РСМ0812", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu5",
-                                "label": {  "values": [  { "value": "РМУ5", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm1012",
+                                "label": {  "values": [  { "value": "РСМ1012", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu6",
-                                "label": {  "values": [  { "value": "РМУ6", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm1216",
+                                "label": {  "values": [  { "value": "РСМ1216", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmu7",
-                                "label": {  "values": [  { "value": "РМУ7", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm1620",
+                                "label": {  "values": [  { "value": "РСМ1620", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmn10",
-                                "label": {  "values": [  { "value": "РНМ10", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm2020",
+                                "label": {  "values": [  { "value": "РСМ2020", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rmn6",
-                                "label": {  "values": [  { "value": "РНМ6", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rsm2125",
+                                "label": {  "values": [  { "value": "РСМ2125", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rgd",
-                                "label": {  "values": [  { "value": "РГД", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rkm0608",
+                                "label": {  "values": [  { "value": "РКМ0608", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rfs1",
-                                "label": {  "values": [  { "value": "РФС-1", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rkm0814",
+                                "label": {  "values": [  { "value": "РКМ0814", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rs16",
-                                "label": {  "values": [  { "value": "RS-16", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rkm1010",
+                                "label": {  "values": [  { "value": "РКМ1010", "language": "ru" } ] },
                                 "children": []
                             },
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rs35",
-                                "label": {  "values": [  { "value": "RS-35", "language": "ru" } ] },
+                                "id": "http://tonya-diploma.com/device/grate/rkm1012",
+                                "label": {  "values": [  { "value": "РКМ1012", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/rkm1016",
+                                "label": {  "values": [  { "value": "РКМ1016", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/rkm1020",
+                                "label": {  "values": [  { "value": "РКМ1020", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/rkm1420",
+                                "label": {  "values": [  { "value": "РКМ1420", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/rkm1620",
+                                "label": {  "values": [  { "value": "РКМ1620", "language": "ru" } ] },
+                                "children": []
+                            },
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/rkm2020",
+                                "label": {  "values": [  { "value": "РКМ2020", "language": "ru" } ] },
                                 "children": []
                             }
                         ]
@@ -124,114 +149,8 @@
                     {
                         "id": "http://tonya-diploma.com/device/grate/hand",
                         "label": { "values": [ { "value": "Ручная очистка", "language": "ru" } ] },
-                        "count": 21,
-                        "children": [
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg5t",
-                                "label": {  "values": [  { "value": "МГ5Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg6t",
-                                "label": {  "values": [  { "value": "МГ6Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg7t",
-                                "label": {  "values": [  { "value": "МГ7Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg8t",
-                                "label": {  "values": [  { "value": "МГ8Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg9t",
-                                "label": {  "values": [  { "value": "МГ9Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg10t",
-                                "label": {  "values": [  { "value": "МГ10Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg11t",
-                                "label": {  "values": [  { "value": "МГ11Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/mg12t",
-                                "label": {  "values": [  { "value": "МГ12Т", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu1",
-                                "label": {  "values": [  { "value": "РМУ1", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu2",
-                                "label": {  "values": [  { "value": "РМУ2", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu3",
-                                "label": {  "values": [  { "value": "РМУ3", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu4",
-                                "label": {  "values": [  { "value": "РМУ4", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu5",
-                                "label": {  "values": [  { "value": "РМУ5", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu6",
-                                "label": {  "values": [  { "value": "РМУ6", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmu7",
-                                "label": {  "values": [  { "value": "РМУ7", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmn10",
-                                "label": {  "values": [  { "value": "РНМ10", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rmn6",
-                                "label": {  "values": [  { "value": "РНМ6", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rgd",
-                                "label": {  "values": [  { "value": "РГД", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rfs1",
-                                "label": {  "values": [  { "value": "РФС-1", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rs16",
-                                "label": {  "values": [  { "value": "RS-16", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rs35",
-                                "label": {  "values": [  { "value": "RS-35", "language": "ru" } ] },
-                                "children": []
-                            }
-                        ]
+                        "count": 0,
+                        "children": []
                     },
                     {
                         "id": "http://tonya-diploma.com/device/grate/crusher",
@@ -239,18 +158,8 @@
                         "count": 4,
                         "children": [
                             {
-                                "id": "http://tonya-diploma.com/device/grate/rd100",
-                                "label": {  "values": [  { "value": "РД-100", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
                                 "id": "http://tonya-diploma.com/device/grate/rd200",
                                 "label": {  "values": [  { "value": "РД-200", "language": "ru" } ] },
-                                "children": []
-                            },
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rd400",
-                                "label": {  "values": [  { "value": "РД-400", "language": "ru" } ] },
                                 "children": []
                             },
                             {
@@ -265,11 +174,16 @@
             {
                 "id": "http://tonya-diploma.com/device/hammer-crusher",
                 "label": { "values": [ { "value": "Молотковая дробилка", "language": "ru" } ] },
-                "count": "2",
+                "count": "3",
                 "children": [
                     {
                         "id": "http://tonya-diploma.com/device/hammer-crusher/d3b",
                         "label": {  "values": [ { "value": "Д-3б", "language": "ru" } ] },
+                        "children": []
+                    },
+                    {
+                        "id": "http://tonya-diploma.com/device/hammer-crusher/dk05",
+                        "label": {  "values": [ { "value": "ДК-0,5", "language": "ru" } ] },
                         "children": []
                     },
                     {

@@ -78,11 +78,21 @@ export namespace SumpSource {
 		max = 60,
 	}
 	export const heightOfNeutralLayer = 0.3;
-	export const sedimentDensity = 1 * Math.pow(10, 4);
+	export const sedimentDensity = 1.01 * Math.pow(10, 4);
 	export const speedInGap = 0.02;
 	export enum SumpDiameters {
 		min = 4,
 		middle = 6,
 		max = 9,
+	}
+
+	export enum PeriodBetweenClean {
+		hydrostatic = 'hydrostatic',
+		mechanic = 'mechanic',
+	}
+
+	export enum PeriodBetweenCleanValues {
+		hydrostatic = 48,
+		mechanic = 8,
 	}
 }
