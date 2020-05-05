@@ -211,8 +211,8 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 							: CentrifugeSource.centrifugeTableDeterminate}
 							onSelect={(value) => {
 								this.currentCentrifuge = type === CentrifugeTypes.continuous
-									? CentrifugeSource.centrifugeTableContinuous.find(device => device.rotorVolume === value as number)
-									: CentrifugeSource.centrifugeTableDeterminate.find(device => device.rotorVolume === value as number);
+									? CentrifugeSource.centrifugeTableContinuous.find(device => device.rotorDiameter === value as number)
+									: CentrifugeSource.centrifugeTableDeterminate.find(device => device.rotorDiameter === value as number);
 							}}
 							onSelectRef={(optionList) => { this.pressureHydrocycloneRef = optionList; }} />
 
@@ -239,25 +239,19 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 	}
 
 	private isInputReadyToCounting = (): boolean => {
-		const {type} = this.props;
 		const {
 			amountOfLayer, coefficientCentrifugeVolume, currentOpenHydrocycloneType,
 			diameterCentralHole, diameterHydrocyclone, hydraulicHugest,
 			periodCentrifugeWorks
 		} = this.state;
-		const isOpenHydrocyclone = amountOfLayer && currentOpenHydrocycloneType && diameterCentralHole &&
+		const isOpenHydrocyclone = currentOpenHydrocycloneType &&
+			(currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelCenter ||
+			currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelExternal
+			? amountOfLayer && diameterCentralHole : true) &&
 			diameterHydrocyclone && hydraulicHugest ? true : false;
 		const isPressureHydrocyclone = hydraulicHugest ? true : false;
 		const isCentrifuge = periodCentrifugeWorks && coefficientCentrifugeVolume ? true : false;
-		if (type === CentrifugeTypes.opened) {
-			return isOpenHydrocyclone;
-		}
-		if (type === CentrifugeTypes.pressure) {
-			return isPressureHydrocyclone;
-		}
-		if (type === CentrifugeTypes.continuous || type === CentrifugeTypes.determinate) {
-			return isCentrifuge;
-		}
+		return isOpenHydrocyclone || isPressureHydrocyclone || isCentrifuge;
 	}
 
 	private selectOpenHydrocyclone = (openHydrocycloneType: CentrifugeSource.HydrocycloneOpenTypes) => {
@@ -271,7 +265,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 
 	private selectNecessaryPressureHydrocyclone = (hydraulicHugest: number) => {
 		this.necessaryPressureHydrocyclone = CentrifugeSource.pressureHydrocycloneTable.filter(device =>
-			device.particleHugest.min < hydraulicHugest && device.particleHugest.max > hydraulicHugest);
+			device.hugestParticular.min < hydraulicHugest && device.hugestParticular.max > hydraulicHugest);
 	}
 
 	private resultCounting = () => {
@@ -289,7 +283,8 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 					Math.pow(diameterHydrocyclone, 2);
 			}
 			if (currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelExternal) {
-				this.coefficientProportion = (1.5 * amountOfLayer * (Math.pow(diameterHydrocyclone, 2) - Math.pow(diameterCentralHole, 2))) /
+				this.coefficientProportion = (1.5 * Math.floor(amountOfLayer / 2) *
+					(Math.pow(diameterHydrocyclone, 2) - Math.pow(diameterCentralHole, 2))) /
 					Math.pow(diameterHydrocyclone, 2);
 			}
 			// formula 2 qhc = 3.6 * Khc * u0
@@ -313,8 +308,12 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		}
 
 		if (type === CentrifugeTypes.continuous || type === CentrifugeTypes.determinate) {
+			// formula 5.01 Lcf = 3.76 * Dcf
+			const Lcf = 3.76 * this.currentCentrifuge.rotorDiameter;
+			// formula 5.01 Wcf = 0.25 Pi * Dcf^2 * Lcf
+			const rotorVolume = 0.25 * Math.PI * Math.pow(this.currentCentrifuge.rotorDiameter, 2) * Lcf;
 			// formula 5 Qcf = 3600 * Wcf * Kcf / tcf
-			this.performance = (3600 * this.currentCentrifuge.rotorVolume * coefficientCentrifugeVolume) / periodCentrifugeWorks;
+			this.performance = (3600 * rotorVolume * coefficientCentrifugeVolume) / periodCentrifugeWorks;
 			// formula 3 n = qw/Ohc
 			this.amountOfDevice = Math.ceil((secondMaxFlow * 3600) / this.performance);
 		}

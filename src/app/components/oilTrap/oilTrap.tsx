@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { OilTrapTypes } from '../general-resources';
-import { labelTemplate, NULLSTR, InputTemplate } from '../utils';
+import { labelTemplate, NULLSTR, InputTemplate, resetSelectToDefault, ItemList, SelectTemplate } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, OilTrapResultData } from '../data-model';
 import { OilTrapSource } from './oilTrap-resource';
@@ -17,7 +17,6 @@ export interface OilTrapProps {
 
 interface OilTrapState {
 	amountOfSection: number;
-	capacity: number;
 	widthSection: number;
 	waterLayerDeep: number;
 	hydraulicParticleSize: number;
@@ -26,13 +25,14 @@ interface OilTrapState {
 	oilBaseConcentrate: number;
 	oilFinalConcentrate: number;
 	borderHeight: number;
+	sedimentType: number;
+	mechanicImpurity: number;
 	isValidateError: boolean;
 	isResult: boolean;
 }
 
 export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState> {
 	private amountOfSectionRef: HTMLInputElement;
-	private capacityRef: HTMLInputElement;
 	private widthSectionRef: HTMLInputElement;
 	private waterLayerDeepRef: HTMLInputElement;
 	private hydraulicParticleSizeRef: HTMLInputElement;
@@ -41,6 +41,8 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 	private oilBaseConcentrateRef: HTMLInputElement;
 	private oilFinalConcentrateRef: HTMLInputElement;
 	private borderHeightRef: HTMLInputElement;
+	private mechanicImpurityRef: HTMLInputElement;
+	private sedimentTypeListRef: HTMLOptionElement[] = [];
 
 	private periodUpOilParticle: number;
 	private sumpPartLengthOfOilTrap: number;
@@ -51,13 +53,17 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 	private widthSectionResult: number;
 	private oilTrapDiameter: number;
 	private fullOilTrapHeight: number;
+	private sedimentTypeList: ItemList[] = [
+		{ value: undefined, label: 'Выберите тип осадка' },
+		{ value: OilTrapSource.SedimentType.freshDrop, label: 'Свежевыпавший' },
+		{ value: OilTrapSource.SedimentType.pressureSediment, label: 'Слежавшийся' },
+	];
 
 	constructor(props: OilTrapProps) {
 		super(props);
 
 		this.state = {
 			amountOfSection: undefined,
-			capacity: undefined,
 			widthSection: undefined,
 			waterLayerDeep: undefined,
 			hydraulicParticleSize: undefined,
@@ -66,6 +72,8 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			oilBaseConcentrate: undefined,
 			oilFinalConcentrate: undefined,
 			borderHeight: undefined,
+			sedimentType: undefined,
+			mechanicImpurity: undefined,
 			isValidateError: false,
 			isResult: false,
 		};
@@ -73,7 +81,6 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 
 	private clearPage = () => {
 		if (this.amountOfSectionRef) { this.amountOfSectionRef.value = NULLSTR; }
-		if (this.capacityRef) { this.capacityRef.value = NULLSTR; }
 		if (this.widthSectionRef) { this.widthSectionRef.value = NULLSTR; }
 		if (this.waterLayerDeepRef) { this.waterLayerDeepRef.value = NULLSTR; }
 		if (this.hydraulicParticleSizeRef) { this.hydraulicParticleSizeRef.value = NULLSTR; }
@@ -82,9 +89,10 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		if (this.oilBaseConcentrateRef) { this.oilBaseConcentrateRef.value = NULLSTR; }
 		if (this.oilFinalConcentrateRef) { this.oilFinalConcentrateRef.value = NULLSTR; }
 		if (this.borderHeightRef) { this.borderHeightRef.value = NULLSTR; }
+		if (this.mechanicImpurityRef) { this.mechanicImpurityRef.value = NULLSTR; }
+		resetSelectToDefault(this.sedimentTypeListRef, this.sedimentTypeList);
 		this.setState({
 			amountOfSection: undefined,
-			capacity: undefined,
 			widthSection: undefined,
 			waterLayerDeep: undefined,
 			hydraulicParticleSize: undefined,
@@ -93,6 +101,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			oilBaseConcentrate: undefined,
 			oilFinalConcentrate: undefined,
 			borderHeight: undefined,
+			sedimentType: undefined,
 			isValidateError: false,
 			isResult: false,
 		});
@@ -114,33 +123,25 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 	}
 
 	private renderInputArea = () => {
-		const { type } = this.props;
-		const { capacity, oilBaseConcentrate } = this.state;
+		const { type, secondMaxFlow } = this.props;
+		const { oilBaseConcentrate } = this.state;
 		return (
 			<>
 				<InputTemplate title={`Количество секций нефтеловушки, шт,
 					диапазон[${type === OilTrapTypes.horizontal
 						? OilTrapSource.minAmountOfSection.horizontal
 						: OilTrapSource.minAmountOfSection.radial} - n]`}
-					// 1000 is artificial value, safety from broken system
 					range={{
 						minValue: type === OilTrapTypes.horizontal
 							? OilTrapSource.minAmountOfSection.horizontal
-							: OilTrapSource.minAmountOfSection.radial, maxValue: 1000
+							: OilTrapSource.minAmountOfSection.radial, maxValue: Infinity
 					}}
 					placeholder={'Введите количество секций нефтеловушки...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					onInputRef={(input) => { this.amountOfSectionRef = input; }}
 					onInput={(value) => { this.setState({ amountOfSection: value }); }} />
 
-				<InputTemplate title={`Пропускная способность нефтеловушки, м3/ч,
-						значение ${OilTrapSource.capacityMark} является переходным для выбора ширины и глубины секции`}
-					placeholder={'Введите пропускную способность нефтеловушки...'}
-					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-					onInputRef={(input) => { this.capacityRef = input; }}
-					onInput={(value) => { this.setState({ capacity: value }); }} />
-
-				{capacity < OilTrapSource.capacityMark && type === OilTrapTypes.horizontal
+				{secondMaxFlow < OilTrapSource.capacityMark && type === OilTrapTypes.horizontal
 					? <>
 						<InputTemplate title={`Ширина секции, м, диапазон[${OilTrapSource.SectionWidth.min} - ${OilTrapSource.SectionWidth.max}]`}
 							range={{ minValue: OilTrapSource.SectionWidth.min, maxValue: OilTrapSource.SectionWidth.max }}
@@ -182,6 +183,10 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 						Для урегулирования можно изменить глубину слоя или скорость движения воды.`} />
 					: null}
 
+				<SelectTemplate title={'Тип осадка'} itemList={this.sedimentTypeList}
+					onSelect={(value) => { this.setState({ sedimentType: value as number }); }}
+					onSelectRef={(optionList) => { this.sedimentTypeListRef = optionList; }} />
+
 				<InputTemplate title={`Эффект задержания осаждающихся примесей, %,
 					диапазон[${OilTrapSource.ImpurityEffectBlock.min} - ${type === OilTrapTypes.horizontal
 						? OilTrapSource.ImpurityEffectBlock.max_horizontal
@@ -196,7 +201,15 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					onInputRef={(input) => { this.impurityBlockEffectRef = input; }}
 					onInput={(value) => { this.setState({ impurityBlockEffect: value }); }} />
 
+				<InputTemplate title={`Содержание механических примесей в сточной воде, мг/л`}
+					range={{ minValue: 0, maxValue: Infinity }}
+					placeholder={'Введите содержание механических примесей...'}
+					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
+					onInputRef={(input) => { this.mechanicImpurityRef = input; }}
+					onInput={(value) => { this.setState({ mechanicImpurity: value }); }} />
+
 				<InputTemplate title={`Концентрация нефтепродуктов в исходной воде, мг/л`}
+					range={{ minValue: 0, maxValue: Infinity }}
 					placeholder={'Введите концентрацию нефтепродуктов в исходной воде...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					onInputRef={(input) => { this.oilBaseConcentrateRef = input; }}
@@ -212,7 +225,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					: null}
 
 				{type === OilTrapTypes.radial
-					? <InputTemplate title={`Высота борта над слоем воды, м, , диапазон[${OilTrapSource.borderHeight.min} - ${OilTrapSource.borderHeight.max}]`}
+					? <InputTemplate title={`Высота борта над слоем воды, м, диапазон[${OilTrapSource.borderHeight.min} - ${OilTrapSource.borderHeight.max}]`}
 						range={{ minValue: OilTrapSource.borderHeight.min, maxValue: OilTrapSource.borderHeight.max }}
 						placeholder={'Введите высота борта над слоем воды...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -226,52 +239,52 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 	}
 
 	private isInputReadyToCounting = (): boolean => {
-		const {type} = this.props;
+		const {secondMaxFlow} = this.props;
 		const {
-			amountOfSection, borderHeight, capacity, hydraulicParticleSize, impurityBlockEffect,
-			oilBaseConcentrate, oilFinalConcentrate, waterLayerDeep, waterSpeed, widthSection,
+			amountOfSection, borderHeight, hydraulicParticleSize, impurityBlockEffect, sedimentType,
+			oilBaseConcentrate, oilFinalConcentrate, waterLayerDeep, waterSpeed, widthSection, mechanicImpurity
 		} = this.state;
-		const commonInputs = amountOfSection && impurityBlockEffect && oilBaseConcentrate && oilFinalConcentrate && capacity ? true : false;
-		const onlyHorizontal = hydraulicParticleSize && waterLayerDeep && waterSpeed && widthSection ? true : false;
+		const commonInputs = amountOfSection && impurityBlockEffect && oilBaseConcentrate &&
+			oilFinalConcentrate && sedimentType && mechanicImpurity ? true : false;
+		const onlyHorizontal = hydraulicParticleSize && waterSpeed &&
+			(secondMaxFlow < OilTrapSource.capacityMark ? waterLayerDeep && widthSection : true) ? true : false;
 		const onlyRadial = borderHeight ? true : false;
-		if (type === OilTrapTypes.horizontal) {
-			return commonInputs && onlyHorizontal;
-		} else if (type === OilTrapTypes.radial) {
-			return commonInputs && onlyRadial;
-		}
+		return (commonInputs && onlyHorizontal) || commonInputs && onlyRadial;
 	}
 
 	private resultCounting = () => {
 		const { secondMaxFlow, type, dailyWaterFlow } = this.props;
 		const {
-			capacity, hydraulicParticleSize, waterSpeed, waterLayerDeep, widthSection,
+			hydraulicParticleSize, waterSpeed, waterLayerDeep, widthSection, sedimentType, mechanicImpurity,
 			impurityBlockEffect, oilBaseConcentrate, oilFinalConcentrate, amountOfSection, borderHeight
 		} = this.state;
 
 		if (type === OilTrapTypes.horizontal) {
-			this.oilTrapDeep = capacity < OilTrapSource.capacityMark ? waterLayerDeep : OilTrapSource.deepSection;
-			this.widthSectionResult = capacity < OilTrapSource.capacityMark ? widthSection : OilTrapSource.widthSection;
+			this.oilTrapDeep = secondMaxFlow < OilTrapSource.capacityMark ? waterLayerDeep : OilTrapSource.deepSection;
+			this.widthSectionResult = secondMaxFlow < OilTrapSource.capacityMark ? widthSection : OilTrapSource.widthSection;
 			// formula 1 tp = Hset / 3.6 * v
 			this.periodUpOilParticle = this.oilTrapDeep / (3.6 * waterSpeed);
 			const proportion = selectValueFromDiapason(OilTrapSource.proportionSpeedHydraulic, (waterSpeed / hydraulicParticleSize));
 			const turbulentCoefficient = OilTrapSource.turbulentCoefficient.find(item => item.proportion === proportion);
 			// formula 2 L = a * v/ u0 * Hset
-			this.sumpPartLengthOfOilTrap = turbulentCoefficient.coefficient * proportion * this.oilTrapDeep;
+			this.sumpPartLengthOfOilTrap = Math.round(turbulentCoefficient.coefficient *
+				(waterSpeed / hydraulicParticleSize) * this.oilTrapDeep);
 			// formula 3 t'p = L / (3.6 * v)
 			this.layPeriod = this.sumpPartLengthOfOilTrap / (3.6 * waterSpeed);
-		} else if (type === OilTrapTypes.radial) {
-			// formula 6 Hset = 3.6 * Kset * T set * u0;
+		}
+		if (type === OilTrapTypes.radial) {
+			// formula 6 Hset = 3.6 * Kset * Tset * u0;
 			this.oilTrapDeep = 3.6 * OilTrapSource.volumeCoefficient * OilTrapSource.layPeriod * OilTrapSource.hydraulicParticleSize;
 			// formula 7 D = sqrt((4 * q * Tset) / (pi * n * Hset * Kset));
-			this.oilTrapDiameter = Math.sqrt((4 * capacity * OilTrapSource.layPeriod) /
-				(Math.PI * amountOfSection * this.oilTrapDeep * OilTrapSource.volumeCoefficient));
+			this.oilTrapDiameter = Math.round(Math.sqrt((4 * secondMaxFlow * 3600 * OilTrapSource.layPeriod) /
+				(Math.PI * amountOfSection * this.oilTrapDeep * OilTrapSource.volumeCoefficient)));
 			// formula 8 H = Hset + H1 + H2 + H3;
 			this.fullOilTrapHeight = this.oilTrapDeep + borderHeight + OilTrapSource.sedimentZoneHeight + OilTrapSource.heightOilProductLayer;
 		}
 
 		// formula 4 Qmud = (Q * C * Э) / ((100 - pmud) * gammamud * 10^6)
-		this.amountOfSediment = (dailyWaterFlow * OilTrapSource.mechanicImpurityConcentrate * impurityBlockEffect) /
-			((100 - OilTrapSource.sedimentWet) * OilTrapSource.volumeMassSediment * Math.pow(10, 6));
+		this.amountOfSediment = (dailyWaterFlow * mechanicImpurity * impurityBlockEffect) /
+			((100 - sedimentType) * OilTrapSource.volumeMassSediment * Math.pow(10, 6));
 		// formula 5 t'p = L / (3.6 * v)
 		this.amountOfOilProduct = (dailyWaterFlow * (oilBaseConcentrate - oilFinalConcentrate)) /
 			(OilTrapSource.volumeMassOilProduct * 30 * Math.pow(10, 4));
@@ -285,35 +298,40 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		if (!this.state.isResult) {
 			return;
 		}
+		const { amountOfSection } = this.state;
 		const {type} = this.props;
 		return (
 			<div className={'table-result'}>
 				<Table bordered hover>
 					<tbody>
+						<tr><td>Количество секций, шт</td>
+							<td>{amountOfSection ? amountOfSection : undefined}</td></tr>
 						<tr><td>Глубина отстаиваемого слоя, м</td>
-							<td>{this.oilTrapDeep ? this.oilTrapDeep.toFixed(3) : undefined}</td></tr>
+							<td>{this.oilTrapDeep ? this.oilTrapDeep.toFixed(2) : undefined}</td></tr>
+						{type === OilTrapTypes.horizontal
+							? <>
+								<tr><td>Ширина секции нефтеловушки, м</td>
+									<td>{this.widthSectionResult ? this.widthSectionResult.toFixed(2) : undefined}</td></tr>
+								<tr><td>Длина отстойной части нефтеловушки, м</td>
+									<td>{this.sumpPartLengthOfOilTrap ? this.sumpPartLengthOfOilTrap : undefined}</td></tr>
+							</>
+							: null}
+						{type === OilTrapTypes.radial
+							? <>
+								<tr><td>Диаметр нефтеловушки, м</td>
+									<td>{this.oilTrapDiameter ? this.oilTrapDiameter : undefined}</td></tr>
+								<tr><td>Полная строительная высота нефтеловушки, м </td>
+									<td>{this.fullOilTrapHeight ? this.fullOilTrapHeight.toFixed(3) : undefined}</td></tr>
+							</>
+							: null}
 						<tr><td>Количество осадка, м3/сут</td>
 							<td>{this.amountOfSediment ? this.amountOfSediment.toFixed(3) : undefined}</td></tr>
 						<tr><td>Количество нефтепродуктов, м3/сут</td>
 							<td>{this.amountOfOilProduct ? this.amountOfOilProduct.toFixed(3) : undefined}</td></tr>
 						{type === OilTrapTypes.horizontal
 							? <>
-								<tr><td>Ширина секции нефтеловушки, м</td>
-									<td>{this.widthSectionResult ? this.widthSectionResult.toFixed(3) : undefined}</td></tr>
-								<tr><td>Продолжительность всплытия нефтяных частиц, ч</td>
-									<td>{this.periodUpOilParticle ? this.periodUpOilParticle.toFixed(3) : undefined}</td></tr>
-								<tr><td>Длина отстойной части нефтеловушки, м</td>
-									<td>{this.sumpPartLengthOfOilTrap ? this.sumpPartLengthOfOilTrap.toFixed(3) : undefined}</td></tr>
-								<tr><td>Продолжительность отсаивания, ч</td>
+								<tr><td>Продолжительность отстаивания, ч</td>
 									<td>{this.layPeriod ? this.layPeriod.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-						{type === OilTrapTypes.radial
-							? <>
-								<tr><td>Диаметр нефтеловушки, м</td>
-									<td>{this.oilTrapDiameter ? this.oilTrapDiameter.toFixed(3) : undefined}</td></tr>
-								<tr><td>Полная строительная высота нефтеловушки, м </td>
-									<td>{this.fullOilTrapHeight ? this.fullOilTrapHeight.toFixed(3) : undefined}</td></tr>
 							</>
 							: null}
 					</tbody>

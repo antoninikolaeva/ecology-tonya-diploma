@@ -207,8 +207,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 
 				{this.averageCoefficient
 					? <SelectTemplate title={'Диаметр отстойника, м'} itemList={this.averageMechanismList}
-						onSelect={(value) => { this.setState({ averageMechanism: value as string }); }}
-						onSelectRef={(optionList) => { this.averageMechanismRef = optionList; }} />
+							onSelect={(value) => { this.setState({ averageMechanism: value as string }); }}
+							onSelectRef={(optionList) => { this.averageMechanismRef = optionList; }} />
 					: null}
 
 				<InputTemplate title={`Период работы устройства усреднителя, ч`}

@@ -3,7 +3,7 @@ export namespace OilTrapSource {
 		horizontal = 2,
 		radial = 3,
 	}
-	export const capacityMark = 162;
+	export const capacityMark = 0.045;
 	export const widthSection = 6;
 	export const deepSection = 2;
 	export enum SectionWidth {
@@ -38,7 +38,6 @@ export namespace OilTrapSource {
 		{proportion: 15, coefficient: 1.65},
 		{proportion: 20, coefficient: 1.75},
 	];
-	export const mechanicImpurityConcentrate = 500;
 	export const sedimentWet = 95;
 	export const volumeMassSediment = 2.65;
 	export const volumeMassOilProduct = 0.95;
@@ -47,4 +46,8 @@ export namespace OilTrapSource {
 	export const hydraulicParticleSize = 0.2;
 	export const sedimentZoneHeight = 0.3;
 	export const heightOilProductLayer = 0.1;
+	export enum SedimentType {
+		freshDrop = 95,
+		pressureSediment = 70,
+	}
 }

@@ -30,78 +30,92 @@ export namespace CentrifugeSource {
 		min = 8,
 		max = 200,
 	}
+
 	export interface PressureHydrocycloneTable {
+		label: string;
+		value: number;
 		mark: string;
 		diameter: number;
 		diameterInPipe: number;
 		diameterOutPipe: number;
+		diameterSpecialPipe: number[];
+		hugestParticular: {
+			min: number;
+			max: number;
+		};
 		deltaP: number;
-		particleHugest: {min: number; max: number};
-		label: string;
-		value: number;
+		alpha: number;
+		cylinderHeight: (diameter: number, value: number) => number;
 	}
 	export const pressureHydrocycloneTable: PressureHydrocycloneTable[] = [
-		{ label: 'ГН-25', value: 25, particleHugest: { min: 8, max: 25 },
-		mark: 'ГН-25', diameter: 25, diameterInPipe: 6, diameterOutPipe: 8, deltaP: 0.1 },
-		{ label: 'ГН-40', value: 40, particleHugest: { min: 10, max: 30 },
-		mark: 'ГН-40', diameter: 40, diameterInPipe: 8, diameterOutPipe: 12, deltaP: 0.1 },
-		{ label: 'ГН-60', value: 60, particleHugest: { min: 15, max: 35 },
-		mark: 'ГН-60', diameter: 60, diameterInPipe: 12, diameterOutPipe: 16, deltaP: 0.15 },
-		{ label: 'ГН-80', value: 80, particleHugest: { min: 18, max: 40 },
-		mark: 'ГН-80', diameter: 80, diameterInPipe: 16, diameterOutPipe: 20, deltaP: 0.2 },
-		{ label: 'ГН-100', value: 100, particleHugest: { min: 20, max: 50 },
-		mark: 'ГН-100', diameter: 100, diameterInPipe: 32, diameterOutPipe: 32, deltaP: 0.2 },
-		{ label: 'ГН-125', value: 125, particleHugest: { min: 25, max: 60 },
-		mark: 'ГН-125', diameter: 125, diameterInPipe: 32, diameterOutPipe: 40, deltaP: 0.2 },
-		{ label: 'ГН-160', value: 160, particleHugest: { min: 30, max: 70 },
-		mark: 'ГН-160', diameter: 160, diameterInPipe: 40, diameterOutPipe: 50, deltaP: 0.2 },
-		{ label: 'ГН-200', value: 200, particleHugest: { min: 35, max: 85 },
-		mark: 'ГН-200', diameter: 200, diameterInPipe: 50, diameterOutPipe: 60, deltaP: 0.25 },
-		{ label: 'ГН-250', value: 250, particleHugest: { min: 40, max: 110 },
-		mark: 'ГН-250', diameter: 250, diameterInPipe: 60, diameterOutPipe: 80, deltaP: 0.25 },
-		{ label: 'ГН-320', value: 320, particleHugest: { min: 45, max: 150 },
-		mark: 'ГН-320', diameter: 320, diameterInPipe: 80, diameterOutPipe: 100, deltaP: 0.3 },
-		{ label: 'ГН-400', value: 400, particleHugest: { min: 50, max: 170 },
-		mark: 'ГН-400', diameter: 400, diameterInPipe: 100, diameterOutPipe: 125, deltaP: 0.3 },
-		{ label: 'ГН-500', value: 500, particleHugest: { min: 55, max: 200 },
-		mark: 'ГН-500', diameter: 500, diameterInPipe: 125, diameterOutPipe: 160, deltaP: 0.35 },
-		{ label: 'ГЦ-150', value: 150, particleHugest: { min: 30, max: 95 },
-		mark: 'ГЦ-150', diameter: 150, diameterInPipe: 50, diameterOutPipe: 40, deltaP: 0.2 },
-		{ label: 'ГЦ-250', value: 250, particleHugest: { min: 37, max: 135 },
-		mark: 'ГЦ-250', diameter: 250, diameterInPipe: 80, diameterOutPipe: 65, deltaP: 0.25 },
-		{ label: 'ГЦ-350', value: 350, particleHugest: { min: 44, max: 180 },
-		mark: 'ГЦ-350', diameter: 350, diameterInPipe: 100, diameterOutPipe: 90, deltaP: 0.3 },
-		{ label: 'ГЦ-500', value: 500, particleHugest: { min: 52, max: 200 },
-		mark: 'ГЦ-500', diameter: 500, diameterInPipe: 150, diameterOutPipe: 130, deltaP: 0.35 },
+		{ label: 'ГЦ-150К', value: 0.15, mark: 'ГЦ-150К', diameter: 0.15, diameterInPipe: 0.05, hugestParticular: {min: 28, max: 95},
+			diameterSpecialPipe: [0.012, 0.017, 0.024], diameterOutPipe: 0.04, alpha: 20, cylinderHeight: undefined, deltaP: 0.1875},
+		{ label: 'ГЦ-250К', value: 0.25, mark: 'ГЦ-250К', diameter: 0.25, diameterInPipe: 0.08, hugestParticular: {min: 37, max: 135},
+			diameterSpecialPipe: [0.017, 0.024, 0.034], diameterOutPipe: 0.065, alpha: 20, cylinderHeight: undefined, deltaP: 0.2},
+		{ label: 'ГЦ-350К', value: 0.35, mark: 'ГЦ-350К', diameter: 0.35, diameterInPipe: 0.1, hugestParticular: {min: 44, max: 180},
+			diameterSpecialPipe: [0.024, 0.034, 0.048], diameterOutPipe: 0.09, alpha: 20, cylinderHeight: undefined, deltaP: 0.25},
+		{ label: 'ГЦ-500К', value: 0.5, mark: 'ГЦ-500К', diameter: 0.5, diameterInPipe: 0.15, hugestParticular: {min: 52, max: 240},
+			diameterSpecialPipe: [0.034, 0.048, 0.075], diameterOutPipe: 0.13, alpha: 20, cylinderHeight: undefined, deltaP: 0.3},
+		{ label: 'ГЦ-710К', value: 0.71, mark: 'ГЦ-710К', diameter: 0.71, diameterInPipe: 0.15, hugestParticular: {min: 86, max: 295},
+			diameterSpecialPipe: [0.048, 0.075, 0.1, 0.15, 0.2], diameterOutPipe: 0.2, alpha: 20, cylinderHeight: undefined, deltaP: 0.1},
+		{ label: 'ГЦ-1000К', value: 1, mark: 'ГЦ-1000К', diameter: 1, diameterInPipe: 0.21, hugestParticular: {min: 115, max: 410},
+			diameterSpecialPipe: [0.75, 0.1, 0.15, 0.2, 0.25], diameterOutPipe: 0.25, alpha: 20, cylinderHeight: undefined, deltaP: 0.1},
+		{ label: 'ГЦ-1400К', value: 1.4, mark: 'ГЦ-1400К', diameter: 1.4, diameterInPipe: 0.3, hugestParticular: {min: 155, max: 570},
+			diameterSpecialPipe: [0.15, 0.2, 0.25, 0.3, 0.35], diameterOutPipe: 0.38, alpha: 20, cylinderHeight: undefined, deltaP: 0.1},
+		{ label: 'ГЦ-2000К', value: 2, mark: 'ГЦ-2000К', diameter: 2, diameterInPipe: 0.4, hugestParticular: {min: 215, max: 810},
+			diameterSpecialPipe: [0.25, 0.3, 0.35, 0.4], diameterOutPipe: 0.5, alpha: 20, cylinderHeight: undefined, deltaP: 0.1},
 	];
 	export const gravityAcceleration = 9.8;
 	export interface CentrifugeTable {
 		mark: string;
-		rotorVolume: number;
+		rotorDiameter: number;
 		separateFactor: number;
 		label: string;
 		value: number;
 	}
 	export const centrifugeTableContinuous: CentrifugeTable[] = [
-		{mark: '', rotorVolume: undefined, separateFactor: undefined, label: 'Выберите центрифугу', value: undefined},
-		{mark: 'ОГШ-352К-6', rotorVolume: 0.06, separateFactor: 3140, label: 'ОГШ-352К-6', value: 0.06},
-		{mark: 'ОГШ-352К-1', rotorVolume: 0.06, separateFactor: 3140, label: 'ОГШ-352К-1', value: 0.06},
-		{mark: 'ОГШ-501К-6', rotorVolume: 0.17, separateFactor: 2000, label: 'ОГШ-501К-6', value: 0.17},
-		{mark: 'ОГШ-631К-2', rotorVolume: 0.35, separateFactor: 1415, label: 'ОГШ-631К-2', value: 0.35},
-		{mark: 'ОГШ-802К-7', rotorVolume: 0.72, separateFactor: 1500, label: 'ОГШ-802К-7', value: 0.72},
-		{mark: 'НОГШ-1203К-1', rotorVolume: 2.44, separateFactor: 430, label: 'НОГШ-1203К-1', value: 2.44},
-		{mark: 'НОГШ-132', rotorVolume: 3.25, separateFactor: 830, label: 'НОГШ-132', value: 3.25},
+		{mark: '', rotorDiameter: undefined, separateFactor: undefined, label: 'Выберите центрифугу', value: undefined},
+		{mark: 'ОГШ-202К-03', rotorDiameter: 0.200, separateFactor: 4000, label: 'ОГШ-202К-03', value: 0.200},
+		{mark: 'ОГШ-321К-01', rotorDiameter: 0.320, separateFactor: 3231, label: 'ОГШ-321К-01', value: 0.320},
+		{mark: 'ОГШ-321К-05', rotorDiameter: 0.325, separateFactor: 2200, label: 'ОГШ-321К-05', value: 0.325},
+		{mark: 'ОГШ-352К-01', rotorDiameter: 0.350, separateFactor: 3535, label: 'ОГШ-352К-01', value: 0.350},
+		{mark: 'ОГШ-352К-05', rotorDiameter: 0.350, separateFactor: 3535, label: 'ОГШ-352К-05', value: 0.350},
+		{mark: 'ОГШ-352К-09', rotorDiameter: 0.350, separateFactor: 2500, label: 'ОГШ-352К-09', value: 0.350},
+		{mark: 'ОГШ-501К-06', rotorDiameter: 0.500, separateFactor: 2190, label: 'ОГШ-501К-06', value: 0.500},
+		{mark: 'ОГШ-501К-10', rotorDiameter: 0.500, separateFactor: 1960, label: 'ОГШ-501К-10', value: 0.500},
+		{mark: 'ОГШ-501К-11', rotorDiameter: 0.200, separateFactor: 2190, label: 'ОГШ-501К-11', value: 0.200},
+		{mark: 'ОГШ-631К-02', rotorDiameter: 0.630, separateFactor: 1420, label: 'ОГШ-631К-02', value: 0.630},
+		{mark: 'ОГШ-631К-06', rotorDiameter: 0.630, separateFactor: 2520, label: 'ОГШ-631К-06', value: 0.630},
+		{mark: 'ОГШ-802К-07', rotorDiameter: 0.800, separateFactor: 1530, label: 'ОГШ-802К-07', value: 0.800},
 	];
 	export const centrifugeTableDeterminate: CentrifugeTable[] = [
-		{mark: '', rotorVolume: undefined, separateFactor: undefined, label: 'Выберите центрифугу', value: undefined},
-		{mark: 'ОТР-10', rotorVolume: 0.015, separateFactor: 13000, label: 'ОТР-10', value: 0.015},
-		{mark: 'ОТР-15', rotorVolume: 0.035, separateFactor: 15000, label: 'ОТР-15', value: 0.035},
-		{mark: 'Г-4', rotorVolume: 0.56, separateFactor: 1250, label: 'Г-4', value: 0.56},
-		{mark: 'Г-2', rotorVolume: 1.33, separateFactor: 950, label: 'Г-2', value: 1.33},
-		{mark: '20ГН-2201У-1', rotorVolume: 19.9, separateFactor: 600, label: '20ГН-2201У-1', value: 19.9},
+		{mark: '', rotorDiameter: undefined, separateFactor: undefined, label: 'Выберите центрифугу', value: undefined},
+		{mark: 'ОТР-102K-01', rotorDiameter: 0.105, separateFactor: 16940, label: 'ОТР-102K-01', value: 0.105},
+		{mark: 'ОТР-151K-01', rotorDiameter: 0.150, separateFactor: 15250, label: 'ОТР-151K-01', value: 0.150},
+		{mark: 'ОМБ-803К-03', rotorDiameter: 0.800, separateFactor: 1000, label: 'ОМБ-803К-03', value: 0.800},
+		{mark: 'ОМД-1202К-2', rotorDiameter: 1.200, separateFactor: 605, label: 'ОМД-1202К-2', value: 1.200},
 	];
 	export enum CoefficientCentrifugeVolume {
 		min = 0.4,
 		max = 0.6,
 	}
+	export interface OpenHydrocycloneConfig {
+		type: HydrocycloneOpenTypes;
+		diameter: (diameter: number) => number;
+		heightCylinderPart: (diameter: number) => number;
+		sizeOfOutPipe: (diameter: number) => number;
+		amountOfDropIn: number;
+		angleOfConusPart: number;
+		angleConusDiaphragm: number;
+		diameterCentralHole: (diameter: number) => number;
+		diameterInsideHole: (diameter: number) => number;
+		heightInsideHole: (diameter: number) => number;
+		heightWaterOutWall: number;
+		diameterWaterOutWall: (diameter: number) => number;
+		diameterCircleWall: (diameter: number) => number;
+		flowSpeed: number;
+	}
+	export const openHydrocycloneConfiguration: OpenHydrocycloneConfig[] = [
+
+	];
 }
