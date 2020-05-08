@@ -1,8 +1,5 @@
 export namespace FilterSource {
-	export enum BaseConcentrate {
-		min = 10,
-		max = 30,
-	}
+
 	export enum FilterTypes {
 		grainyLittleOneLayerDownThread = 'grainyLittleOneLayerDownThread',
 		grainyHugeOneLayerDownThread = 'grainyHugeOneLayerDownThread',
@@ -46,6 +43,12 @@ export namespace FilterSource {
 		{name: 'Барабанные сетки', type: FilterTypes.drumNets,
 		clearEffectBPK: {min: 0, max: 10}, clearEffectSubstance: {min: 0, max: 25}},
 	];
+	export enum TypeOfCleanGrainyFilter {
+		air = 'air',
+		airAndWater = 'airAndWater',
+		water = 'water',
+		all = 'all',
+	}
 	export interface GrainyFilterParameters {
 		type: FilterTypes;
 		speedNormal: { min: number; max: number };
@@ -55,51 +58,60 @@ export namespace FilterSource {
 		periodFirst: { min: number; max: number };
 		intensiveSecond: { min: number; max: number };
 		periodSecond: { min: number; max: number };
-		intensiveThird: { min: number; max: number };
-		periodThird: { min: number; max: number };
+		intensiveThirdAir: { min: number; max: number };
+		intensiveThirdWater: { min: number; max: number };
+		periodThirdAir: { min: number; max: number };
+		periodThirdWater: { min: number; max: number };
 	}
+
 	export const grainyFilters: GrainyFilterParameters[] = [
 		{
 			type: FilterTypes.grainyLittleOneLayerDownThread,
 			speedNormal: { min: 6, max: 7 }, speedForced: { min: 7, max: 8 }, periodFilterCycle: 12,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
 			intensiveSecond: { min: 3, max: 5 }, periodSecond: { min: 10, max: 12 },
-			intensiveThird: { min: 7, max: 7 }, periodThird: { min: 6, max: 8 },
+			intensiveThirdAir: { min: 18, max: 20 }, periodThirdAir: { min: 2, max: 2 },
+			intensiveThirdWater: { min: 7, max: 7 }, periodThirdWater: { min: 6, max: 8 },
 		},
 		{
 			type: FilterTypes.grainyHugeOneLayerDownThread,
 			speedNormal: { min: 16, max: 16 }, speedForced: { min: 18, max: 18 }, periodFilterCycle: 12,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
 			intensiveSecond: { min: 10, max: 10 }, periodSecond: { min: 4, max: 4 },
-			intensiveThird: { min: 15, max: 15 }, periodThird: { min: 3, max: 3 },
+			intensiveThirdAir: { min: 16, max: 16 }, periodThirdAir: { min: 3, max: 3 },
+			intensiveThirdWater: { min: 15, max: 15 }, periodThirdWater: { min: 3, max: 3 },
 		},
 		{
 			type: FilterTypes.grainyOneLayerUpThread,
 			speedNormal: { min: 11, max: 12 }, speedForced: { min: 13, max: 14 }, periodFilterCycle: 12,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
 			intensiveSecond: { min: 3, max: 4 }, periodSecond: { min: 8, max: 10 },
-			intensiveThird: { min: 6, max: 6 }, periodThird: { min: 6, max: 8 },
+			intensiveThirdAir: { min: 18, max: 20 }, periodThirdAir: { min: 2, max: 2 },
+			intensiveThirdWater: { min: 6, max: 6 }, periodThirdWater: { min: 6, max: 8 },
 		},
 		{
 			type: FilterTypes.grainyTwoLayers,
 			speedNormal: { min: 7, max: 8 }, speedForced: { min: 9, max: 10 }, periodFilterCycle: 24,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
-			intensiveSecond: { min: 15, max: 15 }, periodSecond: { min: 3, max: 3 },
-			intensiveThird: { min: 15, max: 15 }, periodThird: { min: 3, max: 3 },
+			intensiveSecond: { min: undefined, max: undefined }, periodSecond: { min: undefined, max: undefined },
+			intensiveThirdAir: { min: undefined, max: undefined }, periodThirdAir: { min: undefined, max: undefined },
+			intensiveThirdWater: { min: 15, max: 15 }, periodThirdWater: { min: 3, max: 3 },
 		},
 		{
 			type: FilterTypes.grainyAerated,
-			speedNormal: { min: 6, max: 7 }, speedForced: { min: 7, max: 8 }, periodFilterCycle: 12,
+			speedNormal: { min: 6, max: 7 }, speedForced: { min: 7, max: 8 }, periodFilterCycle: 24,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
-			intensiveSecond: { min: 16, max: 18 }, periodSecond: { min: 7, max: 8 },
-			intensiveThird: { min: 16, max: 18 }, periodThird: { min: 7, max: 8 },
+			intensiveSecond: { min: undefined, max: undefined }, periodSecond: { min: undefined, max: undefined },
+			intensiveThirdAir: { min: undefined, max: undefined }, periodThirdAir: { min: undefined, max: undefined },
+			intensiveThirdWater: { min: 16, max: 18 }, periodThirdWater: { min: 7, max: 8 },
 		},
 		{
 			type: FilterTypes.grainyCarcase,
 			speedNormal: { min: 10, max: 10 }, speedForced: { min: 15, max: 15 }, periodFilterCycle: 20,
 			intensiveFirst: { min: 16, max: 18 }, periodFirst: { min: 6, max: 8 },
 			intensiveSecond: { min: 6, max: 8 }, periodSecond: { min: 5, max: 7 },
-			intensiveThird: { min: 14, max: 16 }, periodThird: { min: 3, max: 3 },
+			intensiveThirdAir: { min: 14, max: 16 }, periodThirdAir: { min: undefined, max: undefined },
+			intensiveThirdWater: { min: 14, max: 16 }, periodThirdWater: { min: 3, max: 3 },
 		},
 	];
 	export enum CoefficientDrumNetsClean {
@@ -170,4 +182,5 @@ export namespace FilterSource {
 		max = 0.5,
 	}
 	export const periodOfWaterClean = 5;
+	export const day = 24;
 }
