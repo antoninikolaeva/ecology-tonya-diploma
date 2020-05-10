@@ -135,14 +135,23 @@ export namespace FilterSource {
 		}
 		square: number;
 		performance: number;
+		// from drumNet construction
+		filterSquare: number;
+		drumSpeedRotation: number;
 	}
 	export const microFilters: MicroFilter[] = [
-		{value: 100, label: '1.5x1.9', square: 2.85, performance: 100, relation: {width: 1.5, height: 1.9}},
-		{value: 160, label: '1.5x2.8', square: 4.2, performance: 160, relation: {width: 1.5, height: 2.8}},
-		{value: 210, label: '1.5x3.7', square: 5.55, performance: 210, relation: {width: 1.5, height: 3.7}},
-		{value: 400, label: '3x2.8', square: 8.4, performance: 400, relation: {width: 3, height: 2.8}},
-		{value: 530, label: '3x3.7', square: 11.1, performance: 530, relation: {width: 3, height: 3.7}},
-		{value: 660, label: '3x4.6', square: 13.8, performance: 660, relation: {width: 3, height: 4.6}},
+		{value: 2400, label: '1.5x1.9', square: 2.85, performance: 2400, relation: {width: 1.5, height: 1.9},
+			filterSquare: 3.75, drumSpeedRotation: 2.6},
+		{value: 3840, label: '1.5x2.8', square: 4.2, performance: 3840, relation:  {width: 1.5, height: 2.8},
+			filterSquare: 5.6, drumSpeedRotation: 2.6},
+		{value: 5040, label: '1.5x3.7', square: 5.55, performance: 5040, relation: {width: 1.5, height: 3.7},
+			filterSquare: 7.5, drumSpeedRotation: 2.6},
+		{value: 9600, label: '3x2.8', square: 8.4, performance: 9600, relation:    {width: 3, height: 2.8},
+			filterSquare: 13, drumSpeedRotation: 1.7},
+		{value: 12720, label: '3x3.7', square: 11.1, performance: 12720, relation: {width: 3, height: 3.7},
+			filterSquare: 17.5, drumSpeedRotation: 1.7},
+		{value: 15840, label: '3x4.6', square: 13.8, performance: 15840, relation: {width: 3, height: 4.6},
+			filterSquare: 22, drumSpeedRotation: 1.7},
 	];
 	export enum CoefficientIncreasePerformance {
 		min = 1.03,
@@ -161,15 +170,27 @@ export namespace FilterSource {
 	export interface DrumNets {
 		value: number;
 		label: string;
+		relation: {
+			width: number;
+			height: number;
+		}
 		performance: number;
+		filterSquare: number;
+		drumSpeedRotation: number;
 	}
 	export const drumNets: DrumNets[] = [
-		{label: '1.5x1.9', value: 350, performance: 350},
-		{label: '1.5x2.8', value: 550, performance: 550},
-		{label: '1.5x3.7', value: 750, performance: 750},
-		{label: '3x2.8', value: 1250, performance: 1250},
-		{label: '3x3.7', value: 1650, performance: 1650},
-		{label: '3x4.6', value: 2100, performance: 2100},
+		{ label: '1.5x1.9', value: 8400, performance: 8400, relation: { width: 1.5, height: 1.9 },
+			filterSquare: 3.75, drumSpeedRotation: 2.6},
+		{ label: '1.5x2.8', value: 13200, performance: 13200, relation: { width: 1.5, height: 2.8 },
+			filterSquare: 5.6, drumSpeedRotation: 2.6},
+		{ label: '1.5x3.7', value: 18000, performance: 18000, relation: { width: 1.5, height: 3.7 },
+			filterSquare: 7.5, drumSpeedRotation: 2.6},
+		{ label: '3x2.8', value: 30000, performance: 30000, relation: { width: 3, height: 2.8 },
+			filterSquare: 13, drumSpeedRotation: 1.7},
+		{ label: '3x3.7', value: 39600, performance: 39600, relation: { width: 3, height: 3.7 },
+			filterSquare: 17.5, drumSpeedRotation: 1.7},
+		{ label: '3x4.6', value: 50500, performance: 50500, relation: { width: 3, height: 4.6 },
+			filterSquare: 22, drumSpeedRotation: 1.7},
 	];
 	export const minMicroFilterPerformance = 100;
 	export const minDrumNetsPerformance = 350;

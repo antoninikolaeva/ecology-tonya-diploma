@@ -442,6 +442,11 @@ export class GeneralComponent extends React.Component<{}, State> {
 		this.setState({ resultMode });
 	}
 
+	private onStartPage = () => {
+		this.clearPage();
+		this.setState({ resultMode: false, countMode: false });
+	}
+
 	private isDataExisted = () => {
 		const { secondMaxFlow, dailyWaterFlow } = this.state;
 		const listOfSelectedDevice = listOfDevices.filter(device => device.selected);
@@ -523,7 +528,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const { countMode, resultMode } = this.state;
 		return <div>
 			<Navbar bg='primary' variant='dark'>
-				<Navbar.Brand>Расчет очистных сооружений</Navbar.Brand>
+				<Navbar.Brand onClick={this.onStartPage}>Расчет очистных сооружений</Navbar.Brand>
 			</Navbar>
 			{
 				countMode
