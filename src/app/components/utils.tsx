@@ -231,3 +231,30 @@ export class InputTemplate extends React.Component<InputTemplateProps, InputTemp
 		</div>;
 	}
 }
+
+export interface TableRowContentProps {
+	value: number | string;
+	label: string;
+	colClass?: string;
+	rowClass?: string;
+}
+
+export class TableRow extends React.Component<TableRowContentProps, {}> {
+	constructor(props: TableRowContentProps) {
+		super(props);
+		this.state = {};
+	}
+
+	render() {
+		const {value, label, colClass, rowClass} = this.props;
+		if (!value || !label) {
+			return null;
+		}
+		return (
+			<tr className={rowClass}>
+				<td className={colClass}>{label}</td>
+				<td className={colClass}>{value}</td>
+			</tr>
+		);
+	}
+}

@@ -17,6 +17,7 @@ export interface OilTrapResultData {
 }
 
 export interface FilterResultData {
+	currentType: 'grainy' | 'load' | 'microFilter' | 'drumNet';
 	levelOfSubstanceClean: {value: number; label: string};
 	levelOfBPKClean: {value: number; label: string};
 	grainyAndSwimLoad: GrainyAndSwimLoadResult;
@@ -52,37 +53,39 @@ export class GeneralDataModel {
 		this.oilTrapResult = {
 		};
 		this.filterResult = {
+			currentType: undefined,
 			levelOfSubstanceClean: {value: undefined, label: undefined},
 			levelOfBPKClean: {value: undefined, label: undefined},
 			grainyAndSwimLoad: {
-				amountOfAdditionalFilters: undefined,
-				amountOfFilterClean: undefined,
-				commonFilterSquare: undefined,
-				countingWaterFlow: undefined,
-				filterCyclePeriod: undefined,
-				filterSectionSquare: undefined,
-				forcedWaterSpeed: undefined,
-				waterSpeed: undefined,
+				amountOfAdditionalFilters: {value: undefined, label: undefined},
+				amountOfFilterClean: {value: undefined, label: undefined},
+				amountOfFilters: {value: undefined, label: undefined},
+				commonFilterSquare: {value: undefined, label: undefined},
+				countingWaterFlow: {value: undefined, label: undefined},
+				filterCyclePeriod: {value: undefined, label: undefined},
+				filterSectionSquare: {value: undefined, label: undefined},
+				forcedWaterSpeed: {value: undefined, label: undefined},
+				waterSpeed: {value: undefined, label: undefined},
 				onlyGrainyVariable: {
-					t1: undefined,
-					t2: undefined,
-					t3: undefined,
-					w1: undefined,
-					w2: undefined,
-					w3: undefined,
+					t1: {value: undefined, label: undefined},
+					t2: {value: undefined, label: undefined},
+					t3: {value: undefined, label: undefined},
+					w1: {value: undefined, label: undefined},
+					w2: {value: undefined, label: undefined},
+					w3: {value: undefined, label: undefined},
 				},
 			},
 			microFilter: {
-				amountOfAdditionalFilters: undefined,
-				amountOfMicroFilters: undefined,
-				commonFilterSquare: undefined,
-				dailyAmountOfWasteWater: undefined,
+				amountOfAdditionalFilters: {value: undefined, label: undefined},
+				amountOfMicroFilters: {value: undefined, label: undefined},
+				commonFilterSquare: {value: undefined, label: undefined},
+				dailyAmountOfWasteWater: {value: undefined, label: undefined},
 				microFilter: undefined,
 			},
 			drumNet: {
-				amountOfAdditionalFilters: undefined,
-				amountOfDrumNets: undefined,
-				dailyAmountOfWasteWater: undefined,
+				amountOfAdditionalFilters: {value: undefined, label: undefined},
+				amountOfDrumNets: {value: undefined, label: undefined},
+				dailyAmountOfWasteWater: {value: undefined, label: undefined},
 				drumNet: undefined,
 			}
 		};
@@ -154,37 +157,38 @@ export class GeneralDataModel {
 export const dataModel: GeneralDataModel = new GeneralDataModel();
 
 interface GrainyAndSwimLoadResult {
-	countingWaterFlow: number;
-	commonFilterSquare: number;
-	filterSectionSquare: number;
-	waterSpeed: number;
-	forcedWaterSpeed: number;
-	amountOfFilterClean: number;
-	amountOfAdditionalFilters: number;
-	filterCyclePeriod: number;
+	countingWaterFlow: {value: number; label: string};
+	commonFilterSquare: {value: number; label: string};
+	filterSectionSquare: {value: number; label: string};
+	waterSpeed: {value: number; label: string};
+	forcedWaterSpeed: {value: number; label: string};
+	amountOfFilterClean: {value: number; label: string};
+	amountOfAdditionalFilters: {value: number; label: string};
+	amountOfFilters: {value: number; label: string};
+	filterCyclePeriod: {value: number; label: string};
 	onlyGrainyVariable: GrainyVariableConfig;
 }
 
 interface GrainyVariableConfig {
-	w1?: number;
-	w2?: number;
-	w3?: number;
-	t1?: number;
-	t2?: number;
-	t3?: number;
+	w1?: {value: number; label: string};
+	w2?: {value: number; label: string};
+	w3?: {value: number; label: string};
+	t1?: {value: number; label: string};
+	t2?: {value: number; label: string};
+	t3?: {value: number; label: string};
 }
 
 interface MicroFilterResult {
-	commonFilterSquare: number;
+	commonFilterSquare: {value: number; label: string};
 	microFilter: FilterSource.MicroFilter;
-	amountOfMicroFilters: number;
-	amountOfAdditionalFilters: number;
-	dailyAmountOfWasteWater: number;
+	amountOfMicroFilters: {value: number; label: string};
+	amountOfAdditionalFilters: {value: number; label: string};
+	dailyAmountOfWasteWater: {value: number; label: string};
 }
 
 interface DrumNetResult {
 	drumNet: FilterSource.DrumNets;
-	amountOfDrumNets: number;
-	amountOfAdditionalFilters: number;
-	dailyAmountOfWasteWater: number;
+	amountOfDrumNets: {value: number; label: string};
+	amountOfAdditionalFilters: {value: number; label: string};
+	dailyAmountOfWasteWater: {value: number; label: string};
 }

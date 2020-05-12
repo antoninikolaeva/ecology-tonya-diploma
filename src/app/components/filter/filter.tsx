@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { FilterTypes } from '../general-resources';
-import { labelTemplate, NULLSTR, InputTemplate, ItemList, SelectTemplate, resetSelectToDefault } from '../utils';
+import {
+	labelTemplate, NULLSTR, InputTemplate, ItemList, SelectTemplate, resetSelectToDefault, TableRow
+} from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, FilterResultData } from '../data-model';
 import { FilterSource } from './filter-resource';
@@ -171,37 +173,66 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		filterCyclePeriod?: number,
 	) => {
 		this.filterResult = {
-			levelOfBPKClean: {value: this.levelOfCleanBPK, label: 'Уровень очистки для БПК, %'},
-			levelOfSubstanceClean: {value: this.levelOfCleanSubstance, label: 'Уровень очистки для взвешенных веществ, %'},
+			currentType: this.isGrainy ? 'grainy' : this.isSwimPressure ? 'load' : this.isMicroFilter ? 'microFilter' : 'drumNet',
+			levelOfBPKClean: {
+				value: this.levelOfCleanBPK ? Number(this.levelOfCleanBPK.toFixed(3)) : undefined,
+				label: 'Уровень очистки для БПК, %'
+			},
+			levelOfSubstanceClean: {
+				value: this.levelOfCleanSubstance ? Number(this.levelOfCleanSubstance.toFixed(3)) : undefined,
+				label: 'Уровень очистки для взвешенных веществ, %'
+			},
 			grainyAndSwimLoad: {
-				amountOfAdditionalFilters: this.amountOfAdditionalFilters,
-				amountOfFilterClean: this.amountOfFilterClean,
-				commonFilterSquare: this.filterSquare,
-				countingWaterFlow: this.countingWaterFlow,
-				filterCyclePeriod,
-				filterSectionSquare: this.filterSectionSquare,
-				forcedWaterSpeed: this.forcedWaterSpeed,
-				waterSpeed,
+				amountOfAdditionalFilters: {value: this.amountOfAdditionalFilters, label: 'Количество секций фильтров находящихся в ремонте, шт'},
+				amountOfFilterClean: {value: this.amountOfFilterClean, label: 'Количество промывок каждого фильтра за сутки, раз'},
+				amountOfFilters: {value: this.amountOfFilterSection, label: 'Число секций фильтров, шт'},
+				commonFilterSquare: {
+					value: this.filterSquare ? Number(this.filterSquare.toFixed(3)) : undefined,
+					label: 'Общая площадь фильтров, м2'
+				},
+				countingWaterFlow: {
+					value: this.countingWaterFlow ? Number(this.countingWaterFlow.toFixed(3)) : undefined,
+					label: 'Расчетный расход сточной воды подаваемой на фильтры, м3/сут'
+				},
+				filterCyclePeriod: {value: filterCyclePeriod, label: 'Продолжительность фильтроцикла, ч'},
+				filterSectionSquare: {
+					value: this.filterSectionSquare ? Number(this.filterSectionSquare.toFixed(3)) : undefined,
+					label: 'Площадь каждой секции, м2'
+				},
+				forcedWaterSpeed: {
+					value: this.forcedWaterSpeed ? Number(this.forcedWaterSpeed.toFixed(3)) : undefined,
+					label: 'Скорость фильтрования воды при форсированном режиме, м/с'
+				},
+				waterSpeed: {value: waterSpeed, label: 'Скорость фильтрования воды при нормальном режиме, м/с'},
 				onlyGrainyVariable: {
-					t1: onlyGrainy.t1,
-					t2: onlyGrainy.t2,
-					t3: onlyGrainy.t3,
-					w1: onlyGrainy.w1,
-					w2: onlyGrainy.w2,
-					w3: onlyGrainy.w3,
+					t1: {value: onlyGrainy.t1, label: 'Продолжительность начального взрыхления, мин'},
+					t2: {value: onlyGrainy.t2, label: 'Продолжительность промывки(t2), мин'},
+					t3: {value: onlyGrainy.t3, label: 'Продолжительность промывки(t3), мин'},
+					w1: {value: onlyGrainy.w1, label: 'Интенсивность начального взрыхления верхнего слоя, л/(с*м2)'},
+					w2: {value: onlyGrainy.w2, label: 'Интенсивность промывки водой(w2), л/(с*м2)'},
+					w3: {value: onlyGrainy.w3, label: 'Интенсивность промывки водой(w3), л/(с*м2)'},
 				},
 			},
 			microFilter: {
-				amountOfAdditionalFilters: this.amountOfAdditionalFilters,
-				amountOfMicroFilters: this.amountOfFilterSection,
-				commonFilterSquare: this.filterSquare,
-				dailyAmountOfWasteWater: this.dailyAmountOfWasteWater,
+				amountOfAdditionalFilters: {value: this.amountOfAdditionalFilters, label: 'Количество резервных микрофильтров, шт'},
+				amountOfMicroFilters: {value: this.amountOfFilterSection, label: 'Количество микрофильтров, шт'},
+				commonFilterSquare: {
+					value: this.filterSquare ? Number(this.filterSquare.toFixed(3)) : undefined,
+					label: 'Площадь фильтрующей поверхности микрофильтра, м2'
+				},
+				dailyAmountOfWasteWater: {
+					value: this.dailyAmountOfWasteWater ? Number(this.dailyAmountOfWasteWater.toFixed(3)) : undefined,
+					label: 'Суточное количество промывной воды, м3/сут'
+				},
 				microFilter: this.currentMicroFilter,
 			},
 			drumNet: {
-				amountOfAdditionalFilters: this.amountOfAdditionalFilters,
-				amountOfDrumNets: this.amountOfFilterSection,
-				dailyAmountOfWasteWater: this.dailyAmountOfWasteWater,
+				amountOfAdditionalFilters: {value: this.amountOfAdditionalFilters, label: 'Количество резервных барабанных сеток, шт'},
+				amountOfDrumNets: {value: this.amountOfFilterSection, label: 'Количество барабанных сеток, шт'},
+				dailyAmountOfWasteWater: {
+					value: this.dailyAmountOfWasteWater ? Number(this.dailyAmountOfWasteWater.toFixed(3)) : undefined,
+					label: 'Суточное количество промывной воды, м3/сут'
+				},
 				drumNet: this.currentDrumNet,
 			}
 		};
@@ -692,74 +723,18 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		return (
-			<div className={'table-result'}>
-				<Table bordered hover>
-					<tbody>
-						{this.filterResult.levelOfSubstanceClean.label && this.filterResult.levelOfSubstanceClean.value
-							? <tr>
-								<td>{this.filterResult.levelOfSubstanceClean.label}</td>
-								<td>{this.filterResult.levelOfSubstanceClean.value.toFixed(3)}</td>
-							</tr>
-							: null}
-						{this.filterResult.levelOfBPKClean.label && this.filterResult.levelOfBPKClean.value
-							? <tr>
-								<td>{this.filterResult.levelOfBPKClean.label}</td>
-								<td>{this.filterResult.levelOfBPKClean.value.toFixed(3)}</td>
-							</tr>
-							: null}
-						{this.isGrainy || this.isSwimPressure
-							? <>
-								<tr><td>Расчетный расход сточной воды подаваемой на фильтры, м3/сут</td>
-									<td>{this.countingWaterFlow ? this.countingWaterFlow.toFixed(3) : undefined}</td></tr>
-								<tr><td>Общая площадь фильтров, м2</td>
-									<td>{this.filterSquare ? this.filterSquare.toFixed(3) : undefined}</td></tr>
-								<tr><td>Число секций фильтров, шт</td>
-									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
-								<tr><td>Площадь каждой секции, м2</td>
-									<td>{this.filterSectionSquare ? this.filterSectionSquare.toFixed(3) : undefined}</td></tr>
-								<tr><td>Скорость фильтрования воды при форсированном режиме, м/с</td>
-									<td>{this.forcedWaterSpeed ? this.forcedWaterSpeed.toFixed(3) : undefined}</td></tr>
-								<tr><td>Количество промывок каждого фильтра за сутки</td>
-									<td>{this.amountOfFilterClean ? this.amountOfFilterClean : undefined}</td></tr>
-								<tr><td>Количество секций фильтров находящихся в ремонте, шт</td>
-									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
-							</>
-							: null}
-						{this.isMicroFilter
-							? <>
-								<tr><td>Площадь фильтрующей поверхности микрофильтра, м2</td>
-									<td>{this.filterSquare ? this.filterSquare.toFixed(3) : undefined}</td></tr>
-								<tr><td>Марка микрофильтра из типа МФБ, по типоразмеру</td>
-									<td>{this.currentMicroFilter ? this.currentMicroFilter.label : undefined}</td></tr>
-								<tr><td>Производительность м3/ч</td>
-									<td>{this.currentMicroFilter ? this.currentMicroFilter.performance : undefined}</td></tr>
-								<tr><td>Количество микрофильтров, шт</td>
-									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
-								<tr><td>Количество резервных микрофильтров, шт</td>
-									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
-								<tr><td>Суточное количество промывной воды, м3/сут</td>
-									<td>{this.dailyAmountOfWasteWater ? this.dailyAmountOfWasteWater.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-						{this.isDrumNets
-							? <>
-								<tr><td>Марка барабанной сетки из типа БСБ, по типоразмеру</td>
-									<td>{this.currentDrumNet ? this.currentDrumNet.label : undefined}</td></tr>
-								<tr><td>Производительность м3/ч</td>
-									<td>{this.currentDrumNet ? this.currentDrumNet.performance : undefined}</td></tr>
-								<tr><td>Количество барабанных сеток, шт</td>
-									<td>{this.amountOfFilterSection ? this.amountOfFilterSection : undefined}</td></tr>
-								<tr><td>Количество резервных барабанных сеток, шт</td>
-									<td>{this.amountOfAdditionalFilters ? this.amountOfAdditionalFilters : undefined}</td></tr>
-								<tr><td>Суточное количество промывной воды, м3/сут</td>
-									<td>{this.dailyAmountOfWasteWater ? this.dailyAmountOfWasteWater.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-					</tbody>
-				</Table>
-			</div>
-		);
+		return renderFilterResult(
+			this.filterResult,
+			{
+				isGrainyAndLoad: this.isGrainy || this.isSwimPressure,
+				isOnlyGrany: this.isGrainy,
+				isMicroFilters: this.isMicroFilter,
+				isDrumNets: this.isDrumNets,
+			},
+			{
+				isGeneralResult: false,
+				title: NULLSTR,
+			});
 	}
 
 	// Отрисовка кнопки расчета
@@ -827,4 +802,96 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			</>
 		);
 	}
+}
+
+export function renderFilterResult(
+	filterResult: FilterResultData,
+	localResultConfig: {
+		isGrainyAndLoad: boolean;
+		isOnlyGrany: boolean;
+		isMicroFilters: boolean;
+		isDrumNets: boolean;
+	},
+	generalResultConfig: {
+		isGeneralResult: boolean;
+		title: string;
+	},
+) {
+	if (!filterResult) {
+		return null;
+	}
+	const common = filterResult;
+	const grainyOrLoad = common.grainyAndSwimLoad;
+	const onlyGrainy = common.grainyAndSwimLoad.onlyGrainyVariable;
+	const micro = common.microFilter;
+	const drumNet = common.drumNet;
+	return (
+		<div className={'table-result'}>
+			<Table bordered hover>
+				<tbody>
+					{generalResultConfig.isGeneralResult
+						? <>
+						<tr>
+							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
+							<td className={'right-title-column'}></td>
+						</tr>
+						<TableRow value={
+							localResultConfig.isGrainyAndLoad && localResultConfig.isOnlyGrany
+							? 'Зернистый фильтр'
+							: localResultConfig.isGrainyAndLoad && !localResultConfig.isOnlyGrany
+								? 'С плавающей загрузкой'
+								: localResultConfig.isMicroFilters
+									? 'Микрофильтр'
+									: 'Барабанные сетки'
+						} label={'Тип'} />
+						</>
+						: null}
+					<TableRow value={common.levelOfSubstanceClean.value} label={common.levelOfSubstanceClean.label} />
+					<TableRow value={common.levelOfBPKClean.value} label={common.levelOfBPKClean.label} />
+					{localResultConfig.isGrainyAndLoad
+						? <>
+							<TableRow value={grainyOrLoad.countingWaterFlow.value} label={grainyOrLoad.countingWaterFlow.label} />
+							<TableRow value={grainyOrLoad.commonFilterSquare.value} label={grainyOrLoad.commonFilterSquare.label} />
+							<TableRow value={grainyOrLoad.amountOfFilterClean.value} label={grainyOrLoad.amountOfFilterClean.label} />
+							<TableRow value={grainyOrLoad.amountOfFilters.value} label={grainyOrLoad.amountOfFilters.label} />
+							<TableRow value={grainyOrLoad.waterSpeed.value} label={grainyOrLoad.waterSpeed.label} />
+							<TableRow value={grainyOrLoad.forcedWaterSpeed.value} label={grainyOrLoad.forcedWaterSpeed.label} />
+							<TableRow value={grainyOrLoad.amountOfAdditionalFilters.value} label={grainyOrLoad.amountOfAdditionalFilters.label} />
+							<TableRow value={grainyOrLoad.filterSectionSquare.value} label={grainyOrLoad.filterSectionSquare.label} />
+							<TableRow value={grainyOrLoad.filterCyclePeriod.value} label={grainyOrLoad.filterCyclePeriod.label} />
+						</>
+						: null}
+					{localResultConfig.isOnlyGrany
+						? <>
+							<TableRow value={onlyGrainy.w1.value} label={onlyGrainy.w1.label} />
+							<TableRow value={onlyGrainy.t1.value} label={onlyGrainy.t1.label} />
+							<TableRow value={onlyGrainy.w2.value} label={onlyGrainy.w2.label} />
+							<TableRow value={onlyGrainy.t2.value} label={onlyGrainy.t2.label} />
+							<TableRow value={onlyGrainy.w3.value} label={onlyGrainy.w3.label} />
+							<TableRow value={onlyGrainy.t3.value} label={onlyGrainy.t3.label} />
+						</>
+						: null}
+					{localResultConfig.isMicroFilters
+						? <>
+							<TableRow value={micro.microFilter.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
+							<TableRow value={micro.microFilter.performance} label={'Производительность, м3/сут'} />
+							<TableRow value={micro.commonFilterSquare.value} label={micro.commonFilterSquare.label} />
+							<TableRow value={micro.amountOfMicroFilters.value} label={micro.amountOfMicroFilters.label} />
+							<TableRow value={micro.amountOfAdditionalFilters.value} label={micro.amountOfAdditionalFilters.label} />
+							<TableRow value={micro.dailyAmountOfWasteWater.value} label={micro.dailyAmountOfWasteWater.label} />
+						</>
+						: null}
+					{localResultConfig.isDrumNets
+						? <>
+							<TableRow value={drumNet.drumNet.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
+							<TableRow value={drumNet.drumNet.performance} label={'Производительность, м3/сут'} />
+							<TableRow value={drumNet.amountOfDrumNets.value} label={drumNet.amountOfDrumNets.label} />
+							<TableRow value={drumNet.amountOfAdditionalFilters.value} label={drumNet.amountOfAdditionalFilters.label} />
+							<TableRow value={drumNet.dailyAmountOfWasteWater.value} label={drumNet.dailyAmountOfWasteWater.label} />
+						</>
+						: null}
+				</tbody>
+			</Table>
+		</div>
+	);
 }

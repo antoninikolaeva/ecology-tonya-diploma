@@ -12,6 +12,8 @@ import {
 } from '../data-model';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from '../resources/resources';
 import { LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Workspace, WorkspaceProps, DemoDataProvider } from 'ontodia';
+import { TableRow } from '../utils';
+import { renderFilterResult } from '../filter/filter';
 
 export interface GeneralResultProps {
 }
@@ -115,25 +117,19 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	}
 
 	private renderFilters = () => {
-		if (!this.sumpResult) {
+		if (!this.filterResult) {
 			return null;
 		}
-		return (
-			<>
-				<tr>
-					<td className={'input-label left-title-column'}>Фильтр</td>
-					<td className={'right-title-column'}></td>
-				</tr>
-				<tr>
-					<td>{this.filterResult.levelOfSubstanceClean.label}</td>
-					<td>{this.filterResult.levelOfSubstanceClean.value ? this.filterResult.levelOfSubstanceClean.value.toFixed(3) : null}</td>
-				</tr>
-				<tr>
-					<td>{this.filterResult.levelOfBPKClean.label}</td>
-					<td>{this.filterResult.levelOfBPKClean.value ? this.filterResult.levelOfBPKClean.value.toFixed(3) : null}</td>
-				</tr>
-			</>
-		);
+		return renderFilterResult(this.filterResult, {
+			isGrainyAndLoad: this.filterResult.currentType === 'grainy' || this.filterResult.currentType === 'load',
+			isOnlyGrany: this.filterResult.currentType === 'grainy',
+			isMicroFilters: this.filterResult.currentType === 'microFilter',
+			isDrumNets: this.filterResult.currentType === 'drumNet',
+		},
+		{
+			isGeneralResult: true,
+			title: 'Фильтр'
+		});
 	}
 
 	private renderResultTable = () => {
