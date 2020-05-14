@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { CentrifugeTypes } from '../general-resources';
-import { labelTemplate, resetSelectToDefault, NULLSTR, ItemList, SelectTemplate, InputTemplate } from '../utils';
+import { labelTemplate, resetSelectToDefault, NULLSTR, ItemList, SelectTemplate, InputTemplate, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, CentrifugeResultData } from '../data-model';
 import { CentrifugeSource } from './centrifuge-resource';
@@ -54,6 +54,8 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		{value: CentrifugeSource.HydrocycloneOpenTypes.highLevelExternal, label: 'Многоярусные с периферийным отводом воды'},
 	];
 
+	private centrifugeResult: CentrifugeResultData;
+
 	constructor(props: CentrifugeProps) {
 		super(props);
 
@@ -94,9 +96,32 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 	}
 
 	private setCentrifugeResult = () => {
-		const centrifugeResult: CentrifugeResultData = {
+		const { type } = this.props;
+		const { diameterHydrocyclone, currentOpenHydrocycloneType } = this.state;
+		this.centrifugeResult = {
+			deviceType: type,
+			openHydrocycloneType: currentOpenHydrocycloneType,
+			hOpened: {
+				amountOfHydrocyclones: {value: this.amountOfDevice, label: 'Количество рабочих гидроциклонов, шт'},
+				coefficientProportion: {value: Number(this.coefficientProportion.toFixed(3)), label: 'Коэффициент пропорциональности'},
+				currentHydrocyclone: this.currentHydrocyclone,
+				diameterHydrocyclone: {value: diameterHydrocyclone, label: 'Диаметр гидроциклона, м'},
+				hydraulicPressure: {value: Number(this.hydraulicPressure.toFixed(3)), label: 'Удельная гидравлическая нагрузка, м3/(м2/ч)'},
+				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность гидроциклона, м3/ч'},
+			},
+			hPressure: {
+				amountOfHydrocyclones: {value: this.amountOfDevice, label: 'Количество рабочих гидроциклонов, шт'},
+				amountOfAdditionalHydrocyclones: {value: this.amountOfAdditionalDevice, label: 'Количество резервных гидроциклонов, шт'},
+				currentPressureHydrocyclone: this.currentPressureHydrocyclone,
+				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность гидроциклона, м3/ч'},
+			},
+			centrifuge: {
+				amountOfCentrifuges: {value: this.amountOfDevice, label: 'Количество рабочих центрифуг, шт'},
+				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность центрифуги, м3/ч'},
+				currentCentrifuge: this.currentCentrifuge,
+			}
 		};
-		dataModel.setCentrifugeResult(centrifugeResult);
+		dataModel.setCentrifugeResult(this.centrifugeResult);
 	}
 
 	private renderBaseData = () => {
@@ -372,150 +397,10 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		if (!this.state.isResult) {
 			return;
 		}
-		const {type} = this.props;
-		const {currentOpenHydrocycloneType, diameterHydrocyclone} = this.state;
-		return (
-			<div className={'table-result'}>
-				<Table bordered hover>
-					<tbody>
-						{type === CentrifugeTypes.opened
-							? <>
-								<tr><td>Коэффициент пропорциональности</td>
-									<td>{this.coefficientProportion ? this.coefficientProportion.toFixed(3) : undefined}</td></tr>
-								<tr><td>Удельная гидравлическая нагрузка, м3/(м2/ч)</td>
-									<td>{this.hydraulicPressure ? this.hydraulicPressure.toFixed(3) : undefined}</td></tr>
-								<tr><td>Производительность гидроциклона, м3/ч</td>
-									<td>{this.performance ? this.performance.toFixed(3) : undefined}</td></tr>
-								<tr><td>Количество рабочих гидроциклонов, шт</td>
-									<td>{this.amountOfDevice ? this.amountOfDevice : undefined}</td></tr>
-								<tr><td>Диаметр гидроциклона, м</td>
-									<td>{diameterHydrocyclone ? diameterHydrocyclone : undefined}</td></tr>
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.withoutDevice ||
-									currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Высота цилиндрической части, м</td>
-											<td>{this.currentHydrocyclone.heightCylinderPart ? this.currentHydrocyclone.heightCylinderPart : undefined}</td></tr>
-									</>
-									: null}
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.withoutDevice ||
-									currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Размер впускного патрубка, м</td>
-											<td>{this.currentHydrocyclone.sizeOfInPipe ? this.currentHydrocyclone.sizeOfInPipe : undefined}</td></tr>
-									</>
-									: <>
-										<tr><td>Размер впускного патрубка, м</td>
-											<td>Определяется по скорости входа</td></tr>
-									</>}
-								<tr><td>Количество впусков, шт</td>
-									<td>{this.currentHydrocyclone.amountOfDropIn ? this.currentHydrocyclone.amountOfDropIn : undefined}</td></tr>
-								<tr><td>Угол конической части, град</td>
-									<td>{this.currentHydrocyclone.angleOfConusPart ? this.currentHydrocyclone.angleOfConusPart : undefined}</td></tr>
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Угол конуса диафрагм, град</td>
-											<td>{this.currentHydrocyclone.angleConusDiaphragm ? this.currentHydrocyclone.angleConusDiaphragm[0] : undefined}</td></tr>
-									</>
-									: currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelCenter ||
-										currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelExternal
-										? <>
-											<tr><td>Угол конуса диафрагм, град</td>
-												<td>{this.currentHydrocyclone.angleConusDiaphragm
-													? `${this.currentHydrocyclone.angleConusDiaphragm[0]} - ${this.currentHydrocyclone.angleConusDiaphragm[1]}`
-													: undefined}</td></tr>
-										</>
-										: null}
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Диаметр центрального отверстия в диафрагме, м</td>
-											<td>{this.currentHydrocyclone.diameterCentralHole ? this.currentHydrocyclone.diameterCentralHole[0] : undefined}</td></tr>
-									</>
-									: currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelCenter
-										? <>
-											<tr><td>Диаметр центрального отверстия в диафрагме, м</td>
-												<td>{this.currentHydrocyclone.diameterCentralHole
-													? `${this.currentHydrocyclone.diameterCentralHole[0]} - ${this.currentHydrocyclone.diameterCentralHole[1]}`
-													: undefined}</td></tr>
-										</>
-										: currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.highLevelExternal
-											? <>
-												<tr><td>Диаметр центрального отверстия в диафрагме, нижней/верхней, м</td>
-													<td>{this.currentHydrocyclone.diameterCentralHole
-														? `${this.currentHydrocyclone.diameterCentralHole[0]} - ${this.currentHydrocyclone.diameterCentralHole[1]} /
-															${this.currentHydrocyclone.diameterCentralHole[2]} - ${this.currentHydrocyclone.diameterCentralHole[3]}`
-														: undefined}</td></tr>
-											</>
-											: null}
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Диаметр внутреннего цилиндра, м</td>
-											<td>{this.currentHydrocyclone.diameterInsideCylinder ? this.currentHydrocyclone.diameterInsideCylinder : undefined}</td></tr>
-									</>
-									: null}
-								{currentOpenHydrocycloneType === CentrifugeSource.HydrocycloneOpenTypes.conusAndCylinder
-									? <>
-										<tr><td>Высота внутреннего цилиндра, м</td>
-											<td>{this.currentHydrocyclone.heightInsideCylinder ? this.currentHydrocyclone.heightInsideCylinder : undefined}</td></tr>
-									</>
-									: null}
-								<tr><td>Высота водосливной стенки над диафрагмой, м</td>
-									<td>{this.currentHydrocyclone.heightWaterOutWall ? this.currentHydrocyclone.heightWaterOutWall : undefined}</td></tr>
-								<tr><td>Диаметр водосливной стенки, м</td>
-									<td>{this.currentHydrocyclone.diameterWaterOutWall ? this.currentHydrocyclone.diameterWaterOutWall : undefined}</td></tr>
-								<tr><td>Скорость потока на входе в аппарат, м/с</td>
-									<td>{this.currentHydrocyclone.flowSpeed
-									? `${this.currentHydrocyclone.flowSpeed[0]} - ${this.currentHydrocyclone.flowSpeed[1]}`
-									: undefined}</td></tr>
-							</>
-							: null}
-						{type === CentrifugeTypes.pressure
-							? <>
-								<tr><td>Марка гидроциклона</td>
-									<td>{this.currentPressureHydrocyclone ? this.currentPressureHydrocyclone.mark : undefined}</td></tr>
-								<tr><td>Производительность гидроциклона, м3/ч</td>
-									<td>{this.performance ? this.performance.toFixed(3) : undefined}</td></tr>
-								<tr><td>Количество рабочих гидроциклонов, шт</td>
-									<td>{this.amountOfDevice ? this.amountOfDevice : undefined}</td></tr>
-								<tr><td>Количество резервных гидроциклонов, шт</td>
-									<td>{this.amountOfAdditionalDevice ? this.amountOfAdditionalDevice : undefined}</td></tr>
-								<tr><td>Диаметр питающего патрубка, м</td>
-									<td>{this.currentPressureHydrocyclone.diameterInPipe ? this.currentPressureHydrocyclone.diameterInPipe : undefined}</td></tr>
-								<tr><td>Диаметр сливного патрубка, м</td>
-									<td>{this.currentPressureHydrocyclone.diameterOutPipe ? this.currentPressureHydrocyclone.diameterOutPipe : undefined}</td></tr>
-								<tr><td>Диаметр шламового патрубка, м</td>
-									<td>{this.currentPressureHydrocyclone.diameterSpecialPipe
-									? this.currentPressureHydrocyclone.diameterSpecialPipe.map((diameter, index) => <span key={index}>{`${diameter} `}</span>)
-									: undefined}</td></tr>
-								<tr><td>Угол конической части, град</td>
-									<td>{this.currentPressureHydrocyclone.alpha ? this.currentPressureHydrocyclone.alpha : undefined}</td></tr>
-								<tr><td>Высота цилиндрической части, м</td>
-									<td>{this.currentPressureHydrocyclone.cylinderHeight
-									? `${this.currentPressureHydrocyclone.cylinderHeight[0]} - ${this.currentPressureHydrocyclone.cylinderHeight[1]}`
-									: undefined}</td></tr>
-							</>
-							: null}
-						{type === CentrifugeTypes.continuous || type === CentrifugeTypes.determinate
-							? <>
-								<tr><td>Марка центрифуги</td>
-									<td>{this.currentCentrifuge ? this.currentCentrifuge.mark : undefined}</td></tr>
-								<tr><td>Производительность центрифуги, м3/ч</td>
-									<td>{this.performance ? this.performance.toFixed(3) : undefined}</td></tr>
-								<tr><td>Количество рабочих центрифуг, шт</td>
-									<td>{this.amountOfDevice ? this.amountOfDevice : undefined}</td></tr>
-								<tr><td>Диаметр ротора, м</td>
-									<td>{this.currentCentrifuge.rotorDiameter ? this.currentCentrifuge.rotorDiameter.toFixed(3) : undefined}</td></tr>
-								<tr><td>Длина ротора, м</td>
-									<td>{this.currentCentrifuge.rotorLength ? this.currentCentrifuge.rotorLength.toFixed(3) : undefined}</td></tr>
-								<tr><td>Объем ротора, м3</td>
-									<td>{this.currentCentrifuge.rotorVolume ? this.currentCentrifuge.rotorVolume.toFixed(3) : undefined}</td></tr>
-								<tr><td>Фактор разделения</td>
-									<td>{this.currentCentrifuge.separateFactor ? this.currentCentrifuge.separateFactor : undefined}</td></tr>
-							</>
-							: null}
-					</tbody>
-				</Table>
-			</div>
-		);
+		const { type } = this.props;
+		const { currentOpenHydrocycloneType } = this.state;
+		return renderCentrifugeResult(this.centrifugeResult, type, currentOpenHydrocycloneType,
+			{isGeneralResult: false, title: undefined});
 	}
 
 	// Отрисовка кнопки расчета
@@ -589,4 +474,112 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			</>
 		);
 	}
+}
+
+export function renderCentrifugeResult(
+	centrifugeResult: CentrifugeResultData,
+	type: CentrifugeTypes,
+	openHydrocycloneTypes: CentrifugeSource.HydrocycloneOpenTypes,
+	generalResultConfig: {
+		isGeneralResult: boolean;
+		title: string;
+	},
+) {
+	if (!centrifugeResult) {
+		return null;
+	}
+	const opened = centrifugeResult.hOpened;
+	const pressure = centrifugeResult.hPressure;
+	const centriguge = centrifugeResult.centrifuge;
+	const openHydType = CentrifugeSource.HydrocycloneOpenTypes;
+	return (
+		<div className={'table-result'}>
+			<Table bordered hover>
+				<tbody>
+					{generalResultConfig.isGeneralResult
+						? <>
+						<tr>
+							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
+							<td className={'right-title-column'}></td>
+						</tr>
+						<TableRow value={
+							type === CentrifugeTypes.opened
+							? 'Открытый гидроциклон'
+							: type === CentrifugeTypes.pressure
+								? 'Напорный гидроциклон'
+								: type === CentrifugeTypes.continuous
+									? 'Центрифуга непрерывного действия'
+									: 'Центрифуга периодического действия'
+						} label={'Тип'} />
+						</>
+						: null}
+
+					{type === CentrifugeTypes.opened
+						? <>
+							<TableRow value={opened.coefficientProportion.value} label={opened.coefficientProportion.label} />
+							<TableRow value={opened.hydraulicPressure.value} label={opened.hydraulicPressure.label} />
+							<TableRow value={opened.performance.value} label={opened.performance.label} />
+							<TableRow value={opened.amountOfHydrocyclones.value} label={opened.amountOfHydrocyclones.label} />
+							<TableRow value={opened.diameterHydrocyclone.value} label={opened.diameterHydrocyclone.label} />
+							<TableRow value={opened.currentHydrocyclone.heightCylinderPart} label={'Высота цилиндрической части, м'} />
+							<TableRow value={opened.currentHydrocyclone.sizeOfInPipe} label={'Размер впускного патрубка, м'} />
+							<TableRow value={'Определяется по скорости входа'} label={'Размер выпускного патрубка, м'} />
+							<TableRow value={opened.currentHydrocyclone.amountOfDropIn} label={'Количество впусков, шт'} />
+							<TableRow value={opened.currentHydrocyclone.angleOfConusPart} label={'Угол конической части, град'} />
+							<TableRow value={`${opened.currentHydrocyclone.angleConusDiaphragm[0]} -
+								${opened.currentHydrocyclone.angleConusDiaphragm[1]}`}
+								label={'Угол конуса диафрагм, град'} />
+							{openHydrocycloneTypes === openHydType.conusAndCylinder
+								? <TableRow value={opened.currentHydrocyclone.diameterCentralHole[0]}
+									label={'Диаметр центрального отверстия в диафрагме, м'} />
+								: openHydrocycloneTypes === openHydType.highLevelCenter
+									? <TableRow value={`${opened.currentHydrocyclone.diameterCentralHole[0]} -
+										${opened.currentHydrocyclone.diameterCentralHole[1]}`}
+										label={'Диаметр центрального отверстия в диафрагме, м'} />
+									: openHydrocycloneTypes === openHydType.highLevelExternal
+										? <TableRow value={`${opened.currentHydrocyclone.diameterCentralHole[0]} -
+											${opened.currentHydrocyclone.diameterCentralHole[1]} /
+											${opened.currentHydrocyclone.diameterCentralHole[2]} -
+											${opened.currentHydrocyclone.diameterCentralHole[3]}`}
+											label={'Диаметр центрального отверстия в диафрагме, нижней/верхней, м'} />
+										: null}
+							<TableRow value={opened.currentHydrocyclone.diameterInsideCylinder} label={'Диаметр внутреннего цилиндра, м'} />
+							<TableRow value={opened.currentHydrocyclone.heightInsideCylinder} label={'Высота внутреннего цилиндра, м'} />
+							<TableRow value={opened.currentHydrocyclone.heightWaterOutWall} label={'Высота водосливной стенки над диафрагмой, м'} />
+							<TableRow value={opened.currentHydrocyclone.diameterWaterOutWall} label={'Диаметр водосливной стенки, м'} />
+							<TableRow value={`${opened.currentHydrocyclone.flowSpeed[0]} -
+								${opened.currentHydrocyclone.flowSpeed[1]}`}
+								label={'Скорость потока на входе в аппарат, м/с'} />
+						</>
+						: null}
+					{type === CentrifugeTypes.pressure
+						? <>
+							<TableRow value={pressure.currentPressureHydrocyclone.mark} label={'Марка гидроциклона'} />
+							<TableRow value={pressure.performance.value} label={pressure.performance.label} />
+							<TableRow value={pressure.amountOfHydrocyclones.value} label={pressure.amountOfHydrocyclones.label} />
+							<TableRow value={pressure.amountOfAdditionalHydrocyclones.value} label={pressure.amountOfAdditionalHydrocyclones.label} />
+							<TableRow value={pressure.currentPressureHydrocyclone.diameterInPipe} label={'Диаметр питающего патрубка, м'} />
+							<TableRow value={pressure.currentPressureHydrocyclone.diameterOutPipe} label={'Диаметр сливного патрубка, м'} />
+							<TableRow value={pressure.currentPressureHydrocyclone.diameterSpecialPipe.map(diameter => `${diameter}`).join(',')}
+								label={'Диаметр шламового патрубка, м'} />
+							<TableRow value={pressure.currentPressureHydrocyclone.alpha} label={'Угол конической части, град'} />
+							<TableRow value={`${pressure.currentPressureHydrocyclone.cylinderHeight[0]} -
+								${pressure.currentPressureHydrocyclone.cylinderHeight[1]}`} label={'Высота цилиндрической части, м'} />
+						</>
+						: null}
+					{type === CentrifugeTypes.continuous || type === CentrifugeTypes.determinate
+						? <>
+							<TableRow value={centriguge.currentCentrifuge.mark} label={'Марка центрифуги'} />
+							<TableRow value={centriguge.performance.value} label={centriguge.performance.label} />
+							<TableRow value={centriguge.amountOfCentrifuges.value} label={centriguge.amountOfCentrifuges.label} />
+							<TableRow value={centriguge.currentCentrifuge.rotorDiameter} label={'Диаметр ротора, м'} />
+							<TableRow value={centriguge.currentCentrifuge.rotorLength} label={'Длина ротора, м'} />
+							<TableRow value={centriguge.currentCentrifuge.rotorVolume} label={'Объем ротора, м3'} />
+							<TableRow value={centriguge.currentCentrifuge.separateFactor} label={'Фактор разделения'} />
+						</>
+						: null}
+				</tbody>
+			</Table>
+		</div>
+	);
 }

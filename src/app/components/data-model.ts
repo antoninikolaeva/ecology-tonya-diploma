@@ -1,5 +1,7 @@
 import { GrateSource } from '../components/grate/grate-resources';
 import { FilterSource } from './filter/filter-resource';
+import { CentrifugeSource } from './centrifuge/centrifuge-resource';
+import { CentrifugeTypes } from './general-resources';
 
 export interface GrateResultData {
 }
@@ -26,6 +28,11 @@ export interface FilterResultData {
 }
 
 export interface CentrifugeResultData {
+	deviceType: CentrifugeTypes;
+	openHydrocycloneType: CentrifugeSource.HydrocycloneOpenTypes;
+	hOpened: HydrocycloneOpened;
+	hPressure: HydrocyclonePressure;
+	centrifuge: Centrifuge;
 }
 
 export class GeneralDataModel {
@@ -90,6 +97,27 @@ export class GeneralDataModel {
 			}
 		};
 		this.centrifugeResult = {
+			deviceType: undefined,
+			openHydrocycloneType: undefined,
+			hOpened: {
+				amountOfHydrocyclones: {value: undefined, label: undefined},
+				coefficientProportion: {value: undefined, label: undefined},
+				currentHydrocyclone: undefined,
+				diameterHydrocyclone: {value: undefined, label: undefined},
+				hydraulicPressure: {value: undefined, label: undefined},
+				performance: {value: undefined, label: undefined},
+			},
+			hPressure: {
+				amountOfAdditionalHydrocyclones: {value: undefined, label: undefined},
+				amountOfHydrocyclones: {value: undefined, label: undefined},
+				performance: {value: undefined, label: undefined},
+				currentPressureHydrocyclone: undefined,
+			},
+			centrifuge: {
+				amountOfCentrifuges: {value: undefined, label: undefined},
+				currentCentrifuge: undefined,
+				performance: {value: undefined, label: undefined},
+			}
 		};
 	}
 
@@ -191,4 +219,26 @@ interface DrumNetResult {
 	amountOfDrumNets: {value: number; label: string};
 	amountOfAdditionalFilters: {value: number; label: string};
 	dailyAmountOfWasteWater: {value: number; label: string};
+}
+
+interface HydrocycloneOpened {
+	coefficientProportion: {value: number; label: string};
+	hydraulicPressure: {value: number; label: string};
+	performance: {value: number; label: string};
+	amountOfHydrocyclones: {value: number; label: string};
+	diameterHydrocyclone: {value: number; label: string};
+	currentHydrocyclone: CentrifugeSource.OpenHydrocycloneConfig;
+}
+
+interface HydrocyclonePressure {
+	performance: {value: number; label: string};
+	amountOfHydrocyclones: {value: number; label: string};
+	amountOfAdditionalHydrocyclones: {value: number; label: string};
+	currentPressureHydrocyclone: CentrifugeSource.PressureHydrocycloneTable;
+}
+
+interface Centrifuge {
+	performance: {value: number; label: string};
+	amountOfCentrifuges: {value: number; label: string};
+	currentCentrifuge: CentrifugeSource.CentrifugeTable;
 }

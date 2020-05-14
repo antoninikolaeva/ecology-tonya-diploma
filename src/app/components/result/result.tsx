@@ -14,6 +14,7 @@ import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from '../resources/resources';
 import { LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Workspace, WorkspaceProps, DemoDataProvider } from 'ontodia';
 import { TableRow } from '../utils';
 import { renderFilterResult } from '../filter/filter';
+import { renderCentrifugeResult } from '../centrifuge/centrifuge';
 
 export interface GeneralResultProps {
 }
@@ -27,6 +28,7 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	private sandTrapResult: SandTrapResultData;
 	private sumpResult: SumpResultData;
 	private filterResult: FilterResultData;
+	private centrifugeResult: CentrifugeResultData;
 
 	private workspace: Workspace;
 	private elements: any;
@@ -72,6 +74,7 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 		this.sandTrapResult = dataModel.getSandTrapResult();
 		this.sumpResult = dataModel.getSumpResult();
 		this.filterResult = dataModel.getFilterResult();
+		this.centrifugeResult = dataModel.getCentrifugeResult();
 	}
 
 	private renderGrateRows = () => {
@@ -132,6 +135,16 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 		});
 	}
 
+	private renderCentrifuges = () => {
+		if (!this.centrifugeResult) {
+			return null;
+		}
+		return renderCentrifugeResult(this.centrifugeResult,
+			this.centrifugeResult.deviceType,
+			this.centrifugeResult.openHydrocycloneType,
+			{isGeneralResult: true, title: 'Центрифуги и гидроциклоны'});
+	}
+
 	private renderResultTable = () => {
 		return (
 			<Container>
@@ -144,6 +157,7 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 								{this.renderSandTrapRows()}
 								{this.renderSumpRows()}
 								{this.renderFilters()}
+								{this.renderCentrifuges()}
 							</tbody>
 						</Table>
 					</div>
@@ -152,6 +166,8 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 			</Container>
 		);
 	}
+
+
 
 	private generateSchema = () => {
 		// const grateElement = this.grateResult.currentSuitableGrate
