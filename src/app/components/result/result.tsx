@@ -15,6 +15,11 @@ import { LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Workspace, W
 import { TableRow } from '../utils';
 import { renderFilterResult } from '../filter/filter';
 import { renderCentrifugeResult } from '../centrifuge/centrifuge';
+import { renderAverageResult } from '../average/average';
+import { renderGrateResult } from '../grate/grate';
+import { renderOilTrapResult } from '../oilTrap/oilTrap';
+import { renderSandTrapResult } from '../sandTrap/sandTrap';
+import { renderSumpResult } from '../sump/sump';
 
 export interface GeneralResultProps {
 }
@@ -27,6 +32,8 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	private grateResult: GrateResultData;
 	private sandTrapResult: SandTrapResultData;
 	private sumpResult: SumpResultData;
+	private averageResult: AverageResultData;
+	private oilTrapResult: OilTrapResultData;
 	private filterResult: FilterResultData;
 	private centrifugeResult: CentrifugeResultData;
 
@@ -73,76 +80,59 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 		this.grateResult = dataModel.getGrateResult();
 		this.sandTrapResult = dataModel.getSandTrapResult();
 		this.sumpResult = dataModel.getSumpResult();
+		this.oilTrapResult = dataModel.getOilTrapResult();
+		this.averageResult = dataModel.getAverageResult();
 		this.filterResult = dataModel.getFilterResult();
 		this.centrifugeResult = dataModel.getCentrifugeResult();
 	}
 
-	private renderGrateRows = () => {
+	private renderGrate = () => {
 		if (!this.grateResult) {
 			return null;
 		}
-		return (
-			<>
-				<tr>
-					<td className={'input-label left-title-column'}>Решетка</td>
-					<td className={'right-title-column'}></td>
-				</tr>
-			</>
-		);
+		return renderGrateResult(this.grateResult, {isGeneralResult: true, title: 'Решетка'});
 	}
 
-	private renderSandTrapRows = () => {
+	private renderSandTrap = () => {
 		if (!this.sandTrapResult) {
 			return null;
 		}
-		return (
-			<>
-				<tr>
-					<td className={'input-label left-title-column'}>Песколовка</td>
-					<td className={'right-title-column'}></td>
-				</tr>
-			</>
-		);
+		return renderSandTrapResult(this.sandTrapResult, {isGeneralResult: true, title: 'Песколовка'});
 	}
 
-	private renderSumpRows = () => {
+	private renderSump = () => {
 		if (!this.sumpResult) {
 			return null;
 		}
-		return (
-			<>
-				<tr>
-					<td className={'input-label left-title-column'}>Отстойник</td>
-					<td className={'right-title-column'}></td>
-				</tr>
-			</>
-		);
+		return renderSumpResult(this.sumpResult, {isGeneralResult: true, title: 'Отстойник'});
+	}
+
+	private renderAverage = () => {
+		if (!this.averageResult) {
+			return null;
+		}
+		return renderAverageResult(this.averageResult, {isGeneralResult: true, title: 'Усреднитель'});
+	}
+
+	private renderOilTrap = () => {
+		if (!this.oilTrapResult) {
+			return null;
+		}
+		return renderOilTrapResult(this.oilTrapResult, {isGeneralResult: true, title: 'Нефтеловушка'});
 	}
 
 	private renderFilters = () => {
 		if (!this.filterResult) {
 			return null;
 		}
-		return renderFilterResult(this.filterResult, {
-			isGrainyAndLoad: this.filterResult.currentType === 'grainy' || this.filterResult.currentType === 'load',
-			isOnlyGrany: this.filterResult.currentType === 'grainy',
-			isMicroFilters: this.filterResult.currentType === 'microFilter',
-			isDrumNets: this.filterResult.currentType === 'drumNet',
-		},
-		{
-			isGeneralResult: true,
-			title: 'Фильтр'
-		});
+		return renderFilterResult(this.filterResult, {isGeneralResult: true, title: 'Фильтр'});
 	}
 
 	private renderCentrifuges = () => {
 		if (!this.centrifugeResult) {
 			return null;
 		}
-		return renderCentrifugeResult(this.centrifugeResult,
-			this.centrifugeResult.deviceType,
-			this.centrifugeResult.openHydrocycloneType,
-			{isGeneralResult: true, title: 'Центрифуги и гидроциклоны'});
+		return renderCentrifugeResult(this.centrifugeResult, {isGeneralResult: true, title: 'Центрифуги и гидроциклоны'});
 	}
 
 	private renderResultTable = () => {
@@ -153,9 +143,11 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 					<div className={'table-result'}>
 						<Table bordered hover>
 							<tbody>
-								{this.renderGrateRows()}
-								{this.renderSandTrapRows()}
-								{this.renderSumpRows()}
+								{this.renderGrate()}
+								{this.renderSandTrap()}
+								{this.renderSump()}
+								{this.renderAverage()}
+								{this.renderOilTrap()}
 								{this.renderFilters()}
 								{this.renderCentrifuges()}
 							</tbody>
@@ -166,8 +158,6 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 			</Container>
 		);
 	}
-
-
 
 	private generateSchema = () => {
 		// const grateElement = this.grateResult.currentSuitableGrate

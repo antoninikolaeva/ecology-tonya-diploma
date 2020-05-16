@@ -173,7 +173,13 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		filterCyclePeriod?: number,
 	) => {
 		this.filterResult = {
-			currentType: this.isGrainy ? 'grainy' : this.isSwimPressure ? 'load' : this.isMicroFilter ? 'microFilter' : 'drumNet',
+			deviceType: this.isGrainy
+			? FilterSource.FilterGlobalTypes.grainy
+			: this.isSwimPressure
+				? FilterSource.FilterGlobalTypes.swimLoad
+				: this.isMicroFilter
+					? FilterSource.FilterGlobalTypes.microFilter
+					: FilterSource.FilterGlobalTypes.drumNets,
 			levelOfBPKClean: {
 				value: this.levelOfCleanBPK ? Number(this.levelOfCleanBPK.toFixed(3)) : undefined,
 				label: 'Уровень очистки для БПК, %'
@@ -714,7 +720,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			this.dailyAmountOfWasteWater = amountOfWaterClean * FilterSource.periodOfWaterClean * cleanWaterFlow * dailyWaterFlow / 144000;
 		}
 
-		this.setFilterResult({t1, t2, t3, w1, w2, w3}, vf, this.currentGrainyType.periodFilterCycle);
+		this.setFilterResult({t1, t2, t3, w1, w2, w3}, vf, this.currentGrainyType ? this.currentGrainyType.periodFilterCycle : undefined);
 
 		this.setState({ isResult: true });
 	}
@@ -723,18 +729,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderFilterResult(
-			this.filterResult,
-			{
-				isGrainyAndLoad: this.isGrainy || this.isSwimPressure,
-				isOnlyGrany: this.isGrainy,
-				isMicroFilters: this.isMicroFilter,
-				isDrumNets: this.isDrumNets,
-			},
-			{
-				isGeneralResult: false,
-				title: NULLSTR,
-			});
+		return renderFilterResult(this.filterResult, {isGeneralResult: false, title: NULLSTR});
 	}
 
 	// Отрисовка кнопки расчета
@@ -806,12 +801,6 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 
 export function renderFilterResult(
 	filterResult: FilterResultData,
-	localResultConfig: {
-		isGrainyAndLoad: boolean;
-		isOnlyGrany: boolean;
-		isMicroFilters: boolean;
-		isDrumNets: boolean;
-	},
 	generalResultConfig: {
 		isGeneralResult: boolean;
 		title: string;
@@ -836,11 +825,11 @@ export function renderFilterResult(
 							<td className={'right-title-column'}></td>
 						</tr>
 						<TableRow value={
-							localResultConfig.isGrainyAndLoad && localResultConfig.isOnlyGrany
+							filterResult.deviceType === FilterSource.FilterGlobalTypes.grainy
 							? 'Зернистый фильтр'
-							: localResultConfig.isGrainyAndLoad && !localResultConfig.isOnlyGrany
+							: filterResult.deviceType === FilterSource.FilterGlobalTypes.swimLoad
 								? 'С плавающей загрузкой'
-								: localResultConfig.isMicroFilters
+								: filterResult.deviceType === FilterSource.FilterGlobalTypes.microFilter
 									? 'Микрофильтр'
 									: 'Барабанные сетки'
 						} label={'Тип'} />
@@ -848,7 +837,8 @@ export function renderFilterResult(
 						: null}
 					<TableRow value={common.levelOfSubstanceClean.value} label={common.levelOfSubstanceClean.label} />
 					<TableRow value={common.levelOfBPKClean.value} label={common.levelOfBPKClean.label} />
-					{localResultConfig.isGrainyAndLoad
+					{filterResult.deviceType === FilterSource.FilterGlobalTypes.grainy ||
+					filterResult.deviceType === FilterSource.FilterGlobalTypes.swimLoad
 						? <>
 							<TableRow value={grainyOrLoad.countingWaterFlow.value} label={grainyOrLoad.countingWaterFlow.label} />
 							<TableRow value={grainyOrLoad.commonFilterSquare.value} label={grainyOrLoad.commonFilterSquare.label} />
@@ -861,7 +851,7 @@ export function renderFilterResult(
 							<TableRow value={grainyOrLoad.filterCyclePeriod.value} label={grainyOrLoad.filterCyclePeriod.label} />
 						</>
 						: null}
-					{localResultConfig.isOnlyGrany
+					{filterResult.deviceType === FilterSource.FilterGlobalTypes.grainy
 						? <>
 							<TableRow value={onlyGrainy.w1.value} label={onlyGrainy.w1.label} />
 							<TableRow value={onlyGrainy.t1.value} label={onlyGrainy.t1.label} />
@@ -871,7 +861,7 @@ export function renderFilterResult(
 							<TableRow value={onlyGrainy.t3.value} label={onlyGrainy.t3.label} />
 						</>
 						: null}
-					{localResultConfig.isMicroFilters
+					{filterResult.deviceType === FilterSource.FilterGlobalTypes.microFilter
 						? <>
 							<TableRow value={micro.microFilter.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
 							<TableRow value={micro.microFilter.performance} label={'Производительность, м3/сут'} />
@@ -881,7 +871,7 @@ export function renderFilterResult(
 							<TableRow value={micro.dailyAmountOfWasteWater.value} label={micro.dailyAmountOfWasteWater.label} />
 						</>
 						: null}
-					{localResultConfig.isDrumNets
+					{filterResult.deviceType === FilterSource.FilterGlobalTypes.drumNets
 						? <>
 							<TableRow value={drumNet.drumNet.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
 							<TableRow value={drumNet.drumNet.performance} label={'Производительность, м3/сут'} />

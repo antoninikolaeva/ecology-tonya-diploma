@@ -563,7 +563,7 @@
         "id": "http://tonya-diploma.com/device/filter",
         "types": [ "http://tonya-diploma.com/type/Device" ],
         "image": "",
-        "label": { "values": [ { "value": "Отстойник", "language": "ru" } ] },
+        "label": { "values": [ { "value": "Фильтр", "language": "ru" } ] },
         "properties": {
             "http://tonya-diploma.com/device/filter/description": {
                 "type": "string",

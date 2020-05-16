@@ -289,7 +289,7 @@
             },
             {
                 "id": "http://tonya-diploma.com/device/filter",
-                "label": { "values": [ { "value": "Отстойник", "language": "ru" } ] },
+                "label": { "values": [ { "value": "Фильтр", "language": "ru" } ] },
                 "count": "3",
                 "children": [
                     {

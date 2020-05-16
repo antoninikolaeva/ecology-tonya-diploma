@@ -103,21 +103,36 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			openHydrocycloneType: currentOpenHydrocycloneType,
 			hOpened: {
 				amountOfHydrocyclones: {value: this.amountOfDevice, label: 'Количество рабочих гидроциклонов, шт'},
-				coefficientProportion: {value: Number(this.coefficientProportion.toFixed(3)), label: 'Коэффициент пропорциональности'},
+				coefficientProportion: {
+					value: this.coefficientProportion ? Number(this.coefficientProportion.toFixed(3)) : undefined,
+					label: 'Коэффициент пропорциональности'
+				},
 				currentHydrocyclone: this.currentHydrocyclone,
 				diameterHydrocyclone: {value: diameterHydrocyclone, label: 'Диаметр гидроциклона, м'},
-				hydraulicPressure: {value: Number(this.hydraulicPressure.toFixed(3)), label: 'Удельная гидравлическая нагрузка, м3/(м2/ч)'},
-				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность гидроциклона, м3/ч'},
+				hydraulicPressure: {
+					value: this.hydraulicPressure ? Number(this.hydraulicPressure.toFixed(3)) : undefined,
+					label: 'Удельная гидравлическая нагрузка, м3/(м2/ч)'
+				},
+				performance: {
+					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
+					label: 'Производительность гидроциклона, м3/ч'
+				},
 			},
 			hPressure: {
 				amountOfHydrocyclones: {value: this.amountOfDevice, label: 'Количество рабочих гидроциклонов, шт'},
 				amountOfAdditionalHydrocyclones: {value: this.amountOfAdditionalDevice, label: 'Количество резервных гидроциклонов, шт'},
 				currentPressureHydrocyclone: this.currentPressureHydrocyclone,
-				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность гидроциклона, м3/ч'},
+				performance: {
+					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
+					label: 'Производительность гидроциклона, м3/ч'
+				},
 			},
 			centrifuge: {
 				amountOfCentrifuges: {value: this.amountOfDevice, label: 'Количество рабочих центрифуг, шт'},
-				performance: {value: Number(this.performance.toFixed(3)), label: 'Производительность центрифуги, м3/ч'},
+				performance: {
+					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
+					label: 'Производительность центрифуги, м3/ч'
+				},
 				currentCentrifuge: this.currentCentrifuge,
 			}
 		};
@@ -397,10 +412,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		if (!this.state.isResult) {
 			return;
 		}
-		const { type } = this.props;
-		const { currentOpenHydrocycloneType } = this.state;
-		return renderCentrifugeResult(this.centrifugeResult, type, currentOpenHydrocycloneType,
-			{isGeneralResult: false, title: undefined});
+		return renderCentrifugeResult(this.centrifugeResult, {isGeneralResult: false, title: undefined});
 	}
 
 	// Отрисовка кнопки расчета
@@ -478,8 +490,6 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 
 export function renderCentrifugeResult(
 	centrifugeResult: CentrifugeResultData,
-	type: CentrifugeTypes,
-	openHydrocycloneTypes: CentrifugeSource.HydrocycloneOpenTypes,
 	generalResultConfig: {
 		isGeneralResult: boolean;
 		title: string;
@@ -503,18 +513,18 @@ export function renderCentrifugeResult(
 							<td className={'right-title-column'}></td>
 						</tr>
 						<TableRow value={
-							type === CentrifugeTypes.opened
+							centrifugeResult.deviceType === CentrifugeTypes.opened
 							? 'Открытый гидроциклон'
-							: type === CentrifugeTypes.pressure
+							: centrifugeResult.deviceType === CentrifugeTypes.pressure
 								? 'Напорный гидроциклон'
-								: type === CentrifugeTypes.continuous
+								: centrifugeResult.deviceType === CentrifugeTypes.continuous
 									? 'Центрифуга непрерывного действия'
 									: 'Центрифуга периодического действия'
 						} label={'Тип'} />
 						</>
 						: null}
 
-					{type === CentrifugeTypes.opened
+					{centrifugeResult.deviceType === CentrifugeTypes.opened
 						? <>
 							<TableRow value={opened.coefficientProportion.value} label={opened.coefficientProportion.label} />
 							<TableRow value={opened.hydraulicPressure.value} label={opened.hydraulicPressure.label} />
@@ -529,14 +539,14 @@ export function renderCentrifugeResult(
 							<TableRow value={`${opened.currentHydrocyclone.angleConusDiaphragm[0]} -
 								${opened.currentHydrocyclone.angleConusDiaphragm[1]}`}
 								label={'Угол конуса диафрагм, град'} />
-							{openHydrocycloneTypes === openHydType.conusAndCylinder
+							{centrifugeResult.openHydrocycloneType === openHydType.conusAndCylinder
 								? <TableRow value={opened.currentHydrocyclone.diameterCentralHole[0]}
 									label={'Диаметр центрального отверстия в диафрагме, м'} />
-								: openHydrocycloneTypes === openHydType.highLevelCenter
+								: centrifugeResult.openHydrocycloneType === openHydType.highLevelCenter
 									? <TableRow value={`${opened.currentHydrocyclone.diameterCentralHole[0]} -
 										${opened.currentHydrocyclone.diameterCentralHole[1]}`}
 										label={'Диаметр центрального отверстия в диафрагме, м'} />
-									: openHydrocycloneTypes === openHydType.highLevelExternal
+									: centrifugeResult.openHydrocycloneType === openHydType.highLevelExternal
 										? <TableRow value={`${opened.currentHydrocyclone.diameterCentralHole[0]} -
 											${opened.currentHydrocyclone.diameterCentralHole[1]} /
 											${opened.currentHydrocyclone.diameterCentralHole[2]} -
@@ -552,7 +562,7 @@ export function renderCentrifugeResult(
 								label={'Скорость потока на входе в аппарат, м/с'} />
 						</>
 						: null}
-					{type === CentrifugeTypes.pressure
+					{centrifugeResult.deviceType === CentrifugeTypes.pressure
 						? <>
 							<TableRow value={pressure.currentPressureHydrocyclone.mark} label={'Марка гидроциклона'} />
 							<TableRow value={pressure.performance.value} label={pressure.performance.label} />
@@ -567,7 +577,7 @@ export function renderCentrifugeResult(
 								${pressure.currentPressureHydrocyclone.cylinderHeight[1]}`} label={'Высота цилиндрической части, м'} />
 						</>
 						: null}
-					{type === CentrifugeTypes.continuous || type === CentrifugeTypes.determinate
+					{centrifugeResult.deviceType === CentrifugeTypes.continuous || centrifugeResult.deviceType === CentrifugeTypes.determinate
 						? <>
 							<TableRow value={centriguge.currentCentrifuge.mark} label={'Марка центрифуги'} />
 							<TableRow value={centriguge.performance.value} label={centriguge.performance.label} />

@@ -6,7 +6,8 @@ import {
 	SelectTemplate,
 	ItemList,
 	NULLSTR,
-	resetSelectToDefault
+	resetSelectToDefault,
+	TableRow
 } from '../utils';
 import { GrateSource } from './grate-resources';
 import { Table } from 'react-bootstrap';
@@ -91,6 +92,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 	private amountOfTechnicWaterFlow: number;
 	private currentGrateCrusher: GrateSource.GrateCrusher;
 	private amountOfGrateCrusher: number;
+
+	private grateResult: GrateResultData;
 
 	constructor(props: GrateProps) {
 		super(props);
@@ -282,8 +285,66 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 
 	private setCurrentResult = () => {
 		const { type } = this.props;
-		const grateResult: GrateResultData = dataModel.getGrateResult();
-		dataModel.setGrateResult(grateResult);
+		const { amountOfGrates } = this.state;
+		this.grateResult = {
+			deviceType: type,
+			hand: {
+				amountOfGrates: {value: amountOfGrates, label: 'Количество решеток, шт'},
+				amountAdditionalGrates: {value: this.amountAdditionalGrates, label: 'Количество резервных решеток, шт'},
+				countingWidthOfGrate: {
+					value: this.countingWidthOfGrate ? Number(this.countingWidthOfGrate.toFixed(2)) : undefined,
+					label: 'Ширина одной решетки, м'
+				},
+				countingAmountOfSection: {value: this.countingAmountOfSection, label: 'Количество прозоров одной решетки, шт'},
+				commonLengthOfCamera: {
+					value: this.commonLengthOfCamera ? Number(this.commonLengthOfCamera.toFixed(2)) : undefined,
+					label: 'Общая длина камеры решетки, м'
+				},
+				sizeOfInputChannel: {
+					value: this.sizeOfInputChannel ? Number(this.sizeOfInputChannel.toFixed(3)) : undefined,
+					label: 'Размер входной части канала, м'},
+				sizeOfOutputChannel: {
+					value: this.sizeOfOutputChannel ? Number(this.sizeOfOutputChannel.toFixed(3)) : undefined,
+					label: 'Размер выходной части канала, м'},
+				lengthOfExtendPartOfChannel: {
+					value: this.lengthOfExtendPartOfChannel ? Number(this.lengthOfExtendPartOfChannel.toFixed(3)) : undefined,
+					label: 'Длина расширенной части канала, м'},
+				sizeOfLedge: {
+					value: this.sizeOfLedge ? Number(this.sizeOfLedge.toFixed(3)) : undefined,
+					label: 'Величина уступа в месте установки решетки, м'},
+				volumeOfWaste: {
+					value: this.volumeOfWaste ? Number(this.volumeOfWaste.toFixed(2)) : undefined,
+					label: 'Объем снимаемых отбросов, м3/сут'},
+				massOfWaste: {
+					value: this.massOfWaste ? Number(this.massOfWaste.toFixed(2)) : undefined,
+					label: 'Масса снимаемых отбросов за сутки, т/сут'},
+			},
+			mechanic: {
+				currentGrate: {value: this.currentGrate ? this.currentGrate.mark : undefined, label: 'Марка решетки'},
+				amountOfGrate: {value: this.amountOfGrate, label: 'Количество решеток, шт'},
+				amountAdditionalGrates: {value: this.amountAdditionalGrates, label: 'Количество резервных решеток, шт'},
+				currentHammerCrusher: {
+					value: this.currentHammerCrusher ? this.currentHammerCrusher.mark : undefined,
+					label: 'Марка молотковой дробилки',
+				},
+				amountOfHammerCrusher: {value: this.amountOfHammerCrusher, label: 'Количество молотковых дробилок, шт'},
+				amountAdditionalHammerCrusher: {value: this.amountAdditionalHammerCrusher, label: 'Количество резервных молотковых дробилок, шт'},
+				amountOfTechnicWaterFlow: {value: this.amountOfTechnicWaterFlow, label: 'Расход технической воды, подводимой к дробилкам, м3/сут'},
+				massOfWaste: {
+					value: this.massOfWaste ? Number(this.massOfWaste.toFixed(2)) : undefined,
+					label: 'Масса снимаемых отбросов за сутки, т/сут',
+				},
+			},
+			crusher: {
+				currentGrateCrusher: {
+					value: this.currentGrateCrusher ? this.currentGrateCrusher.mark : undefined,
+					label: 'Марка решеток-дробилок'
+				},
+				amountOfGrateCrusher: {value: this.amountOfGrateCrusher, label: 'Количество решеток-дробилок, шт'},
+				amountAdditionalGrates: {value: this.amountAdditionalGrates, label: 'Количество резервных решеток-дробилок, шт'},
+			}
+		}
+		dataModel.setGrateResult(this.grateResult);
 	}
 
 	private resultCounting = () => {
@@ -385,74 +446,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		const { type } = this.props;
-		const { amountOfGrates } = this.state;
-		return (
-			<div className={'table-result'}>
-				<Table bordered hover>
-					<tbody>
-					{(type === GrateTypes.hand)
-							? <>
-								<tr><td>Количество решеток, шт</td>
-									<td>{amountOfGrates ? amountOfGrates : undefined}</td></tr>
-								<tr><td>Количество резервных решеток, шт</td>
-									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
-								<tr><td>Ширина одной решетки, м</td>
-									<td>{this.countingWidthOfGrate ? this.countingWidthOfGrate.toFixed(2) : undefined}</td></tr>
-								<tr><td>Количество прозоров одной решетки, шт</td>
-									<td>{this.countingAmountOfSection ? this.countingAmountOfSection : undefined}</td></tr>
-								<tr><td>Общая длина камеры решетки, м</td>
-									<td>{this.commonLengthOfCamera ? this.commonLengthOfCamera.toFixed(2) : undefined}</td></tr>
-								<tr><td>Размер входной части канала, м</td>
-									<td>{this.sizeOfInputChannel ? this.sizeOfInputChannel.toFixed(3) : undefined}</td></tr>
-								<tr><td>Размер выходной части канала, м</td>
-									<td>{this.sizeOfOutputChannel ? this.sizeOfOutputChannel.toFixed(3) : undefined}</td></tr>
-								<tr><td>Длина расширенной части канала, м</td>
-									<td>{this.lengthOfExtendPartOfChannel ? this.lengthOfExtendPartOfChannel.toFixed(3) : undefined}</td></tr>
-								<tr><td>Величина уступа в месте установки решетки, м</td>
-									<td>{this.sizeOfLedge ? this.sizeOfLedge.toFixed(3) : undefined}</td></tr>
-								<tr><td>Объем снимаемых отбросов, м3/сут</td>
-									<td>{this.volumeOfWaste ? this.volumeOfWaste.toFixed(2) : undefined}</td></tr>
-							</>
-							: null}
-							{(type === GrateTypes.mechanic)
-							? <>
-								<tr><td>Марка решетки</td>
-									<td>{this.currentGrate ? this.currentGrate.mark : undefined}</td></tr>
-								<tr><td>Количество решеток, шт</td>
-									<td>{this.amountOfGrate ? this.amountOfGrate : undefined}</td></tr>
-								<tr><td>Количество резервных решеток, шт</td>
-									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
-								<tr><td>Марка молотковой дробилки</td>
-									<td>{this.currentHammerCrusher ? this.currentHammerCrusher.mark : undefined}</td></tr>
-								<tr><td>Количество молотковых дробилок, шт</td>
-									<td>{this.amountOfHammerCrusher ? this.amountOfHammerCrusher : undefined}</td></tr>
-								<tr><td>Количество резервных молотковых дробилок, шт</td>
-									<td>{this.amountAdditionalHammerCrusher ? this.amountAdditionalHammerCrusher : undefined}</td></tr>
-								<tr><td>Расход технической воды, подводимой к дробилкам, м3/сут</td>
-									<td>{this.amountOfTechnicWaterFlow ? this.amountOfTechnicWaterFlow : undefined}</td></tr>
-							</>
-							: null}
-							{(type === GrateTypes.crusher)
-							? <>
-								<tr><td>Марка решеток-дробилок</td>
-									<td>{this.currentGrateCrusher ? this.currentGrateCrusher.mark : undefined}</td></tr>
-								<tr><td>Количество решеток-дробилок, шт</td>
-									<td>{this.amountOfGrateCrusher ? this.amountOfGrateCrusher : undefined}</td></tr>
-								<tr><td>Количество резервных решеток-дробилок, шт</td>
-									<td>{this.amountAdditionalGrates ? this.amountAdditionalGrates : undefined}</td></tr>
-							</>
-							: null}
-							{(type === GrateTypes.hand || type === GrateTypes.mechanic)
-							? <>
-								<tr><td>Масса снимаемых отбросов за сутки, т/сут</td>
-									<td>{this.massOfWaste ? this.massOfWaste.toFixed(2) : undefined}</td></tr>
-							</>
-							: null}
-					</tbody>
-				</Table>
-			</div>
-		);
+		return renderGrateResult(this.grateResult, {isGeneralResult: false, title: NULLSTR});
 	}
 
 	// Отрисовка кнопки расчета
@@ -548,4 +542,75 @@ export function selectValueFromDiapasonOfFilteredArray(
 			}
 		}
 	}
+}
+
+export function renderGrateResult(
+	grateResult: GrateResultData,
+	generalResultConfig: {
+		isGeneralResult: boolean;
+		title: string;
+	},
+) {
+	if (!grateResult) {
+		return null;
+	}
+	const hand = grateResult.hand;
+	const mechanic = grateResult.mechanic;
+	const crusher = grateResult.crusher;
+	const deviceType = grateResult.deviceType === GrateTypes.hand
+	? 'Ручная очистка'
+	: grateResult.deviceType === GrateTypes.mechanic
+	? 'Механизированная очистка'
+	: 'Решетки-дробилки';
+	return (
+		<div className={'table-result'}>
+			<Table bordered hover>
+				<tbody>
+					{generalResultConfig.isGeneralResult
+						? <>
+						<tr>
+							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
+							<td className={'right-title-column'}></td>
+						</tr>
+						<TableRow value={deviceType} label={'Тип'} />
+						</>
+						: null}
+					{grateResult.deviceType === GrateTypes.hand
+						? <>
+							<TableRow value={hand.amountOfGrates.value} label={hand.amountOfGrates.label} />
+							<TableRow value={hand.amountAdditionalGrates.value} label={hand.amountAdditionalGrates.label} />
+							<TableRow value={hand.countingWidthOfGrate.value} label={hand.countingWidthOfGrate.label} />
+							<TableRow value={hand.countingAmountOfSection.value} label={hand.countingAmountOfSection.label} />
+							<TableRow value={hand.commonLengthOfCamera.value} label={hand.commonLengthOfCamera.label} />
+							<TableRow value={hand.sizeOfInputChannel.value} label={hand.sizeOfInputChannel.label} />
+							<TableRow value={hand.sizeOfOutputChannel.value} label={hand.sizeOfOutputChannel.label} />
+							<TableRow value={hand.lengthOfExtendPartOfChannel.value} label={hand.lengthOfExtendPartOfChannel.label} />
+							<TableRow value={hand.sizeOfLedge.value} label={hand.sizeOfLedge.label} />
+							<TableRow value={hand.volumeOfWaste.value} label={hand.volumeOfWaste.label} />
+							<TableRow value={hand.massOfWaste.value} label={hand.massOfWaste.label} />
+						</>
+						: null}
+					{grateResult.deviceType === GrateTypes.mechanic
+						? <>
+							<TableRow value={mechanic.currentGrate.value} label={mechanic.currentGrate.label} />
+							<TableRow value={mechanic.amountOfGrate.value} label={mechanic.amountOfGrate.label} />
+							<TableRow value={mechanic.amountAdditionalGrates.value} label={mechanic.amountAdditionalGrates.label} />
+							<TableRow value={mechanic.currentHammerCrusher.value} label={mechanic.currentHammerCrusher.label} />
+							<TableRow value={mechanic.amountOfHammerCrusher.value} label={mechanic.amountOfHammerCrusher.label} />
+							<TableRow value={mechanic.amountAdditionalHammerCrusher.value} label={mechanic.amountAdditionalHammerCrusher.label} />
+							<TableRow value={mechanic.amountOfTechnicWaterFlow.value} label={mechanic.amountOfTechnicWaterFlow.label} />
+							<TableRow value={mechanic.massOfWaste.value} label={mechanic.massOfWaste.label} />
+						</>
+						: null}
+					{grateResult.deviceType === GrateTypes.crusher
+						? <>
+							<TableRow value={crusher.currentGrateCrusher.value} label={crusher.currentGrateCrusher.label} />
+							<TableRow value={crusher.amountOfGrateCrusher.value} label={crusher.amountOfGrateCrusher.label} />
+							<TableRow value={crusher.amountAdditionalGrates.value} label={crusher.amountAdditionalGrates.label} />
+						</>
+						: null}
+				</tbody>
+			</Table>
+		</div>
+	);
 }

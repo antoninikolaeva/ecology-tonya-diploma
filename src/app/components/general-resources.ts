@@ -127,7 +127,7 @@ export const oilTrapTypes: DeviceType[] = [
 export enum FilterTypes { base = 'base' }
 export const filterTypes: DeviceType[] = [
 	{
-		iri: 'http://tonya-diploma.com/device/filter/grainy' as ElementIri,
+		iri: 'http://tonya-diploma.com/device/filter/base' as ElementIri,
 		key: FilterTypes.base, name: 'Типовой', ref: undefined
 	}
 ];

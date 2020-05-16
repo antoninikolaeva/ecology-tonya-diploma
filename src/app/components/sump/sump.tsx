@@ -1,7 +1,7 @@
 import * as React from 'react';
 
 import { SumpTypes } from '../general-resources';
-import { labelTemplate, InputTemplate, NULLSTR, SelectTemplate, ItemList, resetSelectToDefault } from '../utils';
+import { labelTemplate, InputTemplate, NULLSTR, SelectTemplate, ItemList, resetSelectToDefault, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';
@@ -73,6 +73,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 	];
 	private diameterRingBorder: number;
 	private heightRingBorder: number;
+
+	private sumpResult: SumpResultData;
 
 	constructor(props: SumpProps) {
 		super(props);
@@ -350,15 +352,96 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 	}
 
 	private setSumpResult = () => {
-		const sumpResult: SumpResultData = {
-			amountOfSection: this.amountOfSection,
-			fullSumpHeight: this.fullSumpHeight,
-			highLightEffect: this.highLightEffect,
-			hydraulicHugest: this.hydraulicHugest,
-			sedimentAmountDaily: this.sedimentAmountDaily,
-			summaWidthAllSection: this.summaWidthAllSection,
+		const {type} = this.props;
+		const {} = this.state;
+		this.sumpResult = {
+			deviceType: type,
+			highLightEffect: {
+				value: this.highLightEffect ? Number(this.highLightEffect.toFixed(3)) : undefined,
+				label: 'Необходимый эффект осветления в отстойниках, %'
+			},
+			amountOfSection: {value: this.amountOfSection, label: 'Количество отделений отстойника, шт'},
+			fullSumpHeight: {
+				value: this.fullSumpHeight ? Number(this.fullSumpHeight.toFixed(3)) : undefined,
+				label: 'Общая высота отстойника, м'
+			},
+			sedimentAmountDaily: {
+				value: this.sedimentAmountDaily ? Number(this.sedimentAmountDaily.toFixed(3)) : undefined,
+				label: 'Количество осадка выделяемого при отстаивании за сутки, м3/сут'
+			},
+			horizontal: {
+				sumpLength: {
+					value: this.sumpLength ? Number(this.sumpLength.toFixed(3)) : undefined,
+					label: 'Длина отстойника, м'
+				},
+				oneSumpVolume: {
+					value: this.oneSumpVolume ? Number(this.oneSumpVolume.toFixed(3)) : undefined,
+					label: 'Вместимость приямника одного отстойника для сбора осадка, м3'
+				},
+				sedimentCleanPeriod: {
+					value: this.sedimentCleanPeriod ? Number(this.sedimentCleanPeriod.toFixed(3)) : undefined,
+					label: 'Период между выгрузками осадка из отстойника, ч'
+				},
+			},
+			vertical: {
+				gapHeightTrumpetAndShield: {
+					value: this.gapHeightTrumpetAndShield ? Number(this.gapHeightTrumpetAndShield.toFixed(3)) : undefined,
+					label: 'Высота щели между низом центральной трубы и поверхностью отражательного щита, м'
+				},
+				commonHeightCylinderSump: {
+					value: this.commonHeightCylinderSump ? Number(this.commonHeightCylinderSump.toFixed(3)) : undefined,
+					label: 'Общая высота цилиндрической части отстойника, м'
+				},
+				conePartOfSump: {
+					value: this.conePartOfSump ? Number(this.conePartOfSump.toFixed(3)) : undefined,
+					label: 'Высота конусной часть отстойника, м'
+				},
+				sumpDiameter: {
+					value: this.sumpDiameter ? Number(this.sumpDiameter.toFixed(3)) : undefined,
+					label: 'Диаметр отстойника, м'
+				},
+				diameterCentralPipe: {
+					value: this.diameterCentralPipe ? Number(this.diameterCentralPipe.toFixed(3)) : undefined,
+					label: 'Диаметр центральной трубы, м'
+				},
+				diameterOfTrumpet: {
+					value: this.diameterOfTrumpet ? Number(this.diameterOfTrumpet.toFixed(3)) : undefined,
+					label: 'Диаметр раструба, м'
+				},
+				diameterOfReflectorShield: {
+					value: this.diameterOfReflectorShield ? Number(this.diameterOfReflectorShield.toFixed(3)) : undefined,
+					label: 'Диаметр отражательного щита, м'
+				},
+			},
+			verticalUpDownFlow: {
+				commonHeightCylinderSump: {
+					value: this.commonHeightCylinderSump ? Number(this.commonHeightCylinderSump.toFixed(3)) : undefined,
+					label: 'Общая высота цилиндрической части отстойника, м'
+				},
+				conePartOfSump: {
+					value: this.conePartOfSump ? Number(this.conePartOfSump.toFixed(3)) : undefined,
+					label: 'Высота конусной часть отстойника, м'
+				},
+				sumpDiameter: {
+					value: this.sumpDiameter ? Number(this.sumpDiameter.toFixed(3)) : undefined,
+					label: 'Диаметр отстойника, м'},
+				diameterRingBorder: {
+					value: this.diameterRingBorder ? Number(this.diameterRingBorder.toFixed(3)) : undefined,
+					label: 'Диаметр кольцевой перегородки, м'
+				},
+				heightRingBorder: {
+					value: this.heightRingBorder ? Number(this.heightRingBorder.toFixed(3)) : undefined,
+					label: 'Высота кольцевой перегородки, м'
+				},
+			},
+			radial: {
+				sumpDiameter: {
+					value: this.sumpDiameter ? Number(this.sumpDiameter.toFixed(3)) : undefined,
+					label: 'Диаметр отстойника, м'
+				},
+			}
 		};
-		dataModel.setSumpResult(sumpResult);
+		dataModel.setSumpResult(this.sumpResult);
 	}
 
 	private resultCounting = () => {
@@ -465,86 +548,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		const { type } = this.props;
-		return (
-			<div className={'table-result'}>
-				<Table bordered hover>
-					<tbody>
-						<tr><td>Необходимый эффект осветления в отстойниках, %</td>
-							<td>{this.highLightEffect ? this.highLightEffect.toFixed(3) : undefined}</td></tr>
-						<tr><td>Количество отделений отстойника, шт</td>
-							<td>{this.amountOfSection ? this.amountOfSection : undefined}</td></tr>
-
-						{type === SumpTypes.horizontal
-							? <>
-								<tr><td>Длина отстойника, м</td>
-									<td>{this.sumpLength ? this.sumpLength.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						<tr><td>Общая высота отстойника, м</td>
-							<td>{this.fullSumpHeight ? this.fullSumpHeight.toFixed(3) : undefined}</td></tr>
-
-						{type === SumpTypes.vertical
-							? <>
-								<tr><td>Высота щели между низом центральной трубы и поверхностью отражательного щита, м</td>
-									<td>{this.gapHeightTrumpetAndShield ? this.gapHeightTrumpetAndShield.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.verticalUpDownFlow || type === SumpTypes.vertical
-							? <>
-								<tr><td>Общая высота цилиндрической части отстойника, м</td>
-									<td>{this.commonHeightCylinderSump ? this.commonHeightCylinderSump.toFixed(3) : undefined}</td></tr>
-								<tr><td>Высота конусной часть отстойника, м</td>
-									<td>{this.conePartOfSump ? this.conePartOfSump.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.verticalUpDownFlow ||
-							type === SumpTypes.vertical ||
-							type === SumpTypes.radial
-							? <>
-								<tr><td>Диаметр отстойника, м</td>
-									<td>{this.sumpDiameter ? this.sumpDiameter.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.vertical
-							? <>
-								<tr><td>Диаметр центральной трубы, м</td>
-									<td>{this.diameterCentralPipe ? this.diameterCentralPipe.toFixed(3) : undefined}</td></tr>
-								<tr><td>Диаметр раструба, м</td>
-									<td>{this.diameterOfTrumpet ? this.diameterOfTrumpet.toFixed(3) : undefined}</td></tr>
-								<tr><td>Диаметр отражательного щита, м</td>
-									<td>{this.diameterOfReflectorShield ? this.diameterOfReflectorShield.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.verticalUpDownFlow
-							? <>
-								<tr><td>Диаметр кольцевой перегородки, м</td>
-									<td>{this.diameterRingBorder ? this.diameterRingBorder.toFixed(3) : undefined}</td></tr>
-								<tr><td>Высота кольцевой перегородки, м</td>
-									<td>{this.heightRingBorder ? this.heightRingBorder.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						{type === SumpTypes.horizontal
-							? <>
-								<tr><td>Вместимость приямника одного отстойника для сбора осадка, м3</td>
-									<td>{this.oneSumpVolume ? this.oneSumpVolume.toFixed(3) : undefined}</td></tr>
-								<tr><td>Период между выгрузками осадка из отстойника, ч</td>
-									<td>{this.sedimentCleanPeriod ? this.sedimentCleanPeriod.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-
-						<tr><td>Количество осадка выделяемого при отстаивании за сутки, м3/сут</td>
-							<td>{this.sedimentAmountDaily ? this.sedimentAmountDaily.toFixed(3) : undefined}</td></tr>
-					</tbody>
-				</Table>
-			</div>
-		);
+		return renderSumpResult(this.sumpResult, {isGeneralResult: false, title: NULLSTR});
 	}
 
 	// Отрисовка кнопки расчета
@@ -694,4 +698,82 @@ export function selectValueAliqout05(value: number) {
 			return Math.round(value) + 0.5;
 		}
 	}
+}
+
+export function renderSumpResult(
+	sumpResult: SumpResultData,
+	generalResultConfig: {
+		isGeneralResult: boolean;
+		title: string;
+	},
+) {
+	if (!sumpResult) {
+		return null;
+	}
+	const horizontal = sumpResult.horizontal;
+	const vertical = sumpResult.vertical;
+	const verticalUpDownFlow = sumpResult.verticalUpDownFlow;
+	const radial = sumpResult.radial;
+	const deviceType = sumpResult.deviceType === SumpTypes.horizontal
+		? 'Горизонтальные'
+		: sumpResult.deviceType === SumpTypes.radial
+			? 'Радиальные'
+			: sumpResult.deviceType === SumpTypes.vertical
+				? 'Вертикальные'
+				: 'Вертикальные отстойники с нисходяще-восходящим потоком';
+	return (
+		<div className={'table-result'}>
+			<Table bordered hover>
+				<tbody>
+					{generalResultConfig.isGeneralResult
+						? <>
+							<tr>
+								<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
+								<td className={'right-title-column'}></td>
+							</tr>
+							<TableRow value={deviceType} label={'Тип'} />
+						</>
+						: null}
+					<TableRow value={sumpResult.highLightEffect.value} label={sumpResult.highLightEffect.label} />
+					<TableRow value={sumpResult.amountOfSection.value} label={sumpResult.amountOfSection.label} />
+					{sumpResult.deviceType === SumpTypes.horizontal
+						? <>
+							<TableRow value={horizontal.sumpLength.value} label={horizontal.sumpLength.label} />
+							<TableRow value={horizontal.oneSumpVolume.value} label={horizontal.oneSumpVolume.label} />
+							<TableRow value={horizontal.sedimentCleanPeriod.value} label={horizontal.sedimentCleanPeriod.label} />
+						</>
+						: null}
+					<TableRow value={sumpResult.fullSumpHeight.value} label={sumpResult.fullSumpHeight.label} />
+					{sumpResult.deviceType === SumpTypes.vertical
+						? <>
+							<TableRow value={vertical.gapHeightTrumpetAndShield.value} label={vertical.gapHeightTrumpetAndShield.label} />
+							<TableRow value={vertical.commonHeightCylinderSump.value} label={vertical.commonHeightCylinderSump.label} />
+							<TableRow value={vertical.conePartOfSump.value} label={vertical.conePartOfSump.label} />
+						</>
+						: null}
+					{sumpResult.deviceType === SumpTypes.verticalUpDownFlow
+						? <>
+							<TableRow value={verticalUpDownFlow.commonHeightCylinderSump.value} label={verticalUpDownFlow.commonHeightCylinderSump.label} />
+							<TableRow value={verticalUpDownFlow.conePartOfSump.value} label={verticalUpDownFlow.conePartOfSump.label} />
+							<TableRow value={verticalUpDownFlow.sumpDiameter.value} label={verticalUpDownFlow.sumpDiameter.label} />
+							<TableRow value={verticalUpDownFlow.diameterRingBorder.value} label={verticalUpDownFlow.diameterRingBorder.label} />
+							<TableRow value={verticalUpDownFlow.heightRingBorder.value} label={verticalUpDownFlow.heightRingBorder.label} />
+						</>
+						: null}
+					{sumpResult.deviceType === SumpTypes.vertical
+						? <>
+							<TableRow value={vertical.sumpDiameter.value} label={vertical.sumpDiameter.label} />
+							<TableRow value={vertical.diameterCentralPipe.value} label={vertical.diameterCentralPipe.label} />
+							<TableRow value={vertical.diameterOfTrumpet.value} label={vertical.diameterOfTrumpet.label} />
+							<TableRow value={vertical.diameterOfReflectorShield.value} label={vertical.diameterOfReflectorShield.label} />
+						</>
+						: null}
+					{sumpResult.deviceType === SumpTypes.radial
+						? <TableRow value={radial.sumpDiameter.value} label={radial.sumpDiameter.label} />
+						: null}
+					<TableRow value={sumpResult.sedimentAmountDaily.value} label={sumpResult.sedimentAmountDaily.label} />
+				</tbody>
+			</Table>
+		</div>
+	);
 }

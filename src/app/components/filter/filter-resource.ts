@@ -1,4 +1,10 @@
 export namespace FilterSource {
+	export enum FilterGlobalTypes {
+		grainy = 'grainy',
+		swimLoad = 'swimLoad',
+		microFilter = 'microFilter',
+		drumNets = 'drumNets',
+	}
 
 	export enum FilterTypes {
 		grainyLittleOneLayerDownThread = 'grainyLittleOneLayerDownThread',

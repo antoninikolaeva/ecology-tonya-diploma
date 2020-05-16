@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { OilTrapTypes } from '../general-resources';
-import { labelTemplate, NULLSTR, InputTemplate, resetSelectToDefault, ItemList, SelectTemplate } from '../utils';
+import { labelTemplate, NULLSTR, InputTemplate, resetSelectToDefault, ItemList, SelectTemplate, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, OilTrapResultData } from '../data-model';
 import { OilTrapSource } from './oilTrap-resource';
@@ -59,6 +59,8 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		{ value: OilTrapSource.SedimentType.pressureSediment, label: 'Слежавшийся' },
 	];
 
+	private oilTrapResult: OilTrapResultData;
+
 	constructor(props: OilTrapProps) {
 		super(props);
 
@@ -108,9 +110,43 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 	}
 
 	private setOilTrapResult = () => {
-		const oilTrapResult: OilTrapResultData = {
+		const {type} = this.props;
+		const {amountOfSection} = this.state;
+		this.oilTrapResult = {
+			deviceType: type,
+			amountOfSection: {value: amountOfSection, label: 'Количество секций, шт'},
+			oilTrapDeep: {
+				value: this.oilTrapDeep ? Number(this.oilTrapDeep.toFixed(2)) : undefined,
+				label: 'Глубина отстаиваемого слоя, м'
+			},
+			amountOfSediment: {
+				value: this.amountOfSediment ? Number(this.amountOfSediment.toFixed(3)) : undefined,
+				label: 'Количество осадка, м3/сут'
+			},
+			amountOfOilProduct: {
+				value: this.amountOfOilProduct ? Number(this.amountOfOilProduct.toFixed(3)) : undefined,
+				label: 'Количество нефтепродуктов, м3/сут'
+			},
+			horizontal: {
+				widthSectionResult: {
+					value: this.widthSectionResult ? Number(this.widthSectionResult.toFixed(2)) : undefined,
+					label: 'Ширина секции нефтеловушки, м'
+				},
+				sumpPartLengthOfOilTrap: {value: this.sumpPartLengthOfOilTrap, label: 'Длина отстойной части нефтеловушки, м'},
+				layPeriod: {
+					value: this.layPeriod ? Number(this.layPeriod.toFixed(3)) : undefined,
+					label: 'Продолжительность отстаивания, ч'
+				},
+			},
+			radial: {
+				oilTrapDiameter: {value: this.oilTrapDiameter, label: 'Диаметр нефтеловушки, м'},
+				fullOilTrapHeight: {
+					value: this.fullOilTrapHeight ? Number(this.fullOilTrapHeight.toFixed(3)) : undefined,
+					label: 'Полная строительная высота нефтеловушки, м'
+				},
+			}
 		};
-		dataModel.setOilTrapResult(oilTrapResult);
+		dataModel.setOilTrapResult(this.oilTrapResult);
 	}
 
 	private renderBaseData = () => {
@@ -216,7 +252,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					onInput={(value) => { this.setState({ oilBaseConcentrate: value }); }} />
 
 				{oilBaseConcentrate
-					? <InputTemplate title={`Концентрация нефтепродуктов в осветленой воде, мг/л, , диапазон[0 - ${oilBaseConcentrate}]`}
+					? <InputTemplate title={`Концентрация нефтепродуктов в осветленой воде, мг/л, диапазон[0 - ${oilBaseConcentrate}]`}
 							range={{ minValue: 0, maxValue: oilBaseConcentrate }}
 							placeholder={'Введите концентрацию нефтепродуктов в осветленой воде...'}
 							onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -298,46 +334,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		if (!this.state.isResult) {
 			return;
 		}
-		const { amountOfSection } = this.state;
-		const {type} = this.props;
-		return (
-			<div className={'table-result'}>
-				<Table bordered hover>
-					<tbody>
-						<tr><td>Количество секций, шт</td>
-							<td>{amountOfSection ? amountOfSection : undefined}</td></tr>
-						<tr><td>Глубина отстаиваемого слоя, м</td>
-							<td>{this.oilTrapDeep ? this.oilTrapDeep.toFixed(2) : undefined}</td></tr>
-						{type === OilTrapTypes.horizontal
-							? <>
-								<tr><td>Ширина секции нефтеловушки, м</td>
-									<td>{this.widthSectionResult ? this.widthSectionResult.toFixed(2) : undefined}</td></tr>
-								<tr><td>Длина отстойной части нефтеловушки, м</td>
-									<td>{this.sumpPartLengthOfOilTrap ? this.sumpPartLengthOfOilTrap : undefined}</td></tr>
-							</>
-							: null}
-						{type === OilTrapTypes.radial
-							? <>
-								<tr><td>Диаметр нефтеловушки, м</td>
-									<td>{this.oilTrapDiameter ? this.oilTrapDiameter : undefined}</td></tr>
-								<tr><td>Полная строительная высота нефтеловушки, м </td>
-									<td>{this.fullOilTrapHeight ? this.fullOilTrapHeight.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-						<tr><td>Количество осадка, м3/сут</td>
-							<td>{this.amountOfSediment ? this.amountOfSediment.toFixed(3) : undefined}</td></tr>
-						<tr><td>Количество нефтепродуктов, м3/сут</td>
-							<td>{this.amountOfOilProduct ? this.amountOfOilProduct.toFixed(3) : undefined}</td></tr>
-						{type === OilTrapTypes.horizontal
-							? <>
-								<tr><td>Продолжительность отстаивания, ч</td>
-									<td>{this.layPeriod ? this.layPeriod.toFixed(3) : undefined}</td></tr>
-							</>
-							: null}
-					</tbody>
-				</Table>
-			</div>
-		);
+		return renderOilTrapResult(this.oilTrapResult, {isGeneralResult: false, title: NULLSTR});
 	}
 
 	// Отрисовка кнопки расчета
@@ -407,4 +404,58 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			</>
 		);
 	}
+}
+
+export function renderOilTrapResult(
+	oiltrapResult: OilTrapResultData,
+	generalResultConfig: {
+		isGeneralResult: boolean;
+		title: string;
+	},
+) {
+	if (!oiltrapResult) {
+		return null;
+	}
+	const horizontal = oiltrapResult.horizontal;
+	const radial = oiltrapResult.radial;
+	const deviceType = oiltrapResult.deviceType === OilTrapTypes.horizontal ? 'Горизонтальные' : 'Радиальные';
+	return (
+		<div className={'table-result'}>
+			<Table bordered hover>
+				<tbody>
+					{generalResultConfig.isGeneralResult
+						? <>
+							<tr>
+								<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
+								<td className={'right-title-column'}></td>
+							</tr>
+							<TableRow value={deviceType} label={'Тип'} />
+						</>
+						: null}
+					<TableRow value={oiltrapResult.amountOfSection.value} label={oiltrapResult.amountOfSection.label} />
+					<TableRow value={oiltrapResult.oilTrapDeep.value} label={oiltrapResult.oilTrapDeep.label} />
+					{oiltrapResult.deviceType === OilTrapTypes.horizontal
+						? <>
+							<TableRow value={horizontal.widthSectionResult.value} label={horizontal.widthSectionResult.label} />
+							<TableRow value={horizontal.sumpPartLengthOfOilTrap.value} label={horizontal.sumpPartLengthOfOilTrap.label} />
+						</>
+						: null}
+					{oiltrapResult.deviceType === OilTrapTypes.radial
+						? <>
+							<TableRow value={radial.oilTrapDiameter.value} label={radial.oilTrapDiameter.label} />
+							<TableRow value={radial.fullOilTrapHeight.value} label={radial.fullOilTrapHeight.label} />
+						</>
+						: null}
+					<TableRow value={oiltrapResult.amountOfSediment.value} label={oiltrapResult.amountOfSediment.label} />
+					<TableRow value={oiltrapResult.amountOfOilProduct.value} label={oiltrapResult.amountOfOilProduct.label} />
+
+					{oiltrapResult.deviceType === OilTrapTypes.horizontal
+						? <>
+							<TableRow value={horizontal.layPeriod.value} label={horizontal.layPeriod.label} />
+						</>
+						: null}
+				</tbody>
+			</Table>
+		</div>
+	);
 }
