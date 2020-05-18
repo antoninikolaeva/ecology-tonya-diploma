@@ -173,6 +173,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		filterCyclePeriod?: number,
 	) => {
 		this.filterResult = {
+			complete: true,
 			deviceType: this.isGrainy
 			? FilterSource.FilterGlobalTypes.grainy
 			: this.isSwimPressure

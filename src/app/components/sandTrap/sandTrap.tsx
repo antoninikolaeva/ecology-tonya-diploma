@@ -398,6 +398,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		const { type } = this.props;
 		const { sandTrapDeep } = this.state;
 		this.sandTrapResult = {
+			complete: true,
 			deviceType: type,
 			amountOfSandTrapSection: {value: this.amountOfSandTrapSection, label: 'Количество отделений песколовки, шт'},
 			horizontalForward: {

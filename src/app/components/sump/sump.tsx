@@ -355,6 +355,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		const {type} = this.props;
 		const {} = this.state;
 		this.sumpResult = {
+			complete: true,
 			deviceType: type,
 			highLightEffect: {
 				value: this.highLightEffect ? Number(this.highLightEffect.toFixed(3)) : undefined,

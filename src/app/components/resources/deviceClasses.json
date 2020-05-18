@@ -2,7 +2,7 @@
     {
         "id": "http://tonya-diploma.com/device",
         "label": {  "values": [ { "value": "Очистное сооружение", "language": "ru" } ] },
-        "count": "3",
+        "count": "8",
         "children": [
             {
                 "id": "http://tonya-diploma.com/device/grate",

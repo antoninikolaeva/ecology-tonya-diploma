@@ -113,6 +113,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		const {type} = this.props;
 		const {amountOfSection} = this.state;
 		this.oilTrapResult = {
+			complete: true,
 			deviceType: type,
 			amountOfSection: {value: amountOfSection, label: 'Количество секций, шт'},
 			oilTrapDeep: {

@@ -99,6 +99,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		const { type } = this.props;
 		const { diameterHydrocyclone, currentOpenHydrocycloneType } = this.state;
 		this.centrifugeResult = {
+			complete: true,
 			deviceType: type,
 			openHydrocycloneType: currentOpenHydrocycloneType,
 			hOpened: {

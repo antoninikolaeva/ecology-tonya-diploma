@@ -11,8 +11,10 @@ import {
 	dataModel,
 } from '../data-model';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from '../resources/resources';
-import { LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Workspace, WorkspaceProps, DemoDataProvider } from 'ontodia';
-import { TableRow } from '../utils';
+import {
+	LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Link,
+	Workspace, WorkspaceProps, DemoDataProvider, Element, ElementTypeIri
+} from 'ontodia';
 import { renderFilterResult } from '../filter/filter';
 import { renderCentrifugeResult } from '../centrifuge/centrifuge';
 import { renderAverageResult } from '../average/average';
@@ -20,6 +22,9 @@ import { renderGrateResult } from '../grate/grate';
 import { renderOilTrapResult } from '../oilTrap/oilTrap';
 import { renderSandTrapResult } from '../sandTrap/sandTrap';
 import { renderSumpResult } from '../sump/sump';
+import { GrateTypes } from '../general-resources';
+import { ElementIri } from '../ontodia/dataProvider';
+import { GrateSource } from '../grate/grate-resources';
 
 export interface GeneralResultProps {
 }
@@ -65,11 +70,9 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 				diagram: this.state.deviceDiagram,
 				dataProvider: new DemoDataProvider(
 					CLASSES as any,
-					// LINK_TYPES as any,
-					[],
-					this.elements as any,
-					// LINKS as any
-					[]
+					LINK_TYPES as any,
+					ELEMENTS as any,
+					LINKS as any,
 				),
 				validateLinks: true,
 			});
@@ -87,49 +90,49 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	}
 
 	private renderGrate = () => {
-		if (!this.grateResult) {
+		if (!this.grateResult.complete) {
 			return null;
 		}
 		return renderGrateResult(this.grateResult, {isGeneralResult: true, title: 'Решетка'});
 	}
 
 	private renderSandTrap = () => {
-		if (!this.sandTrapResult) {
+		if (!this.sandTrapResult.complete) {
 			return null;
 		}
 		return renderSandTrapResult(this.sandTrapResult, {isGeneralResult: true, title: 'Песколовка'});
 	}
 
 	private renderSump = () => {
-		if (!this.sumpResult) {
+		if (!this.sumpResult.complete) {
 			return null;
 		}
 		return renderSumpResult(this.sumpResult, {isGeneralResult: true, title: 'Отстойник'});
 	}
 
 	private renderAverage = () => {
-		if (!this.averageResult) {
+		if (!this.averageResult.complete) {
 			return null;
 		}
 		return renderAverageResult(this.averageResult, {isGeneralResult: true, title: 'Усреднитель'});
 	}
 
 	private renderOilTrap = () => {
-		if (!this.oilTrapResult) {
+		if (!this.oilTrapResult.complete) {
 			return null;
 		}
 		return renderOilTrapResult(this.oilTrapResult, {isGeneralResult: true, title: 'Нефтеловушка'});
 	}
 
 	private renderFilters = () => {
-		if (!this.filterResult) {
+		if (!this.filterResult.complete) {
 			return null;
 		}
 		return renderFilterResult(this.filterResult, {isGeneralResult: true, title: 'Фильтр'});
 	}
 
 	private renderCentrifuges = () => {
-		if (!this.centrifugeResult) {
+		if (!this.centrifugeResult.complete) {
 			return null;
 		}
 		return renderCentrifugeResult(this.centrifugeResult, {isGeneralResult: true, title: 'Центрифуги и гидроциклоны'});
@@ -159,81 +162,113 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 		);
 	}
 
-	private generateSchema = () => {
-		// const grateElement = this.grateResult.currentSuitableGrate
-		// 	? (ELEMENTS as any)[this.grateResult.currentSuitableGrate.iri]
-		// 	: this.grateResult.currentGrateCrusher
-		// 		? (ELEMENTS as any)[this.grateResult.currentGrateCrusher.iri]
-		// 		: undefined;
-		// const sandTrapElement = this.getSandTrapElement();
-		// const sumpElement = {
-		// 	id: 'http://tonya-diploma.com/device/sump/standart',
-		// 	types: ['http://tonya-diploma.com/type/Device'],
-		// 	image: '',
-		// 	label: { values: [ { value: 'Типовой отстойник', language: 'ru' } ] },
-		// 	properties: {
-		// 		'http://tonya-diploma.com/device/sump/standartamountOfSection': { type: 'string', values: [ { value: this.sumpResult.amountOfSection } ] },
-		// 		'http://tonya-diploma.com/device/sump/standartfullSumpHeight': { type: 'string', values: [ { value: this.sumpResult.fullSumpHeight } ] },
-		// 		'http://tonya-diploma.com/device/sump/standarthighLightEffect': { type: 'string', values: [ { value: this.sumpResult.highLightEffect } ] },
-		// 		'http://tonya-diploma.com/device/sump/standarthydraulicHugest': { type: 'string', values: [ { value: this.sumpResult.hydraulicHugest } ] },
-		// 		'http://tonya-diploma.com/device/sump/standartsedimentAmountDaily': { type: 'string', values: [ { value: this.sumpResult.sedimentAmountDaily } ] },
-		// 		'http://tonya-diploma.com/device/sump/standartsummaWidthAllSection': { type: 'string', values: [ { value: this.sumpResult.summaWidthAllSection } ] },
-		// 	}
-		// };
-		// const links: LayoutLink[] = [
-			// {
-			// 	'@type': 'Link',
-			// 	'@id': `http://tonya-diploma.com/device/consists_of/${Math.random() * 1000000}`,
-			// 	property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-			// 	source: { '@id': grateElement.id },
-			// 	target: { '@id': sandTrapElement.id }
-			// },
-			// {
-			// 	'@type': 'Link',
-			// 	'@id': `http://tonya-diploma.com/device/consists_of/${Math.random() * 1000000}`,
-			// 	property: ('http://tonya-diploma.com/device/consists_of') as LinkTypeIri,
-			// 	source: { '@id': sandTrapElement.id },
-			// 	target: { '@id': sumpElement.id }
-			// },
-		// ];
-		// const elements: LayoutElement[] = [
-		// 	{
-		// 		'@type': 'Element',
-		// 		'@id': grateElement.id,
-		// 		iri: grateElement.id,
-		// 		position: { x: 100, y: 400 },
-		// 	},
-		// 	{
-		// 		'@type': 'Element',
-		// 		'@id': sandTrapElement.id,
-		// 		iri: sandTrapElement.id,
-		// 		position: { x: 300, y: 400 },
-		// 	},
-		// 	{
-		// 		'@type': 'Element',
-		// 		'@id': sumpElement.id,
-		// 		iri: sumpElement.id,
-		// 		position: { x: 500, y: 400 },
-		// 	},
-		// ];
-		// const testDiagram: SerializedDiagram = {
-		// 	'@context': 'https://ontodia.org/context/v1.json',
-		// 	'@type': 'Diagram',
-		// 	layoutData: {
-		// 		'@type': 'Layout',
-		// 		elements: elements,
-		// 		links: links,
-		// 	}
-		// };
-		// this.elements = {
-		// 	'http://tonya-diploma.com/device/sandTrap/standard': sandTrapElement,
-		// 	'http://tonya-diploma.com/device/sump/standard': sumpElement,
-		// 	...ELEMENTS
-		// };
-		// this.setState({ deviceDiagram: testDiagram });
+	private generateGrateScheme = () => {
+		if (!this.grateResult.complete) {
+			return;
+		}
+		const links: LayoutLink[] = [];
+		const elements: LayoutElement[] = [];
+		if (this.grateResult.deviceType === GrateTypes.hand) {
+			const element: Element = new Element({
+				id: 'http://tonya-diploma.com/device/grate/counting',
+				data: {
+					id: 'http://tonya-diploma.com/device/grate/counting' as ElementIri,
+					label: {values: [{value: 'Решетка ручной очистки(типовая)', language: 'ru'}]},
+					types: ['http://tonya-diploma.com/type/Device' as ElementTypeIri],
+					properties: {
+						'http://tonya-diploma.com/device/grate/counting/Количество решеток': {
+							type: 'string',
+							values: [{value: `${this.grateResult.hand.amountOfGrates}`, language: 'ru'}]
+						},
+						'http://tonya-diploma.com/device/grate/counting/Длина камеры': {
+							type: 'string',
+							values: [{value: `${this.grateResult.hand.commonLengthOfCamera}`, language: 'ru'}]
+						},
+					}
+				}
+			});
+			const link: Link = new Link({
+				id: 'http://tonya-diploma.com/device/grate/counting/link',
+				sourceId: 'http://tonya-diploma.com/device/grate/counting',
+				targetId: 'http://tonya-diploma.com/device/grate/hand',
+				typeId: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
+			});
+			const layoutElement: LayoutElement = {
+				'@type': 'Element',
+				'@id': 'http://tonya-diploma.com/device/grate/counting',
+				iri: 'http://tonya-diploma.com/device/grate/counting' as ElementIri,
+				position: { x: (300), y: 300 },
+			};
+			const layoutLink: LayoutLink = {
+				'@type': 'Link',
+				'@id': `http://tonya-diploma.com/device/instanceOf/${Math.random() * 1000000}`,
+				property: ('http://tonya-diploma.com/device/instanceOf') as LinkTypeIri,
+				source: { '@id': 'http://tonya-diploma.com/device/grate/counting' },
+				target: { '@id': 'http://tonya-diploma.com/device/grate/hand' }
+			};
+			const model = this.workspace.getModel();
+			model.addElement(element);
+			model.createClass('http://tonya-diploma.com/device/grate/counting' as ElementTypeIri);
+			model.addLink(link);
+			elements.push(layoutElement);
+			links.push(layoutLink);
+			const testDiagram: SerializedDiagram = {
+				'@context': `https://ontodia.org/context/${Math.random() * 1000000}/v1.json`,
+				'@type': 'Diagram',
+				layoutData: {
+					'@type': 'Layout',
+					elements: elements,
+					links: links,
+				}
+			};
+			this.setState({ deviceDiagram: testDiagram });
+		}
+		if (this.grateResult.deviceType === GrateTypes.mechanic) {
+			GrateSource.grates.forEach((device, index) => {
+				if (device.mark === this.grateResult.mechanic.currentGrate.value) {
+					const elementDevice = (ELEMENTS as any)['http://tonya-diploma.com/device/grate/mechanic'];
+					const element = (ELEMENTS as any)[device.iri];
+					if (elementDevice &&
+						(elements.length === 0 || elements.every(item => item.iri !== device.iri))) {
+						elements.push({
+							'@type': 'Element',
+							'@id': 'http://tonya-diploma.com/device/grate/mechanic',
+							iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
+							position: { x: 300, y: 100 },
+						});
+					}
+					if (element) {
+						elements.push({
+							'@type': 'Element',
+							'@id': device.iri,
+							iri: device.iri as ElementIri,
+							position: { x: 300, y: 400 },
+						});
+						links.push({
+							'@type': 'Link',
+							'@id': `http://tonya-diploma.com/device/instanceOf/${Math.random() * 1000000}`,
+							property: ('http://tonya-diploma.com/device/instanceOf') as LinkTypeIri,
+							source: { '@id': 'http://tonya-diploma.com/device/grate/mechanic' },
+							target: { '@id': device.iri }
+						});
+					}
+				}
+			});
+			const testDiagram: SerializedDiagram = {
+				'@context': `https://ontodia.org/context/${Math.random() * 1000000}/v1.json`,
+				'@type': 'Diagram',
+				layoutData: {
+					'@type': 'Layout',
+					elements: elements,
+					links: links,
+				}
+			};
+			this.setState({ deviceDiagram: testDiagram });
+		}
 	}
 
-	private getSandTrapElement = () => {
+	private generateSchema = () => {
+		this.generateGrateScheme();
 	}
 
 	private renderScheme = () => {
@@ -251,12 +286,13 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 				</Container>
 				<div className={'ontodia-container'}>
 					<Workspace
+						key={'result-page-ontodia'}
 						ref={workspaceProps ? workspaceProps.ref : undefined}
 						leftPanelInitiallyOpen={false}
 						rightPanelInitiallyOpen={false}
-						hidePanels={true}
-						hideScrollBars={true}
-						hideTutorial={true}
+						hidePanels={false}
+						hideScrollBars={false}
+						hideTutorial={false}
 					></Workspace>
 				</div>
 			</div>
@@ -271,11 +307,9 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 			diagram: this.state.deviceDiagram,
 			dataProvider: new DemoDataProvider(
 				CLASSES as any,
-				// LINK_TYPES as any,
-				[],
-				this.elements as any,
-				// LINKS as any
-				[]
+				LINK_TYPES as any,
+				ELEMENTS as any,
+				LINKS as any
 			),
 			validateLinks: true,
 		});

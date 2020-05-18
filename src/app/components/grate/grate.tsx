@@ -287,6 +287,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		const { type } = this.props;
 		const { amountOfGrates } = this.state;
 		this.grateResult = {
+			complete: true,
 			deviceType: type,
 			hand: {
 				amountOfGrates: {value: amountOfGrates, label: 'Количество решеток, шт'},

@@ -234,6 +234,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			</Container>
 			<div className={'ontodia-container'}>
 				<Workspace
+					key={'general-page-ontodia'}
 					ref={workspaceProps ? workspaceProps.ref : undefined}
 					leftPanelInitiallyOpen={false}
 					rightPanelInitiallyOpen={false}

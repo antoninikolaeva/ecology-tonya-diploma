@@ -527,6 +527,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			averageMechanism, distanceBetweenWallBubble, distanceBetweenIntervalBubble, formOfAverage
 		} = this.state;
 		this.averageResult = {
+			complete: true,
 			deviceType: type,
 			averageMechanismType: averageMechanism,
 			averageCoefficient: {
