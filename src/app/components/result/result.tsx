@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Tab, Tabs, Table, Container, Row, Col } from 'react-bootstrap';
+import { Table, Container, Row, Col } from 'react-bootstrap';
 import {
 	GrateResultData,
 	SandTrapResultData,
@@ -12,8 +12,8 @@ import {
 } from '../data-model';
 import { CLASSES, LINK_TYPES, ELEMENTS, LINKS } from '../resources/resources';
 import {
-	LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram, Link,
-	Workspace, WorkspaceProps, DemoDataProvider, Element, ElementTypeIri
+	LayoutLink, LayoutElement, LinkTypeIri, SerializedDiagram,
+	Workspace, WorkspaceProps, DemoDataProvider, Element,
 } from 'ontodia';
 import { renderFilterResult } from '../filter/filter';
 import { renderCentrifugeResult } from '../centrifuge/centrifuge';
@@ -26,14 +26,12 @@ import { GrateTypes } from '../general-resources';
 import { ElementIri } from '../ontodia/dataProvider';
 import { GrateSource } from '../grate/grate-resources';
 
-export interface GeneralResultProps {
+interface ResultItems {
+	elements: LayoutElement[];
+	links: LayoutLink[];
 }
 
-interface GeneralResultState {
-	deviceDiagram: SerializedDiagram;
-}
-
-export class GeneralResult extends React.Component<GeneralResultProps, GeneralResultState> {
+export class GeneralResult extends React.Component<{}, {}> {
 	private grateResult: GrateResultData;
 	private sandTrapResult: SandTrapResultData;
 	private sumpResult: SumpResultData;
@@ -43,40 +41,15 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	private centrifugeResult: CentrifugeResultData;
 
 	private workspace: Workspace;
-	private elements: any;
-	private links: any;
+	private diagram: SerializedDiagram;
+	private elements: LayoutElement[] = [];
+	private links: LayoutLink[] = [];
 
-	constructor(props: GeneralResultProps) {
+	constructor(props: {}) {
 		super(props);
 
-		this.state = {
-			deviceDiagram: undefined,
-		};
-
 		this.getAllResults();
-	}
-
-	componentDidMount() {
 		this.generateSchema();
-	}
-
-	componentDidUpdate(prevProps: {}, prevState: GeneralResultState) {
-		const { deviceDiagram } = this.state;
-		const isNewData = !prevState.deviceDiagram && deviceDiagram;
-		const isUpdatedData = deviceDiagram && prevState.deviceDiagram &&
-			(prevState.deviceDiagram.layoutData.elements !== deviceDiagram.layoutData.elements);
-		if (isNewData || isUpdatedData) {
-			this.workspace.getModel().importLayout({
-				diagram: this.state.deviceDiagram,
-				dataProvider: new DemoDataProvider(
-					CLASSES as any,
-					LINK_TYPES as any,
-					ELEMENTS as any,
-					LINKS as any,
-				),
-				validateLinks: true,
-			});
-		}
 	}
 
 	private getAllResults = () => {
@@ -162,113 +135,59 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 		);
 	}
 
-	private generateGrateScheme = () => {
+	private generateGrateScheme = (): ResultItems => {
 		if (!this.grateResult.complete) {
 			return;
 		}
-		const links: LayoutLink[] = [];
-		const elements: LayoutElement[] = [];
+		let result: ResultItems = {elements: [], links: []};
 		if (this.grateResult.deviceType === GrateTypes.hand) {
-			const element: Element = new Element({
-				id: 'http://tonya-diploma.com/device/grate/counting',
-				data: {
-					id: 'http://tonya-diploma.com/device/grate/counting' as ElementIri,
-					label: {values: [{value: 'Решетка ручной очистки(типовая)', language: 'ru'}]},
-					types: ['http://tonya-diploma.com/type/Device' as ElementTypeIri],
-					properties: {
-						'http://tonya-diploma.com/device/grate/counting/Количество решеток': {
-							type: 'string',
-							values: [{value: `${this.grateResult.hand.amountOfGrates}`, language: 'ru'}]
-						},
-						'http://tonya-diploma.com/device/grate/counting/Длина камеры': {
-							type: 'string',
-							values: [{value: `${this.grateResult.hand.commonLengthOfCamera}`, language: 'ru'}]
-						},
-					}
-				}
+			result = getCountingDeviceAndInstance({
+				deviceIri: 'http://tonya-diploma.com/device/grate/hand' as ElementIri,
+				instanceIri: 'http://tonya-diploma.com/device/grate/hand/counting' as ElementIri,
+				linkIri: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
 			});
-			const link: Link = new Link({
-				id: 'http://tonya-diploma.com/device/grate/counting/link',
-				sourceId: 'http://tonya-diploma.com/device/grate/counting',
-				targetId: 'http://tonya-diploma.com/device/grate/hand',
-				typeId: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
-			});
-			const layoutElement: LayoutElement = {
-				'@type': 'Element',
-				'@id': 'http://tonya-diploma.com/device/grate/counting',
-				iri: 'http://tonya-diploma.com/device/grate/counting' as ElementIri,
-				position: { x: (300), y: 300 },
-			};
-			const layoutLink: LayoutLink = {
-				'@type': 'Link',
-				'@id': `http://tonya-diploma.com/device/instanceOf/${Math.random() * 1000000}`,
-				property: ('http://tonya-diploma.com/device/instanceOf') as LinkTypeIri,
-				source: { '@id': 'http://tonya-diploma.com/device/grate/counting' },
-				target: { '@id': 'http://tonya-diploma.com/device/grate/hand' }
-			};
-			const model = this.workspace.getModel();
-			model.addElement(element);
-			model.createClass('http://tonya-diploma.com/device/grate/counting' as ElementTypeIri);
-			model.addLink(link);
-			elements.push(layoutElement);
-			links.push(layoutLink);
-			const testDiagram: SerializedDiagram = {
-				'@context': `https://ontodia.org/context/${Math.random() * 1000000}/v1.json`,
-				'@type': 'Diagram',
-				layoutData: {
-					'@type': 'Layout',
-					elements: elements,
-					links: links,
-				}
-			};
-			this.setState({ deviceDiagram: testDiagram });
 		}
 		if (this.grateResult.deviceType === GrateTypes.mechanic) {
-			GrateSource.grates.forEach((device, index) => {
-				if (device.mark === this.grateResult.mechanic.currentGrate.value) {
-					const elementDevice = (ELEMENTS as any)['http://tonya-diploma.com/device/grate/mechanic'];
-					const element = (ELEMENTS as any)[device.iri];
-					if (elementDevice &&
-						(elements.length === 0 || elements.every(item => item.iri !== device.iri))) {
-						elements.push({
-							'@type': 'Element',
-							'@id': 'http://tonya-diploma.com/device/grate/mechanic',
-							iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
-							position: { x: 300, y: 100 },
-						});
-					}
-					if (element) {
-						elements.push({
-							'@type': 'Element',
-							'@id': device.iri,
-							iri: device.iri as ElementIri,
-							position: { x: 300, y: 400 },
-						});
-						links.push({
-							'@type': 'Link',
-							'@id': `http://tonya-diploma.com/device/instanceOf/${Math.random() * 1000000}`,
-							property: ('http://tonya-diploma.com/device/instanceOf') as LinkTypeIri,
-							source: { '@id': 'http://tonya-diploma.com/device/grate/mechanic' },
-							target: { '@id': device.iri }
-						});
-					}
-				}
+			const grateCrushersResult = getTableDeviceAndInstance({
+				deviceMark: this.grateResult.mechanic.currentHammerCrusher.value,
+				deviceIri: 'http://tonya-diploma.com/device/hammer-crusher' as ElementIri,
+				deviceList: GrateSource.hammerCrushers,
+				linkIri: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
 			});
-			const testDiagram: SerializedDiagram = {
-				'@context': `https://ontodia.org/context/${Math.random() * 1000000}/v1.json`,
-				'@type': 'Diagram',
-				layoutData: {
-					'@type': 'Layout',
-					elements: elements,
-					links: links,
-				}
-			};
-			this.setState({ deviceDiagram: testDiagram });
+			const gratesResult = getTableDeviceAndInstance({
+				deviceMark: this.grateResult.mechanic.currentGrate.value,
+				deviceIri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
+				deviceList: GrateSource.grates,
+				linkIri: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
+			});
+			result.elements = result.elements.concat(gratesResult.elements).concat(grateCrushersResult.elements);
+			result.links = result.links.concat(gratesResult.links).concat(grateCrushersResult.links);
 		}
+		if (this.grateResult.deviceType === GrateTypes.crusher) {
+			result = getTableDeviceAndInstance({
+				deviceMark: this.grateResult.crusher.currentGrateCrusher.value,
+				deviceIri: 'http://tonya-diploma.com/device/grate/crusher' as ElementIri,
+				deviceList: GrateSource.grateCrushers,
+				linkIri: 'http://tonya-diploma.com/device/instanceOf' as LinkTypeIri,
+			});
+		}
+		return result;
 	}
 
 	private generateSchema = () => {
-		this.generateGrateScheme();
+		const grateResult = this.generateGrateScheme();
+		this.elements = this.elements.concat(grateResult.elements);
+		this.links = this.links.concat(grateResult.links);
+		const testDiagram: SerializedDiagram = {
+			'@context': `https://ontodia.org/context/v2.json`,
+			'@type': 'Diagram',
+			layoutData: {
+				'@type': 'Layout',
+				elements: this.elements,
+				links: this.links,
+			}
+		};
+		this.diagram = testDiagram;
 	}
 
 	private renderScheme = () => {
@@ -304,7 +223,7 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 
 		this.workspace = workspace;
 		this.workspace.getModel().importLayout({
-			diagram: this.state.deviceDiagram,
+			diagram: this.diagram,
 			dataProvider: new DemoDataProvider(
 				CLASSES as any,
 				LINK_TYPES as any,
@@ -327,4 +246,70 @@ export class GeneralResult extends React.Component<GeneralResultProps, GeneralRe
 	render() {
 		return this.renderResults();
 	}
+}
+
+function getElement(iri: ElementIri): LayoutElement {
+	return {
+		'@type': 'Element',
+		'@id': iri,
+		iri: iri,
+		position: { x: (100), y: 100 },
+	}
+}
+
+function getTableDeviceAndInstance(params: {
+	deviceMark: string;
+	deviceList: any[];
+	deviceIri: ElementIri;
+	linkIri: LinkTypeIri;
+}): ResultItems {
+	const {deviceList, deviceIri, linkIri, deviceMark} = params;
+	const elements: LayoutElement[] = [];
+	const links: LayoutLink[] = [];
+	deviceList.forEach(device => {
+		if (device.mark === deviceMark) {
+			const elementDevice = (ELEMENTS as any)[deviceIri];
+			const element = (ELEMENTS as any)[device.iri];
+			if (elementDevice) {
+				const newElement = getElement(deviceIri);
+				elements.push(newElement);
+			}
+			if (element) {
+				const newElement = getElement(device.iri as ElementIri);
+				elements.push(newElement);
+				links.push({
+					'@type': 'Link',
+					'@id': `${linkIri}/${Math.random() * 1000000}`,
+					property: linkIri,
+					source: { '@id': device.iri },
+					target: { '@id': deviceIri }
+				});
+			}
+		}
+	});
+	return {elements, links};
+}
+
+function getCountingDeviceAndInstance(params: {
+	deviceIri: ElementIri;
+	instanceIri: ElementIri;
+	linkIri: LinkTypeIri;
+}): ResultItems {
+	const {deviceIri, linkIri, instanceIri} = params;
+	const elements: LayoutElement[] = [];
+	const links: LayoutLink[] = [];
+	const deviceElement = getElement(deviceIri);
+	const elementOfDevice = getElement(instanceIri);
+
+	const layoutLink: LayoutLink = {
+		'@type': 'Link',
+		'@id': `${linkIri}/${Math.random() * 1000000}`,
+		property: linkIri,
+		source: { '@id': instanceIri },
+		target: { '@id': deviceIri }
+	};
+	elements.push(deviceElement);
+	elements.push(elementOfDevice);
+	links.push(layoutLink);
+	return {elements, links};
 }

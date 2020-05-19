@@ -411,7 +411,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 		if (isValidateError || !this.isDataExisted()) {
 			return;
 		}
-		this.setState({ countMode: true, resultMode: false });
+		this.workspace = undefined;
+		this.setState({ countMode: true, resultMode: false, deviceDiagram: undefined });
 	}
 
 	private clearPage = () => {

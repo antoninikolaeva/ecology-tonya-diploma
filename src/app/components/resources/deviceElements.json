@@ -288,6 +288,13 @@
             "http://tonya-diploma.com/device/grate/rkm2020/Расчетный расход": { "type": "string", "values": [ { "value": 2770 } ] }
         }
     },
+    "http://tonya-diploma.com/device/grate/hand/counting": {
+        "id": "http://tonya-diploma.com/device/grate/hand/counting",
+        "types": [ "http://tonya-diploma.com/type/Grate" ],
+        "image": "",
+        "label": { "values": [ { "value": "Расчетная решетка", "language": "ru" } ] },
+        "properties": {}
+    },
     "http://tonya-diploma.com/device/grate/rd200": {
         "id": "http://tonya-diploma.com/device/grate/rd200",
         "types": [ "http://tonya-diploma.com/type/GrateCrusher" ],

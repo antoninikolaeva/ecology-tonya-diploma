@@ -2,12 +2,12 @@
     {
         "id": "http://tonya-diploma.com/device",
         "label": {  "values": [ { "value": "Очистное сооружение", "language": "ru" } ] },
-        "count": "8",
+        "count": 8,
         "children": [
             {
                 "id": "http://tonya-diploma.com/device/grate",
                 "label": { "values": [ { "value": "Решетка", "language": "ru" } ] },
-                "count": "3",
+                "count": 3,
                 "children": [
                     {
                         "id": "http://tonya-diploma.com/device/grate/mechanic",
@@ -149,13 +149,19 @@
                     {
                         "id": "http://tonya-diploma.com/device/grate/hand",
                         "label": { "values": [ { "value": "Ручная очистка", "language": "ru" } ] },
-                        "count": 0,
-                        "children": []
+                        "count": 1,
+                        "children": [
+                            {
+                                "id": "http://tonya-diploma.com/device/grate/hand/counting",
+                                "label": {  "values": [  { "value": "Расчетная решетка ручного типа", "language": "ru" } ] },
+                                "children": []
+                            }
+                        ]
                     },
                     {
                         "id": "http://tonya-diploma.com/device/grate/crusher",
                         "label": { "values": [ { "value": "Решетка дробилка", "language": "ru" } ] },
-                        "count": 4,
+                        "count": 2,
                         "children": [
                             {
                                 "id": "http://tonya-diploma.com/device/grate/rd200",
@@ -174,7 +180,7 @@
             {
                 "id": "http://tonya-diploma.com/device/hammer-crusher",
                 "label": { "values": [ { "value": "Молотковая дробилка", "language": "ru" } ] },
-                "count": "3",
+                "count": 3,
                 "children": [
                     {
                         "id": "http://tonya-diploma.com/device/hammer-crusher/d3b",

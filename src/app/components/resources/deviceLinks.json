@@ -289,6 +289,12 @@
   },
 
   {
+    "sourceId": "http://tonya-diploma.com/device/grate/hand/counting",
+    "linkTypeId": "http://tonya-diploma.com/device/instanceOf",
+    "targetId": "http://tonya-diploma.com/device/grate/hand"
+  },
+
+  {
     "sourceId": "http://tonya-diploma.com/device/grate/rd200",
     "linkTypeId": "http://tonya-diploma.com/device/instanceOf",
     "targetId": "http://tonya-diploma.com/device/grate/crusher"
