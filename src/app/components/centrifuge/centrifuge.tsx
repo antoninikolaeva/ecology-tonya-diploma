@@ -313,7 +313,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			diameter: undefined, diameterInPipe: undefined,
 			hugestParticular: {min: undefined, max: undefined},
 			diameterSpecialPipe: [], diameterOutPipe: undefined, alpha: undefined,
-			cylinderHeight: [], deltaP: undefined,
+			cylinderHeight: [], deltaP: undefined, iri: undefined,
 		});
 	}
 

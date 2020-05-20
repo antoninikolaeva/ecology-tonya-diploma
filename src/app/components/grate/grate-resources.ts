@@ -39,6 +39,7 @@ export namespace GrateSource {
 	}
 
 	export interface HammerCrusher {
+		iri: string;
 		mark: string;
 		performance: {
 			min: number;
@@ -118,9 +119,9 @@ export namespace GrateSource {
 	];
 
 	export const hammerCrushers: HammerCrusher[] = [
-		{ mark: 'Д-3б', performance: {min: 300, max: 600}, },
-		{ mark: 'ДК-0,5', performance: {min: 500, max: 500}, },
-		{ mark: 'ДК-1,0', performance: {min: 1000, max: 1000}, },
+		{ mark: 'Д-3б', performance: {min: 300, max: 600}, iri: 'http://tonya-diploma.com/device/hammer-crusher/d3b'},
+		{ mark: 'ДК-0,5', performance: {min: 500, max: 500}, iri: 'http://tonya-diploma.com/device/hammer-crusher/dk05'},
+		{ mark: 'ДК-1,0', performance: {min: 1000, max: 1000}, iri: 'http://tonya-diploma.com/device/hammer-crusher/dk1-0'},
 	];
 
 	export const grateCrushers: GrateCrusher[] = [

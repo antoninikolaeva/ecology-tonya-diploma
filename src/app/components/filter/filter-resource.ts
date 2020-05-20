@@ -133,6 +133,8 @@ export namespace FilterSource {
 	}
 	export const performanceForcedSpeed = 1.15;
 	export interface MicroFilter {
+		iri: string;
+		mark: string;
 		value: number;
 		label: string;
 		relation: {
@@ -146,18 +148,18 @@ export namespace FilterSource {
 		drumSpeedRotation: number;
 	}
 	export const microFilters: MicroFilter[] = [
-		{value: 2400, label: '1.5x1.9', square: 2.85, performance: 2400, relation: {width: 1.5, height: 1.9},
-			filterSquare: 3.75, drumSpeedRotation: 2.6},
-		{value: 3840, label: '1.5x2.8', square: 4.2, performance: 3840, relation:  {width: 1.5, height: 2.8},
-			filterSquare: 5.6, drumSpeedRotation: 2.6},
-		{value: 5040, label: '1.5x3.7', square: 5.55, performance: 5040, relation: {width: 1.5, height: 3.7},
-			filterSquare: 7.5, drumSpeedRotation: 2.6},
-		{value: 9600, label: '3x2.8', square: 8.4, performance: 9600, relation:    {width: 3, height: 2.8},
-			filterSquare: 13, drumSpeedRotation: 1.7},
-		{value: 12720, label: '3x3.7', square: 11.1, performance: 12720, relation: {width: 3, height: 3.7},
-			filterSquare: 17.5, drumSpeedRotation: 1.7},
-		{value: 15840, label: '3x4.6', square: 13.8, performance: 15840, relation: {width: 3, height: 4.6},
-			filterSquare: 22, drumSpeedRotation: 1.7},
+		{value: 2400, label: '1.5x1.9', mark: '1.5x1.9', square: 2.85, performance: 2400, relation: {width: 1.5, height: 1.9},
+			filterSquare: 3.75, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/microFilter/1519'},
+		{value: 3840, label: '1.5x2.8', mark: '1.5x2.8', square: 4.2, performance: 3840, relation:  {width: 1.5, height: 2.8},
+			filterSquare: 5.6, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/microFilter/1528'},
+		{value: 5040, label: '1.5x3.7', mark: '1.5x3.7', square: 5.55, performance: 5040, relation: {width: 1.5, height: 3.7},
+			filterSquare: 7.5, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/microFilter/1537'},
+		{value: 9600, label: '3x2.8', mark: '3x2.8', square: 8.4, performance: 9600, relation:    {width: 3, height: 2.8},
+			filterSquare: 13, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/microFilter/328'},
+		{value: 12720, label: '3x3.7', mark: '3x3.7', square: 11.1, performance: 12720, relation: {width: 3, height: 3.7},
+			filterSquare: 17.5, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/microFilter/337'},
+		{value: 15840, label: '3x4.6', mark: '3x4.6', square: 13.8, performance: 15840, relation: {width: 3, height: 4.6},
+			filterSquare: 22, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/microFilter/346'},
 	];
 	export enum CoefficientIncreasePerformance {
 		min = 1.03,
@@ -174,6 +176,8 @@ export namespace FilterSource {
 		coefficientSecond = 0.63,
 	}
 	export interface DrumNets {
+		iri: string;
+		mark: string;
 		value: number;
 		label: string;
 		relation: {
@@ -185,18 +189,18 @@ export namespace FilterSource {
 		drumSpeedRotation: number;
 	}
 	export const drumNets: DrumNets[] = [
-		{ label: '1.5x1.9', value: 8400, performance: 8400, relation: { width: 1.5, height: 1.9 },
-			filterSquare: 3.75, drumSpeedRotation: 2.6},
-		{ label: '1.5x2.8', value: 13200, performance: 13200, relation: { width: 1.5, height: 2.8 },
-			filterSquare: 5.6, drumSpeedRotation: 2.6},
-		{ label: '1.5x3.7', value: 18000, performance: 18000, relation: { width: 1.5, height: 3.7 },
-			filterSquare: 7.5, drumSpeedRotation: 2.6},
-		{ label: '3x2.8', value: 30000, performance: 30000, relation: { width: 3, height: 2.8 },
-			filterSquare: 13, drumSpeedRotation: 1.7},
-		{ label: '3x3.7', value: 39600, performance: 39600, relation: { width: 3, height: 3.7 },
-			filterSquare: 17.5, drumSpeedRotation: 1.7},
-		{ label: '3x4.6', value: 50500, performance: 50500, relation: { width: 3, height: 4.6 },
-			filterSquare: 22, drumSpeedRotation: 1.7},
+		{ label: '1.5x1.9', mark: '1.5x1.9', value: 8400, performance: 8400, relation: { width: 1.5, height: 1.9 },
+			filterSquare: 3.75, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/drumNet/1519'},
+		{ label: '1.5x2.8', mark: '1.5x2.8', value: 13200, performance: 13200, relation: { width: 1.5, height: 2.8 },
+			filterSquare: 5.6, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/drumNet/1528'},
+		{ label: '1.5x3.7', mark: '1.5x3.7', value: 18000, performance: 18000, relation: { width: 1.5, height: 3.7 },
+			filterSquare: 7.5, drumSpeedRotation: 2.6, iri: 'http://tonya-diploma.com/device/filter/drumNet/1537'},
+		{ label: '3x2.8', mark: '3x2.8', value: 30000, performance: 30000, relation: { width: 3, height: 2.8 },
+			filterSquare: 13, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/drumNet/328'},
+		{ label: '3x3.7', mark: '3x3.7', value: 39600, performance: 39600, relation: { width: 3, height: 3.7 },
+			filterSquare: 17.5, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/drumNet/337'},
+		{ label: '3x4.6', mark: '3x4.6', value: 50500, performance: 50500, relation: { width: 3, height: 4.6 },
+			filterSquare: 22, drumSpeedRotation: 1.7, iri: 'http://tonya-diploma.com/device/filter/drumNet/346'},
 	];
 	export const minMicroFilterPerformance = 100;
 	export const minDrumNetsPerformance = 350;

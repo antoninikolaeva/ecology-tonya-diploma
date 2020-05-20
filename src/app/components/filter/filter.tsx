@@ -597,6 +597,8 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			value: undefined,
 			drumSpeedRotation: undefined,
 			filterSquare: undefined,
+			iri: undefined,
+			mark: undefined,
 		});
 	}
 
@@ -613,6 +615,8 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			drumSpeedRotation: undefined,
 			filterSquare: undefined,
 			relation: {width: undefined, height: undefined},
+			iri: undefined,
+			mark: undefined,
 		});
 	}
 

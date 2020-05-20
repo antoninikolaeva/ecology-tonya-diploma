@@ -17,6 +17,7 @@ import { AverageComponent } from './average/average';
 import { OilTrapComponent } from './oilTrap/oilTrap';
 import { FilterComponent } from './filter/filter';
 import { CentrifugeComponent } from './centrifuge/centrifuge';
+import { dataModel } from './data-model';
 
 interface State {
 	deviceWatcher: number;
@@ -446,6 +447,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private onStartPage = () => {
 		this.clearPage();
+		dataModel.resetResultData();
 		this.setState({ resultMode: false, countMode: false });
 	}
 
