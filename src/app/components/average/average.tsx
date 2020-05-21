@@ -1,10 +1,11 @@
 import * as React from 'react';
-import { AverageTypes } from '../general-resources';
+import { AverageTypes, KindOfDevices } from '../general-resources';
 import { labelTemplate, NULLSTR, InputTemplate, ItemList, resetSelectToDefault, SelectTemplate, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, AverageResultData } from '../data-model';
 import { AverageSource } from './average-resource';
 import { ErrorAlert } from '../error/error';
+import { renderToolbar, renderCheckingButton } from '../grate/grate';
 
 export interface AverageProps {
 	secondMaxFlow: number;
@@ -161,7 +162,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -388,7 +389,11 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 					</>
 					: null}
 
-				{this.renderCheckingButton()}
+				{renderCheckingButton(
+					this.clearPage,
+					this.isInputReadyToCounting,
+					this.resultCounting,
+				)}
 			</>
 		);
 	}
@@ -527,6 +532,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			averageMechanism, distanceBetweenWallBubble, distanceBetweenIntervalBubble, formOfAverage
 		} = this.state;
 		this.averageResult = {
+			type: KindOfDevices.average,
 			complete: true,
 			deviceType: type,
 			averageMechanismType: averageMechanism,
@@ -534,13 +540,13 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 				value: this.averageCoefficient ? Number(this.averageCoefficient.toFixed(3)) : undefined,
 				label: 'Требуемый коэффициент усреднения, %'
 			},
-			averageVolume: {value: this.averageVolume, label: 'Объем усреднителя, м3'},
-			sectionSquare: {value: this.sectionSquare, label: 'Площадь каждой секции усреднителя, м2'},
+			averageVolume: {value: this.averageVolume, label: 'Объем усреднителя, м³'},
+			sectionSquare: {value: this.sectionSquare, label: 'Площадь каждой секции усреднителя, м²'},
 			bubbling: {
 				averageLength: {value: this.averageLength, label: 'Длина усреднителя, м'},
 				commonAirFlow: {
 					value: this.commonAirFlow ? Number(this.commonAirFlow.toFixed(3)) : undefined,
-					label: 'Общий расход воздуха для барботирования, м3/ч'
+					label: 'Общий расход воздуха для барботирования, м³/ч'
 				},
 				distanceBetweenIntervalBubble: {
 					value: distanceBetweenIntervalBubble ? Number(distanceBetweenIntervalBubble.toFixed(3)) : undefined,
@@ -574,12 +580,12 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 				averageLength: {value: this.averageLength, label: 'Длина усреднителя, м'},
 				crossSectionalArea: {
 					value: this.crossSectionalArea ? Number(this.crossSectionalArea.toFixed(3)) : undefined,
-					label: 'Площадь поперечного сечения распределительного лотка, м2'
+					label: 'Площадь поперечного сечения распределительного лотка, м²'
 				},
 				widthOfEachChannel: {value: listOfArrayValues(this.widthOfEachChannel, 3), label: 'Ширина каждого канала секции, м'},
-				waterFlowOfEachChannel: {value: listOfArrayValues(this.waterFlowOfEachChannel, 3), label: 'Расход воды в каждом канале, м3/ч'},
-				squareBottomForEachChannel: {value: listOfArrayValues(this.squareBottomForEachChannel, 3), label: 'Площадь донного отверстия в распределительном лотке, м2'},
-				squareSideForEachChannel: {value: listOfArrayValues(this.squareSideForEachChannel, 3), label: 'Площадь бокового отверстия в распределительном лотке, м2'},
+				waterFlowOfEachChannel: {value: listOfArrayValues(this.waterFlowOfEachChannel, 3), label: 'Расход воды в каждом канале, м³/ч'},
+				squareBottomForEachChannel: {value: listOfArrayValues(this.squareBottomForEachChannel, 3), label: 'Площадь донного отверстия в распределительном лотке, м²'},
+				squareSideForEachChannel: {value: listOfArrayValues(this.squareSideForEachChannel, 3), label: 'Площадь бокового отверстия в распределительном лотке, м²'},
 			},
 		};
 		dataModel.setAverageResult(this.averageResult);
@@ -589,42 +595,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderAverageResult(this.averageResult, {isGeneralResult: false, title: undefined});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитныех сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderAverageResult(this.averageResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -644,7 +615,10 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 					{type === AverageTypes.volleyDischarge ?
 						<div className={'count-title'}>Залповый сброс</div> :
 						<div className={'count-title'}>Циклические колебания</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -668,10 +642,7 @@ function listOfArrayValues(array: number[], fixedValue: number): string {
 
 export function renderAverageResult(
 	averageResult: AverageResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!averageResult) {
 		return null;
@@ -690,14 +661,10 @@ export function renderAverageResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
+					{isGeneralResult
 						? <>
-						<tr>
-							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-							<td className={'right-title-column'}></td>
-						</tr>
-						<TableRow value={deviceType} label={'Тип'} />
-						<TableRow value={mechanism} label={'Тип механизма'} />
+							<TableRow value={deviceType} label={'Тип'} />
+							<TableRow value={mechanism} label={'Тип механизма'} />
 						</>
 						: null}
 					<TableRow value={averageResult.averageCoefficient.value} label={averageResult.averageCoefficient.label} />

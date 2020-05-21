@@ -34,15 +34,15 @@ export enum GrateTypes { mechanic = 'mechanic', hand = 'hand', crusher = 'crushe
 export const grateTypes: DeviceType[] = [
 	{
 		iri: 'http://tonya-diploma.com/device/grate/mechanic' as ElementIri,
-		key: GrateTypes.mechanic, name: 'Механизированная очистка', ref: undefined
+		key: GrateTypes.mechanic, name: 'С механизированной очисткой', ref: undefined
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/grate/hand' as ElementIri,
-		key: GrateTypes.hand, name: 'Ручная очистка', ref: undefined
+		key: GrateTypes.hand, name: 'С ручной очисткой', ref: undefined
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/grate/crusher' as ElementIri,
-		key: GrateTypes.crusher, name: 'Дробилки', ref: undefined
+		key: GrateTypes.crusher, name: 'Решетки-дробилки', ref: undefined
 	},
 ];
 export enum SandTrapTypes {
@@ -90,11 +90,12 @@ export const sumpTypes: DeviceType[] = [
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/sump/vertical' as ElementIri,
-		key: SumpTypes.vertical, name: 'Вертикальные', ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000
+		key: SumpTypes.vertical, name: 'Вертикальные с впуском через центральную трубу',
+		ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000
 	},
 	{
 		iri: 'http://tonya-diploma.com/device/sump/vertical-down-up-low' as ElementIri,
-		key: SumpTypes.verticalUpDownFlow, name: 'Вертикальные с нисходящим-восходящим потоком',
+		key: SumpTypes.verticalUpDownFlow, name: 'Вертикальные с нисходяще-восходящим потоком',
 		ref: undefined, minDailyWaterFlow: 2000, maxDailyWaterFlow: 20000
 	},
 	{
@@ -128,7 +129,7 @@ export enum FilterTypes { base = 'base' }
 export const filterTypes: DeviceType[] = [
 	{
 		iri: 'http://tonya-diploma.com/device/filter/base' as ElementIri,
-		key: FilterTypes.base, name: 'Типовой', ref: undefined
+		key: FilterTypes.base, name: 'Тип фильтра', ref: undefined
 	}
 ];
 export enum CentrifugeTypes { opened = 'opened', pressure = 'pressure', continuous = 'continuous', determinate = 'determinate' }

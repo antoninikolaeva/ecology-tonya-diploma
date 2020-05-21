@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { GrateTypes } from '../general-resources';
+import { GrateTypes, KindOfDevices } from '../general-resources';
 import {
 	InputTemplate,
 	labelTemplate,
@@ -155,8 +155,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Максимальный секундный расход сточных вод, м3/с', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Максимальный секундный расход сточных вод, м³/с', secondMaxFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -236,7 +236,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					range={{ minValue: 0, maxValue: Infinity }}
 					onInputRef={(input) => { this.middleValueBPK5Ref = input; }}
 					onInput={(value) => { this.setState({ middleValueBPK5: value }); }} />
-				<InputTemplate title={`Среднегодовой объем сточных вод, м3`}
+				<InputTemplate title={`Среднегодовой объем сточных вод, м³`}
 					placeholder={'Введите среднегодовой объем...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					range={{ minValue: dailyWaterFlow, maxValue: Infinity }}
@@ -264,7 +264,11 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					onSelectRef={(optionList) => { this.hammerCrusherListRef = optionList; }} />
 			</>
 			: null}
-			{this.renderCheckingButton()}
+			{renderCheckingButton(
+				this.clearPage,
+				this.isInputReadyToCounting,
+				this.resultCounting,
+			)}
 		</div>;
 	}
 
@@ -287,6 +291,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		const { type } = this.props;
 		const { amountOfGrates } = this.state;
 		this.grateResult = {
+			type: KindOfDevices.grate,
 			complete: true,
 			deviceType: type,
 			hand: {
@@ -315,7 +320,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					label: 'Величина уступа в месте установки решетки, м'},
 				volumeOfWaste: {
 					value: this.volumeOfWaste ? Number(this.volumeOfWaste.toFixed(2)) : undefined,
-					label: 'Объем снимаемых отбросов, м3/сут'},
+					label: 'Объем снимаемых отбросов, м³/сут'},
 				massOfWaste: {
 					value: this.massOfWaste ? Number(this.massOfWaste.toFixed(2)) : undefined,
 					label: 'Масса снимаемых отбросов за сутки, т/сут'},
@@ -330,7 +335,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 				},
 				amountOfHammerCrusher: {value: this.amountOfHammerCrusher, label: 'Количество молотковых дробилок, шт'},
 				amountAdditionalHammerCrusher: {value: this.amountAdditionalHammerCrusher, label: 'Количество резервных молотковых дробилок, шт'},
-				amountOfTechnicWaterFlow: {value: this.amountOfTechnicWaterFlow, label: 'Расход технической воды, подводимой к дробилкам, м3/сут'},
+				amountOfTechnicWaterFlow: {value: this.amountOfTechnicWaterFlow, label: 'Расход технической воды, подводимой к дробилкам, м³/сут'},
 				massOfWaste: {
 					value: this.massOfWaste ? Number(this.massOfWaste.toFixed(2)) : undefined,
 					label: 'Масса снимаемых отбросов за сутки, т/сут',
@@ -447,42 +452,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderGrateResult(this.grateResult, {isGeneralResult: false, title: NULLSTR});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитныех сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderGrateResult(this.grateResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -504,7 +474,10 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 						type === GrateTypes.hand ?
 							<div className={'count-title'}>Ручная очистка</div> :
 							<div className={'count-title'}>Решетки-дробилки</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -547,10 +520,7 @@ export function selectValueFromDiapasonOfFilteredArray(
 
 export function renderGrateResult(
 	grateResult: GrateResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!grateResult) {
 		return null;
@@ -567,14 +537,8 @@ export function renderGrateResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-						<tr>
-							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-							<td className={'right-title-column'}></td>
-						</tr>
-						<TableRow value={deviceType} label={'Тип'} />
-						</>
+					{isGeneralResult
+						? <TableRow value={deviceType} label={'Тип'} />
 						: null}
 					{grateResult.deviceType === GrateTypes.hand
 						? <>
@@ -614,4 +578,52 @@ export function renderGrateResult(
 			</Table>
 		</div>
 	);
+}
+
+// Отрисовка кнопки расчета
+export function renderCheckingButton(
+	clearPage: () => void,
+	isInputReadyToCounting: () => boolean,
+	resultCounting: () => void) {
+	const isNotReadyToCount = !isInputReadyToCounting();
+	return (
+		<div className='bottom-btn-bar'>
+			{isNotReadyToCount
+			? <button className={'btn btn-primary not-active-btn'} disabled>
+					Показать результаты данной выборки
+				</button>
+			: <button className={'btn btn-primary'} onClick={() => resultCounting()}>
+					Показать результаты данной выборки
+				</button>}
+			{resetData(clearPage)}
+		</div>
+	);
+}
+// Отрисовка кнопки очистки
+export function resetData(clearPage: () => void) {
+	return <button className={'btn btn-danger'}
+		title={'Очистить входные данные'}
+		onClick={() => clearPage()}>
+		<span className='space-between-text-image'>Очистить входные данные</span>
+		<i className={'far fa-trash-alt'}></i>
+	</button>;
+}
+// Отрисовка toolbar с кнопками возврата в начало расчета и переход к результатам
+export function renderToolbar(
+	returnToScheme: () => void,
+	goToResult: () => void,
+) {
+	return <div className={'device-count-toolbar'}>
+		<button className={'btn btn-primary space-between-text-image'} title={'Изменить расчетную схему'}
+			onClick={returnToScheme}>
+			<span className='space-between-text-image'>Изменить расчетную схему</span>
+			<i className={'fas fa-reply'}></i>
+		</button>
+		<button className={'merge-result btn btn-success'}
+			onClick={goToResult}
+			title={'Cводная схема очиcтных сооружений'}>
+			<span className='space-between-text-image'>Cводная схема очиcтных сооружений</span>
+			<i className={'fas fa-trophy'}></i>
+		</button>
+	</div>;
 }

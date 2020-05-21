@@ -81,54 +81,34 @@ export class GeneralComponent extends React.Component<{}, State> {
 
 	private renderDevicesList = () => {
 		const list = listOfDevices.map((device, index) => {
-			return <Card>
-				<Accordion.Toggle eventKey={`${index}`}>
-					<div style={{ display: 'flex', justifyContent: 'space-between' }}>
-						<Form key={`${device.key}-${index}`}>
-							<Form.Check className={'checkbox'}
-								id={`${device.key}-${index}`}
-								custom type={'checkbox'}
-								label={device.name}
-								onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-									this.selectDevice(event, device);
-								}}>
-							</Form.Check>
-						</Form>
-						<div>{device.selected ? <i className={'fas fa-caret-down'}></i> : undefined}</div>
-					</div>
-				</Accordion.Toggle>
-				{
-					device.selected ?
+			return (
+				<Accordion key={`${index}`}>
+					<Card>
+						<Accordion.Toggle eventKey={`${index}`} className={`${device.selected ? 'toggle-after-select' : ''}`}>
+							<div className='accordion-toggle'>
+								<span>{device.name}</span>
+								{device.selected
+									? <div><i className={'fas fa-check'}></i></div>
+									: <div><i className={'fas fa-caret-down'}></i></div>}
+							</div>
+						</Accordion.Toggle>
 						<Accordion.Collapse eventKey={`${index}`}>
 							<Card.Body>{this.typeList(device)}</Card.Body>
-						</Accordion.Collapse> :
-						null
-				}
-
-			</Card>;
+						</Accordion.Collapse>
+					</Card>
+				</Accordion>
+			);
 		});
 		return <Container>
 			<Row className={'justify-content-md-center general-container'}>
 				<Col xs lg='12'>
 					<h4 className={'general-title'}>
-						Выберите очистные сооружения для расчетный схемы (отметка галочкой)
+						Выберите очистные сооружения для расчетный схемы
 					</h4>
-					<Accordion>{list}</Accordion>
+					{list}
 				</Col>
 			</Row>
 		</Container>;
-	}
-
-	private selectDevice = (event: React.ChangeEvent<HTMLInputElement>, device: Device) => {
-		let { deviceWatcher } = this.state;
-		device.ref = event.target;
-		if (event.target.checked) {
-			device.selected = true;
-		} else {
-			device.selected = false;
-			device.selectedType = { iri: undefined, key: undefined, name: '' };
-		}
-		this.setState({ deviceWatcher: deviceWatcher++ });
 	}
 
 	private typeList = (device: Device) => {
@@ -136,8 +116,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const minValueOfDailyWaterFlow = Math.min(...device.listOfTypes.map(type => type.minDailyWaterFlow));
 		const maxValueOfDailyWaterFlow = Math.max(...device.listOfTypes.map(type => type.maxDailyWaterFlow));
 		const errorOfMinWaterFlow = new Error('Суточный расход воды слишком мал/велик, и использование данного оборудования нецелесообразно');
-		if (device.selected) {
-			return <div>
+		return (
+			<div>
 				{(device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
 					&& dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow)
 					? <ErrorAlert errorValue={errorOfMinWaterFlow} />
@@ -156,7 +136,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 								}
 							}
 							return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
-								<input ref={radio => type.ref = radio} type={'radio'}
+								<input ref={checkbox => type.ref = checkbox} type={'checkbox'}
 									onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
 										this.selectType(event, device, type);
 									}} />
@@ -164,10 +144,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 							</label>;
 						})}
 					</div>}
-			</div>;
-		} else {
-			return null;
-		}
+			</div>
+		);
 	}
 
 	private selectType = (event: React.ChangeEvent<HTMLInputElement>, device: Device, type: DeviceType) => {
@@ -181,9 +159,11 @@ export class GeneralComponent extends React.Component<{}, State> {
 		};
 		if (event.target.checked) {
 			clearTypesExceptCurrent(device.listOfTypes);
+			device.selected = true;
 			device.selectedType = { iri: type.iri, key: type.key, name: type.name };
 			this.updateDiagram();
 		} else {
+			device.selected = false;
 			device.selectedType = { iri: undefined, key: undefined, name: '' };
 		}
 		this.setState({ deviceWatcher: deviceWatcher++ });
@@ -193,22 +173,23 @@ export class GeneralComponent extends React.Component<{}, State> {
 		return <Container>
 			<Row className={'justify-content-md-center general-container'} style={{ flexDirection: 'row' }}>
 				<Col xs lg='6'>
-					<InputTemplate title={'Секундный максимальный расход, м3/с'}
-						placeholder={'Введите секундный максимальный расход...'}
+					<InputTemplate title={'Максимальный секундный расход сточной воды, м³/с'}
+						placeholder={'Введите максимальный секундный расход...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.maxSecondFlowRef = input; }}
 						onInput={(value) => { this.setState({ secondMaxFlow: value }); }} />
 				</Col>
 				<Col xs lg='6'>
-					<InputTemplate title={`Суточный расход воды, м3/сут, диапазон [0 - 1000000]`}
+					<InputTemplate title={`Суточный расход воды, м³/сут`}
 						placeholder={'Введите суточный расход воды...'}
-						range={{ minValue: 0, maxValue: 1000000 }}
+						range={{ minValue: 0, maxValue: Infinity }}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
 						onInput={(value) => {
 							listOfDevices.forEach(device => {
 								if (device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) {
 									device.selectedType = undefined;
+									device.selected = false;
 									device.listOfTypes.forEach(type => {
 										if (type.ref) { type.ref.checked = false; }
 									});
@@ -532,7 +513,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const { countMode, resultMode } = this.state;
 		return <div>
 			<Navbar bg='primary' variant='dark'>
-				<Navbar.Brand onClick={this.onStartPage}>Расчет очистных сооружений</Navbar.Brand>
+				<Navbar.Brand className='app-title' onClick={this.onStartPage}>
+					Подбор оборудования механической очистки сточных вод
+				</Navbar.Brand>
 			</Navbar>
 			{
 				countMode

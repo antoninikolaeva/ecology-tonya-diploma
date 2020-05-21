@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { SandTrapTypes } from '../general-resources';
+import { SandTrapTypes, KindOfDevices } from '../general-resources';
 import {
 	InputTemplate,
 	labelTemplate,
@@ -13,7 +13,7 @@ import { SandTrapSource } from './sandTrap-resources';
 import { Table } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
 import { SandTrapResultData, dataModel } from '../data-model';
-import { selectValueFromDiapasonOfFilteredArray } from '../grate/grate';
+import { selectValueFromDiapasonOfFilteredArray, renderCheckingButton, renderToolbar } from '../grate/grate';
 
 export interface SandTrapProps {
 	secondMaxFlow: number;
@@ -167,7 +167,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -204,7 +204,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				: null}
 
 			{(type === SandTrapTypes.tangential || type === SandTrapTypes.vertical)
-				? <InputTemplate title={`Нагрузка на песколовку по воде при максимальном притоке, м3/(м2*ч),
+				? <InputTemplate title={`Нагрузка на песколовку по воде при максимальном притоке, м³/(м²*ч),
 					диапазон[${type === SandTrapTypes.tangential
 						? SandTrapSource.sandTrapPressureMinTangential
 						: SandTrapSource.sandTrapPressureMinVertical} - ${SandTrapSource.sandTrapPressureMax}]`}
@@ -258,7 +258,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				: null}
 
 			{(type === SandTrapTypes.horizontalForward)
-				? <InputTemplate title={`Минимальный секундный расход сточных вод, м3/c, диапазон [0 - ${secondMaxFlow}]`}
+				? <InputTemplate title={`Минимальный секундный расход сточных вод, м³/c, диапазон [0 - ${secondMaxFlow}]`}
 					placeholder={'Введите минимальный секундный расход...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					range={{ minValue: 0, maxValue: secondMaxFlow }}
@@ -286,7 +286,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				range={{ minValue: 0, maxValue: Infinity }}
 				onInputRef={(input) => { this.middleValueBPK5Ref = input; }}
 				onInput={(value) => { this.setState({ middleValueBPK5: value }); }} />
-			<InputTemplate title={`Среднегодовой объем сточных вод, м3`}
+			<InputTemplate title={`Среднегодовой объем сточных вод, м³`}
 				placeholder={'Введите среднегодовой объем...'}
 				onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 				range={{ minValue: dailyWaterFlow, maxValue: Infinity }}
@@ -312,7 +312,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 						range={{ minValue: SandTrapSource.sandLayerHeightMin, maxValue: SandTrapSource.sandLayerHeightMax }}
 						onInputRef={(input) => { this.sandLayerHeightRef = input; }}
 						onInput={(value) => { this.setState({ sandLayerHeight: value }); }} />
-					<InputTemplate title={`Интесивность аэрации, м3/(м2/ч),
+					<InputTemplate title={`Интесивность аэрации, м³/(м²/ч),
 						диапазон [${SandTrapSource.aeratedIntensiveMin} - ${SandTrapSource.aeratedIntensiveMax}]`}
 						placeholder={'Введите интесивность аэрации...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -322,7 +322,11 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				</>
 				: null}
 
-			{this.renderCheckingButton()}
+			{renderCheckingButton(
+				this.clearPage,
+				this.isInputReadyToCounting,
+				this.resultCounting,
+			)}
 		</div>;
 	}
 
@@ -398,6 +402,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		const { type } = this.props;
 		const { sandTrapDeep } = this.state;
 		this.sandTrapResult = {
+			type: KindOfDevices.sandTrap,
 			complete: true,
 			deviceType: type,
 			amountOfSandTrapSection: {value: this.amountOfSandTrapSection, label: 'Количество отделений песколовки, шт'},
@@ -416,7 +421,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				},
 				volumeOfSandTrapSection: {
 					value: this.volumeOfSandTrapSection ? Number(this.volumeOfSandTrapSection.toFixed(3)) : undefined,
-					label: 'Объем бункера одного отделения песколовки, м3'
+					label: 'Объем бункера одного отделения песколовки, м³'
 				},
 				deepSandTrapSection: {
 					value: this.deepSandTrapSection ? Number(this.deepSandTrapSection.toFixed(3)) : undefined,
@@ -442,7 +447,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				},
 				volumeOfSandTrapSection: {
 					value: this.volumeOfSandTrapSection ? Number(this.volumeOfSandTrapSection.toFixed(3)) : undefined,
-					label: 'Объем бункера одного отделения песколовки, м3'
+					label: 'Объем бункера одного отделения песколовки, м³'
 				},
 			},
 			tangentialOrVertical: {
@@ -488,7 +493,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				},
 				generalAirFlow: {
 					value: this.generalAirFlow ? Number(this.generalAirFlow.toFixed(3)) : undefined,
-					label: 'Общий расход воздуха для аэрирования, м3/ч'
+					label: 'Общий расход воздуха для аэрирования, м³/ч'
 				},
 			}
 		}
@@ -642,42 +647,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderSandTrapResult(this.sandTrapResult, {isGeneralResult: false, title: NULLSTR});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитныех сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderSandTrapResult(this.sandTrapResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -703,7 +673,10 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 								type === SandTrapTypes.tangential ?
 									<div className={'count-title'}>Тангенциальные</div> :
 									<div className={'count-title'}>Аэрируемые</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -723,10 +696,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 
 export function renderSandTrapResult(
 	sandTrapResult: SandTrapResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!sandTrapResult) {
 		return null;
@@ -748,14 +718,8 @@ export function renderSandTrapResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-							<tr>
-								<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-								<td className={'right-title-column'}></td>
-							</tr>
-							<TableRow value={deviceType} label={'Тип'} />
-						</>
+					{isGeneralResult
+						? <TableRow value={deviceType} label={'Тип'} />
 						: null}
 					<TableRow value={sandTrapResult.amountOfSandTrapSection.value} label={sandTrapResult.amountOfSandTrapSection.label} />
 					{sandTrapResult.deviceType === SandTrapTypes.horizontalForward

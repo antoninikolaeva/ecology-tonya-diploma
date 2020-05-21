@@ -1,11 +1,12 @@
 import * as React from 'react';
-import { OilTrapTypes } from '../general-resources';
+import { OilTrapTypes, KindOfDevices } from '../general-resources';
 import { labelTemplate, NULLSTR, InputTemplate, resetSelectToDefault, ItemList, SelectTemplate, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, OilTrapResultData } from '../data-model';
 import { OilTrapSource } from './oilTrap-resource';
 import { selectValueFromDiapason } from '../sump/sump';
 import { ErrorAlert } from '../error/error';
+import { renderCheckingButton, renderToolbar } from '../grate/grate';
 
 export interface OilTrapProps {
 	secondMaxFlow: number;
@@ -113,6 +114,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		const {type} = this.props;
 		const {amountOfSection} = this.state;
 		this.oilTrapResult = {
+			type: KindOfDevices.oilTrap,
 			complete: true,
 			deviceType: type,
 			amountOfSection: {value: amountOfSection, label: 'Количество секций, шт'},
@@ -122,11 +124,11 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			},
 			amountOfSediment: {
 				value: this.amountOfSediment ? Number(this.amountOfSediment.toFixed(3)) : undefined,
-				label: 'Количество осадка, м3/сут'
+				label: 'Количество осадка, м³/сут'
 			},
 			amountOfOilProduct: {
 				value: this.amountOfOilProduct ? Number(this.amountOfOilProduct.toFixed(3)) : undefined,
-				label: 'Количество нефтепродуктов, м3/сут'
+				label: 'Количество нефтепродуктов, м³/сут'
 			},
 			horizontal: {
 				widthSectionResult: {
@@ -155,7 +157,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -270,7 +272,11 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 						onInput={(value) => { this.setState({ borderHeight: value }); }} />
 					: null}
 
-				{this.renderCheckingButton()}
+				{renderCheckingButton(
+					this.clearPage,
+					this.isInputReadyToCounting,
+					this.resultCounting,
+				)}
 			</>
 		);
 	}
@@ -335,42 +341,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderOilTrapResult(this.oilTrapResult, {isGeneralResult: false, title: NULLSTR});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитныех сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderOilTrapResult(this.oilTrapResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -390,7 +361,10 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					{type === OilTrapTypes.horizontal ?
 						<div className={'count-title'}>Горизонтальные</div> :
 						<div className={'count-title'}>Радиальные</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -409,10 +383,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 
 export function renderOilTrapResult(
 	oiltrapResult: OilTrapResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!oiltrapResult) {
 		return null;
@@ -424,14 +395,8 @@ export function renderOilTrapResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-							<tr>
-								<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-								<td className={'right-title-column'}></td>
-							</tr>
-							<TableRow value={deviceType} label={'Тип'} />
-						</>
+					{isGeneralResult
+						? <TableRow value={deviceType} label={'Тип'} />
 						: null}
 					<TableRow value={oiltrapResult.amountOfSection.value} label={oiltrapResult.amountOfSection.label} />
 					<TableRow value={oiltrapResult.oilTrapDeep.value} label={oiltrapResult.oilTrapDeep.label} />

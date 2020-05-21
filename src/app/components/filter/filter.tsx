@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { FilterTypes } from '../general-resources';
+import { FilterTypes, KindOfDevices } from '../general-resources';
 import {
 	labelTemplate, NULLSTR, InputTemplate, ItemList, SelectTemplate, resetSelectToDefault, TableRow
 } from '../utils';
@@ -7,6 +7,7 @@ import { Table } from 'react-bootstrap';
 import { dataModel, FilterResultData } from '../data-model';
 import { FilterSource } from './filter-resource';
 import { ErrorAlert } from '../error/error';
+import { renderCheckingButton, renderToolbar } from '../grate/grate';
 
 export interface FilterProps {
 	secondMaxFlow: number;
@@ -173,6 +174,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		filterCyclePeriod?: number,
 	) => {
 		this.filterResult = {
+			type: KindOfDevices.filter,
 			complete: true,
 			deviceType: this.isGrainy
 			? FilterSource.FilterGlobalTypes.grainy
@@ -195,16 +197,16 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 				amountOfFilters: {value: this.amountOfFilterSection, label: 'Число секций фильтров, шт'},
 				commonFilterSquare: {
 					value: this.filterSquare ? Number(this.filterSquare.toFixed(3)) : undefined,
-					label: 'Общая площадь фильтров, м2'
+					label: 'Общая площадь фильтров, м²'
 				},
 				countingWaterFlow: {
 					value: this.countingWaterFlow ? Number(this.countingWaterFlow.toFixed(3)) : undefined,
-					label: 'Расчетный расход сточной воды подаваемой на фильтры, м3/сут'
+					label: 'Расчетный расход сточной воды подаваемой на фильтры, м³/сут'
 				},
 				filterCyclePeriod: {value: filterCyclePeriod, label: 'Продолжительность фильтроцикла, ч'},
 				filterSectionSquare: {
 					value: this.filterSectionSquare ? Number(this.filterSectionSquare.toFixed(3)) : undefined,
-					label: 'Площадь каждой секции, м2'
+					label: 'Площадь каждой секции, м²'
 				},
 				forcedWaterSpeed: {
 					value: this.forcedWaterSpeed ? Number(this.forcedWaterSpeed.toFixed(3)) : undefined,
@@ -215,9 +217,9 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 					t1: {value: onlyGrainy.t1, label: 'Продолжительность начального взрыхления, мин'},
 					t2: {value: onlyGrainy.t2, label: 'Продолжительность промывки(t2), мин'},
 					t3: {value: onlyGrainy.t3, label: 'Продолжительность промывки(t3), мин'},
-					w1: {value: onlyGrainy.w1, label: 'Интенсивность начального взрыхления верхнего слоя, л/(с*м2)'},
-					w2: {value: onlyGrainy.w2, label: 'Интенсивность промывки водой(w2), л/(с*м2)'},
-					w3: {value: onlyGrainy.w3, label: 'Интенсивность промывки водой(w3), л/(с*м2)'},
+					w1: {value: onlyGrainy.w1, label: 'Интенсивность начального взрыхления верхнего слоя, л/(с*м²)'},
+					w2: {value: onlyGrainy.w2, label: 'Интенсивность промывки водой(w2), л/(с*м²)'},
+					w3: {value: onlyGrainy.w3, label: 'Интенсивность промывки водой(w3), л/(с*м²)'},
 				},
 			},
 			microFilter: {
@@ -225,11 +227,11 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 				amountOfMicroFilters: {value: this.amountOfFilterSection, label: 'Количество микрофильтров, шт'},
 				commonFilterSquare: {
 					value: this.filterSquare ? Number(this.filterSquare.toFixed(3)) : undefined,
-					label: 'Площадь фильтрующей поверхности микрофильтра, м2'
+					label: 'Площадь фильтрующей поверхности микрофильтра, м²'
 				},
 				dailyAmountOfWasteWater: {
 					value: this.dailyAmountOfWasteWater ? Number(this.dailyAmountOfWasteWater.toFixed(3)) : undefined,
-					label: 'Суточное количество промывной воды, м3/сут'
+					label: 'Суточное количество промывной воды, м³/сут'
 				},
 				microFilter: this.currentMicroFilter,
 			},
@@ -238,7 +240,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 				amountOfDrumNets: {value: this.amountOfFilterSection, label: 'Количество барабанных сеток, шт'},
 				dailyAmountOfWasteWater: {
 					value: this.dailyAmountOfWasteWater ? Number(this.dailyAmountOfWasteWater.toFixed(3)) : undefined,
-					label: 'Суточное количество промывной воды, м3/сут'
+					label: 'Суточное количество промывной воды, м³/сут'
 				},
 				drumNet: this.currentDrumNet,
 			}
@@ -251,7 +253,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -453,7 +455,11 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 				</>
 			: null}
 
-				{this.renderCheckingButton()}
+				{renderCheckingButton(
+					this.clearPage,
+					this.isInputReadyToCounting,
+					this.resultCounting,
+				)}
 			</>
 		);
 	}
@@ -734,42 +740,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderFilterResult(this.filterResult, {isGeneralResult: false, title: NULLSTR});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитных сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderFilterResult(this.filterResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -787,7 +758,10 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			<>
 				<div className={'title-container'}>
 					<div className={'count-title'}>Типовой фильтр</div>
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -806,10 +780,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 
 export function renderFilterResult(
 	filterResult: FilterResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!filterResult) {
 		return null;
@@ -823,22 +794,16 @@ export function renderFilterResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-						<tr>
-							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-							<td className={'right-title-column'}></td>
-						</tr>
-						<TableRow value={
+					{isGeneralResult
+						? <TableRow value={
 							filterResult.deviceType === FilterSource.FilterGlobalTypes.grainy
-							? 'Зернистый фильтр'
-							: filterResult.deviceType === FilterSource.FilterGlobalTypes.swimLoad
-								? 'С плавающей загрузкой'
-								: filterResult.deviceType === FilterSource.FilterGlobalTypes.microFilter
-									? 'Микрофильтр'
-									: 'Барабанные сетки'
+								? 'Зернистый фильтр'
+								: filterResult.deviceType === FilterSource.FilterGlobalTypes.swimLoad
+									? 'С плавающей загрузкой'
+									: filterResult.deviceType === FilterSource.FilterGlobalTypes.microFilter
+										? 'Микрофильтр'
+										: 'Барабанные сетки'
 						} label={'Тип'} />
-						</>
 						: null}
 					<TableRow value={common.levelOfSubstanceClean.value} label={common.levelOfSubstanceClean.label} />
 					<TableRow value={common.levelOfBPKClean.value} label={common.levelOfBPKClean.label} />
@@ -869,7 +834,7 @@ export function renderFilterResult(
 					{filterResult.deviceType === FilterSource.FilterGlobalTypes.microFilter
 						? <>
 							<TableRow value={micro.microFilter.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
-							<TableRow value={micro.microFilter.performance} label={'Производительность, м3/сут'} />
+							<TableRow value={micro.microFilter.performance} label={'Производительность, м³/сут'} />
 							<TableRow value={micro.commonFilterSquare.value} label={micro.commonFilterSquare.label} />
 							<TableRow value={micro.amountOfMicroFilters.value} label={micro.amountOfMicroFilters.label} />
 							<TableRow value={micro.amountOfAdditionalFilters.value} label={micro.amountOfAdditionalFilters.label} />
@@ -879,7 +844,7 @@ export function renderFilterResult(
 					{filterResult.deviceType === FilterSource.FilterGlobalTypes.drumNets
 						? <>
 							<TableRow value={drumNet.drumNet.label} label={'Марка микрофильтра из типа МФБ, по типоразмеру'} />
-							<TableRow value={drumNet.drumNet.performance} label={'Производительность, м3/сут'} />
+							<TableRow value={drumNet.drumNet.performance} label={'Производительность, м³/сут'} />
 							<TableRow value={drumNet.amountOfDrumNets.value} label={drumNet.amountOfDrumNets.label} />
 							<TableRow value={drumNet.amountOfAdditionalFilters.value} label={drumNet.amountOfAdditionalFilters.label} />
 							<TableRow value={drumNet.dailyAmountOfWasteWater.value} label={drumNet.dailyAmountOfWasteWater.label} />

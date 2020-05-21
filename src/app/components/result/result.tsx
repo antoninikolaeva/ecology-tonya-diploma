@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Table, Container, Row, Col } from 'react-bootstrap';
+import { Table, Container, Row, Col, Accordion, Card } from 'react-bootstrap';
 import {
 	GrateResultData,
 	SandTrapResultData,
@@ -22,7 +22,7 @@ import { renderGrateResult } from '../grate/grate';
 import { renderOilTrapResult } from '../oilTrap/oilTrap';
 import { renderSandTrapResult } from '../sandTrap/sandTrap';
 import { renderSumpResult } from '../sump/sump';
-import { GrateTypes, SandTrapTypes, SumpTypes, AverageTypes, OilTrapTypes, CentrifugeTypes } from '../general-resources';
+import { GrateTypes, SandTrapTypes, SumpTypes, AverageTypes, OilTrapTypes, CentrifugeTypes, KindOfDevices } from '../general-resources';
 import { ElementIri } from '../ontodia/dataProvider';
 import { GrateSource } from '../grate/grate-resources';
 import { FilterSource } from '../filter/filter-resource';
@@ -64,53 +64,63 @@ export class GeneralResult extends React.Component<{}, {}> {
 		this.centrifugeResult = dataModel.getCentrifugeResult();
 	}
 
-	private renderGrate = () => {
-		if (!this.grateResult.complete) {
+	private renderAccordion = (
+		deviceCompletion: boolean,
+		titleConfig: {isGeneralResult: boolean; title: string },
+		deviceResult: GrateResultData | SandTrapResultData | SumpResultData |
+			AverageResultData | OilTrapResultData | FilterResultData | CentrifugeResultData,
+	) => {
+		if (!deviceCompletion) {
 			return null;
 		}
-		return renderGrateResult(this.grateResult, {isGeneralResult: true, title: 'Решетка'});
+		return (
+			<Accordion>
+				<Card>
+					<Accordion.Toggle eventKey='0'>
+						<div className='accordion-toggle'>
+							<span className='table-result-title'>{titleConfig.title}</span>
+							<div><i className={'fas fa-caret-down'}></i></div>
+						</div>
+					</Accordion.Toggle>
+					<Accordion.Collapse eventKey='0'>
+						<Card.Body>{this.renderDeviceResult(deviceCompletion, deviceResult, titleConfig.isGeneralResult)}</Card.Body>
+					</Accordion.Collapse>
+				</Card>
+			</Accordion>
+		);
 	}
 
-	private renderSandTrap = () => {
-		if (!this.sandTrapResult.complete) {
+	private renderDeviceResult = (
+		deviceCompletion: boolean,
+		deviceResult: GrateResultData | SandTrapResultData | SumpResultData |
+			AverageResultData | OilTrapResultData | FilterResultData | CentrifugeResultData,
+		isGeneralResult: boolean,
+	) => {
+		if (!deviceCompletion) {
 			return null;
 		}
-		return renderSandTrapResult(this.sandTrapResult, {isGeneralResult: true, title: 'Песколовка'});
-	}
-
-	private renderSump = () => {
-		if (!this.sumpResult.complete) {
-			return null;
-		}
-		return renderSumpResult(this.sumpResult, {isGeneralResult: true, title: 'Отстойник'});
-	}
-
-	private renderAverage = () => {
-		if (!this.averageResult.complete) {
-			return null;
-		}
-		return renderAverageResult(this.averageResult, {isGeneralResult: true, title: 'Усреднитель'});
-	}
-
-	private renderOilTrap = () => {
-		if (!this.oilTrapResult.complete) {
-			return null;
-		}
-		return renderOilTrapResult(this.oilTrapResult, {isGeneralResult: true, title: 'Нефтеловушка'});
-	}
-
-	private renderFilters = () => {
-		if (!this.filterResult.complete) {
-			return null;
-		}
-		return renderFilterResult(this.filterResult, {isGeneralResult: true, title: 'Фильтр'});
-	}
-
-	private renderCentrifuges = () => {
-		if (!this.centrifugeResult.complete) {
-			return null;
-		}
-		return renderCentrifugeResult(this.centrifugeResult, {isGeneralResult: true, title: 'Центрифуги и гидроциклоны'});
+		const grate = KindOfDevices.grate === deviceResult.type
+			? renderGrateResult(deviceResult as GrateResultData, isGeneralResult)
+			: null;
+		const sandTrap = KindOfDevices.sandTrap === deviceResult.type
+			? renderSandTrapResult(deviceResult as SandTrapResultData, isGeneralResult)
+			: null;
+		const sump = KindOfDevices.sump === deviceResult.type
+			? renderSumpResult(deviceResult as SumpResultData, isGeneralResult)
+			: null;
+		const average = KindOfDevices.average === deviceResult.type
+			? renderAverageResult(deviceResult as AverageResultData, isGeneralResult)
+			: null;
+		const oilTrap = KindOfDevices.oilTrap === deviceResult.type
+			? renderOilTrapResult(deviceResult as OilTrapResultData, isGeneralResult)
+			: null;
+		const filter = KindOfDevices.filter === deviceResult.type
+			? renderFilterResult(deviceResult as FilterResultData, isGeneralResult)
+			: null;
+		const centrifuge = KindOfDevices.centrifuge === deviceResult.type
+			? renderCentrifugeResult(deviceResult as CentrifugeResultData, isGeneralResult)
+			: null;
+		return grate || sandTrap || sump || average || oilTrap || filter || centrifuge;
 	}
 
 	private renderResultTable = () => {
@@ -118,19 +128,15 @@ export class GeneralResult extends React.Component<{}, {}> {
 			<Container>
 				<Row className={'justify-content-md-center general-container'}>
 					<Col xs lg='12'>
-					<div className={'table-result'}>
-						<Table bordered hover>
-							<tbody>
-								{this.renderGrate()}
-								{this.renderSandTrap()}
-								{this.renderSump()}
-								{this.renderAverage()}
-								{this.renderOilTrap()}
-								{this.renderFilters()}
-								{this.renderCentrifuges()}
-							</tbody>
-						</Table>
-					</div>
+						{this.renderAccordion(this.grateResult.complete, {isGeneralResult: true, title: 'Решетка'}, this.grateResult)}
+						{this.renderAccordion(this.sandTrapResult.complete, {isGeneralResult: true, title: 'Песколовка'}, this.sandTrapResult)}
+						{this.renderAccordion(this.sumpResult.complete, {isGeneralResult: true, title: 'Отстойник'}, this.sumpResult)}
+						{this.renderAccordion(this.averageResult.complete, {isGeneralResult: true, title: 'Усреднитель'}, this.averageResult)}
+						{this.renderAccordion(this.oilTrapResult.complete, {isGeneralResult: true, title: 'Нефтеловушка'}, this.oilTrapResult)}
+						{this.renderAccordion(this.filterResult.complete, {isGeneralResult: true, title: 'Фильтр'}, this.filterResult)}
+						{this.renderAccordion(
+							this.centrifugeResult.complete, {isGeneralResult: true, title: 'Центрифуги и гидроциклон'}, this.centrifugeResult
+						)}
 					</Col>
 				</Row>
 			</Container>

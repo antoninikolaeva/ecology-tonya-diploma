@@ -1,12 +1,13 @@
 import * as React from 'react';
 
-import { SumpTypes } from '../general-resources';
+import { SumpTypes, KindOfDevices } from '../general-resources';
 import { labelTemplate, InputTemplate, NULLSTR, SelectTemplate, ItemList, resetSelectToDefault, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';
 import { GrateSource } from '../grate/grate-resources';
 import { SumpResultData, dataModel } from '../data-model';
+import { renderCheckingButton, renderToolbar } from '../grate/grate';
 
 export interface SumpProps {
 	secondMaxFlow: number;
@@ -125,7 +126,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -194,8 +195,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					: null}
 
 				{type === SumpTypes.horizontal &&
-				this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.min &&
-				this.checkWorkingThreadSpeed < SumpSource.WorkingThreadSpeed.middle
+				this.checkWorkingThreadSpeed < SumpSource.WorkingThreadSpeed.min ||
+				this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.middle
 					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed},
 					должна быть в пределах диапазона ${SumpSource.WorkingThreadSpeed.min} - ${SumpSource.WorkingThreadSpeed.middle}.
 					Для урегулирования скорости измените рабочую глубину отстойника.`} />
@@ -315,7 +316,11 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					</>
 					: null}
 
-				{this.renderCheckingButton()}
+				{renderCheckingButton(
+					this.clearPage,
+					this.isInputReadyToCounting,
+					this.resultCounting,
+				)}
 			</>
 		);
 	}
@@ -355,6 +360,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		const {type} = this.props;
 		const {} = this.state;
 		this.sumpResult = {
+			type: KindOfDevices.sump,
 			complete: true,
 			deviceType: type,
 			highLightEffect: {
@@ -368,7 +374,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			},
 			sedimentAmountDaily: {
 				value: this.sedimentAmountDaily ? Number(this.sedimentAmountDaily.toFixed(3)) : undefined,
-				label: 'Количество осадка выделяемого при отстаивании за сутки, м3/сут'
+				label: 'Количество осадка выделяемого при отстаивании за сутки, м³/сут'
 			},
 			horizontal: {
 				sumpLength: {
@@ -377,7 +383,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 				},
 				oneSumpVolume: {
 					value: this.oneSumpVolume ? Number(this.oneSumpVolume.toFixed(3)) : undefined,
-					label: 'Вместимость приямника одного отстойника для сбора осадка, м3'
+					label: 'Вместимость приямника одного отстойника для сбора осадка, м³'
 				},
 				sedimentCleanPeriod: {
 					value: this.sedimentCleanPeriod ? Number(this.sedimentCleanPeriod.toFixed(3)) : undefined,
@@ -549,42 +555,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderSumpResult(this.sumpResult, {isGeneralResult: false, title: NULLSTR});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитныех сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderSumpResult(this.sumpResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -608,7 +579,10 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							type === SumpTypes.vertical ?
 								<div className={'count-title'}>Вертикальные</div> :
 								<div className={'count-title'}>Вертикальные отстойники с нисходяще-восходящим потоком</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -703,10 +677,7 @@ export function selectValueAliqout05(value: number) {
 
 export function renderSumpResult(
 	sumpResult: SumpResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!sumpResult) {
 		return null;
@@ -726,14 +697,8 @@ export function renderSumpResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-							<tr>
-								<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-								<td className={'right-title-column'}></td>
-							</tr>
-							<TableRow value={deviceType} label={'Тип'} />
-						</>
+					{isGeneralResult
+						? <TableRow value={deviceType} label={'Тип'} />
 						: null}
 					<TableRow value={sumpResult.highLightEffect.value} label={sumpResult.highLightEffect.label} />
 					<TableRow value={sumpResult.amountOfSection.value} label={sumpResult.amountOfSection.label} />

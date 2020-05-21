@@ -252,8 +252,8 @@ export class TableRow extends React.Component<TableRowContentProps, {}> {
 		}
 		return (
 			<tr className={rowClass}>
-				<td className={colClass}>{label}</td>
-				<td className={colClass}>{value}</td>
+				<td className={`${colClass} left-table-column`}>{label}</td>
+				<td className={`${colClass} right-table-column`}>{value}</td>
 			</tr>
 		);
 	}

@@ -1,9 +1,10 @@
 import { FilterSource } from './filter/filter-resource';
 import { CentrifugeSource } from './centrifuge/centrifuge-resource';
-import { CentrifugeTypes, AverageTypes, GrateTypes, OilTrapTypes, SandTrapTypes, SumpTypes } from './general-resources';
+import { CentrifugeTypes, AverageTypes, GrateTypes, OilTrapTypes, SandTrapTypes, SumpTypes, KindOfDevices } from './general-resources';
 import { AverageSource } from './average/average-resource';
 
 export interface GrateResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: GrateTypes;
 	mechanic: MechanicGrate;
@@ -12,6 +13,7 @@ export interface GrateResultData {
 }
 
 export interface SandTrapResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: SandTrapTypes;
 	amountOfSandTrapSection: {value: number; label: string};
@@ -22,6 +24,7 @@ export interface SandTrapResultData {
 }
 
 export interface SumpResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: SumpTypes;
 	highLightEffect: {value: number; label: string};
@@ -35,6 +38,7 @@ export interface SumpResultData {
 }
 
 export interface AverageResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: AverageTypes;
 	averageMechanismType: AverageSource.AverageMechanismType;
@@ -47,6 +51,7 @@ export interface AverageResultData {
 }
 
 export interface OilTrapResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: OilTrapTypes;
 	amountOfSection: {value: number; label: string};
@@ -58,6 +63,7 @@ export interface OilTrapResultData {
 }
 
 export interface FilterResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: FilterSource.FilterGlobalTypes;
 	levelOfSubstanceClean: {value: number; label: string};
@@ -68,6 +74,7 @@ export interface FilterResultData {
 }
 
 export interface CentrifugeResultData {
+	type: KindOfDevices;
 	complete: boolean;
 	deviceType: CentrifugeTypes;
 	openHydrocycloneType: CentrifugeSource.HydrocycloneOpenTypes;
@@ -91,6 +98,7 @@ export class GeneralDataModel {
 
 	private initDataModel() {
 		this.grateResult = {
+			type: KindOfDevices.grate,
 			complete: false,
 			deviceType: undefined,
 			hand: {
@@ -123,6 +131,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.sandTrapResult = {
+			type: KindOfDevices.sandTrap,
 			complete: false,
 			deviceType: undefined,
 			amountOfSandTrapSection: {value: undefined, label: undefined},
@@ -158,6 +167,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.sumpResult = {
+			type: KindOfDevices.sump,
 			complete: false,
 			deviceType: undefined,
 			highLightEffect: {value: undefined, label: undefined},
@@ -190,6 +200,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.averageResult = {
+			type: KindOfDevices.average,
 			complete: false,
 			deviceType: undefined,
 			averageMechanismType: undefined,
@@ -219,6 +230,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.oilTrapResult = {
+			type: KindOfDevices.oilTrap,
 			complete: false,
 			deviceType: undefined,
 			amountOfSection: {value: undefined, label: undefined},
@@ -236,6 +248,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.filterResult = {
+			type: KindOfDevices.filter,
 			complete: false,
 			deviceType: undefined,
 			levelOfSubstanceClean: {value: undefined, label: undefined},
@@ -274,6 +287,7 @@ export class GeneralDataModel {
 			}
 		};
 		this.centrifugeResult = {
+			type: KindOfDevices.centrifuge,
 			complete: false,
 			deviceType: undefined,
 			openHydrocycloneType: undefined,

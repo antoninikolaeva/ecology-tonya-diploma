@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { CentrifugeTypes } from '../general-resources';
+import { CentrifugeTypes, KindOfDevices } from '../general-resources';
 import { labelTemplate, resetSelectToDefault, NULLSTR, ItemList, SelectTemplate, InputTemplate, TableRow } from '../utils';
 import { Table } from 'react-bootstrap';
 import { dataModel, CentrifugeResultData } from '../data-model';
 import { CentrifugeSource } from './centrifuge-resource';
+import { renderToolbar, renderCheckingButton } from '../grate/grate';
 
 export interface CentrifugeProps {
 	secondMaxFlow: number;
@@ -99,6 +100,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		const { type } = this.props;
 		const { diameterHydrocyclone, currentOpenHydrocycloneType } = this.state;
 		this.centrifugeResult = {
+			type: KindOfDevices.centrifuge,
 			complete: true,
 			deviceType: type,
 			openHydrocycloneType: currentOpenHydrocycloneType,
@@ -112,11 +114,11 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 				diameterHydrocyclone: {value: diameterHydrocyclone, label: 'Диаметр гидроциклона, м'},
 				hydraulicPressure: {
 					value: this.hydraulicPressure ? Number(this.hydraulicPressure.toFixed(3)) : undefined,
-					label: 'Удельная гидравлическая нагрузка, м3/(м2/ч)'
+					label: 'Удельная гидравлическая нагрузка, м³/(м²/ч)'
 				},
 				performance: {
 					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
-					label: 'Производительность гидроциклона, м3/ч'
+					label: 'Производительность гидроциклона, м³/ч'
 				},
 			},
 			hPressure: {
@@ -125,14 +127,14 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 				currentPressureHydrocyclone: this.currentPressureHydrocyclone,
 				performance: {
 					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
-					label: 'Производительность гидроциклона, м3/ч'
+					label: 'Производительность гидроциклона, м³/ч'
 				},
 			},
 			centrifuge: {
 				amountOfCentrifuges: {value: this.amountOfDevice, label: 'Количество рабочих центрифуг, шт'},
 				performance: {
 					value: this.performance ? Number(this.performance.toFixed(3)) : undefined,
-					label: 'Производительность центрифуги, м3/ч'
+					label: 'Производительность центрифуги, м³/ч'
 				},
 				currentCentrifuge: this.currentCentrifuge,
 			}
@@ -145,7 +147,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		return <div>
 			<div className={'input-data-title'}>Входные данные</div>
 			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м3/сут', dailyWaterFlow)}
+			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
 		</div>;
 	}
 
@@ -275,7 +277,11 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 					</>
 					: null}
 
-				{this.renderCheckingButton()}
+				{renderCheckingButton(
+					this.clearPage,
+					this.isInputReadyToCounting,
+					this.resultCounting,
+				)}
 			</>
 		);
 	}
@@ -413,42 +419,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		if (!this.state.isResult) {
 			return;
 		}
-		return renderCentrifugeResult(this.centrifugeResult, {isGeneralResult: false, title: undefined});
-	}
-
-	// Отрисовка кнопки расчета
-	private renderCheckingButton = () => {
-		const isNotReadyToCount = !this.isInputReadyToCounting();
-		return isNotReadyToCount ? <button className={'btn btn-primary'} disabled>
-			Показать результаты данной выборки
-			</button> :
-			<button className={'btn btn-primary'} onClick={() => this.resultCounting()}>
-				Показать результаты данной выборки
-			</button>;
-	}
-
-	// Отрисовка кнопки очистки
-	private resetData = () => {
-		return <button className={'btn btn-danger'}
-			title={'Очистить входные данные'}
-			onClick={() => this.clearPage()}>
-			<i className={'far fa-trash-alt'}></i>
-		</button>;
-	}
-
-	private renderToolbar = () => {
-		return <div className={'device-count-toolbar'}>
-			<button className={'btn btn-primary'} title={'Изменить схему'}
-				onClick={this.returnToScheme}>
-				<i className={'fas fa-reply'}></i>
-			</button>
-			{this.resetData()}
-			<button className={'merge-result btn btn-success'}
-				onClick={this.goToResult}
-				title={'Cводная схема очитных сооружений'}>
-				<i className={'fas fa-trophy'}></i>
-			</button>
-		</div>;
+		return renderCentrifugeResult(this.centrifugeResult, false);
 	}
 
 	private returnToScheme = () => {
@@ -472,7 +443,10 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 							: type === CentrifugeTypes.continuous
 								? <div className={'count-title'}>Центрифуги непрерывного действия</div>
 								: <div className={'count-title'}>Центрифуги периодического действия</div>}
-					{this.renderToolbar()}
+					{renderToolbar(
+						this.returnToScheme,
+						this.goToResult,
+					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
@@ -491,10 +465,7 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 
 export function renderCentrifugeResult(
 	centrifugeResult: CentrifugeResultData,
-	generalResultConfig: {
-		isGeneralResult: boolean;
-		title: string;
-	},
+	isGeneralResult: boolean,
 ) {
 	if (!centrifugeResult) {
 		return null;
@@ -507,24 +478,17 @@ export function renderCentrifugeResult(
 		<div className={'table-result'}>
 			<Table bordered hover>
 				<tbody>
-					{generalResultConfig.isGeneralResult
-						? <>
-						<tr>
-							<td className={'input-label left-title-column'}>{generalResultConfig.title}</td>
-							<td className={'right-title-column'}></td>
-						</tr>
-						<TableRow value={
+					{isGeneralResult
+						? <TableRow value={
 							centrifugeResult.deviceType === CentrifugeTypes.opened
-							? 'Открытый гидроциклон'
-							: centrifugeResult.deviceType === CentrifugeTypes.pressure
-								? 'Напорный гидроциклон'
-								: centrifugeResult.deviceType === CentrifugeTypes.continuous
-									? 'Центрифуга непрерывного действия'
-									: 'Центрифуга периодического действия'
+								? 'Открытый гидроциклон'
+								: centrifugeResult.deviceType === CentrifugeTypes.pressure
+									? 'Напорный гидроциклон'
+									: centrifugeResult.deviceType === CentrifugeTypes.continuous
+										? 'Центрифуга непрерывного действия'
+										: 'Центрифуга периодического действия'
 						} label={'Тип'} />
-						</>
 						: null}
-
 					{centrifugeResult.deviceType === CentrifugeTypes.opened
 						? <>
 							<TableRow value={opened.coefficientProportion.value} label={opened.coefficientProportion.label} />
@@ -537,8 +501,13 @@ export function renderCentrifugeResult(
 							<TableRow value={'Определяется по скорости входа'} label={'Размер выпускного патрубка, м'} />
 							<TableRow value={opened.currentHydrocyclone.amountOfDropIn} label={'Количество впусков, шт'} />
 							<TableRow value={opened.currentHydrocyclone.angleOfConusPart} label={'Угол конической части, град'} />
-							<TableRow value={`${opened.currentHydrocyclone.angleConusDiaphragm[0]} -
-								${opened.currentHydrocyclone.angleConusDiaphragm[1]}`}
+							<TableRow value={opened.currentHydrocyclone.angleConusDiaphragm[0] && opened.currentHydrocyclone.angleConusDiaphragm[1]
+							? `${opened.currentHydrocyclone.angleConusDiaphragm[0]} - ${opened.currentHydrocyclone.angleConusDiaphragm[1]}`
+							: opened.currentHydrocyclone.angleConusDiaphragm[0]
+								? `${opened.currentHydrocyclone.angleConusDiaphragm[0]}`
+								: opened.currentHydrocyclone.angleConusDiaphragm[1]
+									? `${opened.currentHydrocyclone.angleConusDiaphragm[1]}`
+									: null}
 								label={'Угол конуса диафрагм, град'} />
 							{centrifugeResult.openHydrocycloneType === openHydType.conusAndCylinder
 								? <TableRow value={opened.currentHydrocyclone.diameterCentralHole[0]}
@@ -585,7 +554,7 @@ export function renderCentrifugeResult(
 							<TableRow value={centriguge.amountOfCentrifuges.value} label={centriguge.amountOfCentrifuges.label} />
 							<TableRow value={centriguge.currentCentrifuge.rotorDiameter} label={'Диаметр ротора, м'} />
 							<TableRow value={centriguge.currentCentrifuge.rotorLength} label={'Длина ротора, м'} />
-							<TableRow value={centriguge.currentCentrifuge.rotorVolume} label={'Объем ротора, м3'} />
+							<TableRow value={centriguge.currentCentrifuge.rotorVolume} label={'Объем ротора, м³'} />
 							<TableRow value={centriguge.currentCentrifuge.separateFactor} label={'Фактор разделения'} />
 						</>
 						: null}

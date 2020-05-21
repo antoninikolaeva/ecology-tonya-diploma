@@ -1,3 +1,7 @@
+.app-title {
+    cursor: pointer;
+}
+
 .general-container {
     display: flex;
     flex-direction: column;
@@ -102,6 +106,15 @@
     outline: none;
 }
 
+/* Accordion style */
+.accordion-toggle {
+    display: flex;
+    justify-content: space-between;
+}
+.toggle-after-select {
+    background-color: green !important;
+}
+
 /* Table hacking */
 .table-result {
     margin: 1rem 0;
@@ -183,4 +196,30 @@
 .table {
     background-color: white;
 }
+.left-table-column {
+    width: 50%;
+    text-align: left;
+    font-weight: 600;
+    font-size: 1.1rem;
+}
+.right-table-column {
+    width: 50%;
+    text-align: center;
+    font-size: 1.1rem;
+}
+.table-result-title {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
 
+/* control-button for data manipulate in the each device */
+.bottom-btn-bar {
+    display: flex;
+    justify-content: space-between;
+}
+.space-between-text-image {
+    margin-right: 0.5rem;
+}
+.not-active-btn {
+    cursor: not-allowed;
+}
