@@ -19,6 +19,8 @@ import { FilterComponent } from './filter/filter';
 import { CentrifugeComponent } from './centrifuge/centrifuge';
 import { dataModel } from './data-model';
 
+import { Link } from 'react-router-dom';
+
 interface State {
 	deviceWatcher: number;
 	secondMaxFlow: number;
@@ -513,6 +515,9 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const { countMode, resultMode } = this.state;
 		return <div>
 			<Navbar bg='primary' variant='dark'>
+				<Link to={'/'}>
+					<div className='base-image'></div>
+				</Link>
 				<Navbar.Brand className='app-title' onClick={this.onStartPage}>
 					Подбор оборудования механической очистки сточных вод
 				</Navbar.Brand>

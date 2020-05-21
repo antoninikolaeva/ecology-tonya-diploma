@@ -1,11 +1,12 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import { GeneralComponent } from './app/components/general';
+import { RouterComponent } from './app/components/router';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
 import '../assets/styles/style.css';
 
+
 ReactDOM.render(
-	<GeneralComponent />,
+	<RouterComponent />,
 	document.getElementById('root')
 );

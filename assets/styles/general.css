@@ -223,3 +223,10 @@
 .not-active-btn {
     cursor: not-allowed;
 }
+
+.base-image {
+    width: 80px;
+    height: 80px;
+    background-image: url(../images/devices/2.svg);
+    background-size: cover;
+}
