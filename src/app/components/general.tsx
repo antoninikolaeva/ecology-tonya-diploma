@@ -514,13 +514,15 @@ export class GeneralComponent extends React.Component<{}, State> {
 	render() {
 		const { countMode, resultMode } = this.state;
 		return <div>
-			<Navbar bg='primary' variant='dark'>
-				<Link to={'/'}>
-					<div className='base-image'></div>
-				</Link>
-				<Navbar.Brand className='app-title' onClick={this.onStartPage}>
-					Подбор оборудования механической очистки сточных вод
-				</Navbar.Brand>
+			<Navbar bg='primary' variant='dark' className='title-navbar'>
+				<div className='intro-navbar-counting'>
+					<Link to={'/'} className='link-to-start'>
+						<div onClick={this.onStartPage} className='base-image' title='Вернуться на главную страницу'></div>
+					</Link>
+					<Navbar.Brand className='app-title' onClick={this.onStartPage}>
+						Подбор оборудования механической очистки сточных вод
+					</Navbar.Brand>
+				</div>
 			</Navbar>
 			{
 				countMode

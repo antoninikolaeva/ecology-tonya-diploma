@@ -1,5 +1,10 @@
 .app-title {
     cursor: pointer;
+    color: #fff;
+    display: flex;
+    align-self: center;
+    padding: 1rem;
+    font-size: 2rem;
 }
 
 .general-container {
@@ -112,7 +117,7 @@
     justify-content: space-between;
 }
 .toggle-after-select {
-    background-color: green !important;
+    background-color: #7eb7bd !important;
 }
 
 /* Table hacking */
@@ -156,7 +161,7 @@
 .device-tabs-container .nav.nav-tabs {
     display: flex;
     padding-top: 1rem;
-    background-color: #f3f3f3;
+    background-color: #e3e3e3;
 }
 .device-tabs-container .nav.nav-tabs a.nav-item.nav-link {
     display: flex;
@@ -181,7 +186,7 @@
 }
 .accordion .card button{
     padding: 0.5rem;
-    background-color: #b8ffe7;
+    background-color: #d7e9eb;
     outline: none;
     border: none;
     border-bottom: 1px solid rgba(0,0,0,.125);
@@ -200,7 +205,7 @@
     width: 50%;
     text-align: left;
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1.05rem;
 }
 .right-table-column {
     width: 50%;
@@ -225,8 +230,61 @@
 }
 
 .base-image {
-    width: 80px;
-    height: 80px;
-    background-image: url(../images/devices/2.svg);
+    width: 48px;
+    height: 48px;
+    background-image: url(../images/hand-gesture.svg);
     background-size: cover;
+    margin-right: 1rem;
+}
+
+.title-navbar {
+    background-size: cover;
+    background-image: url(../images/header-counting.jpg);
+    background-repeat: no-repeat;
+    max-height: 6rem;
+    padding: 0;
+}
+
+.link-to-start {
+    display: flex;
+    align-self: center;
+    padding-left: 2rem;
+}
+
+.ctrl-buttons-panel .btn.btn-primary,
+.btn.btn-primary.space-between-text-image,
+.bottom-btn-bar .btn.btn-primary,
+.ctrl-buttons-panel .btn.btn-primary:hover,
+.btn.btn-primary.space-between-text-image:hover,
+.bottom-btn-bar .btn.btn-primary:hover,
+.ctrl-buttons-panel .btn.btn-primary:focus,
+.btn.btn-primary.space-between-text-image:focus,
+.bottom-btn-bar .btn.btn-primary:focus {
+    background-color: #3e638a;
+    border: 2px solid #1f4063;
+}
+.ctrl-buttons-panel .btn.btn-primary:disabled,
+.btn.btn-primary.space-between-text-image:disabled,
+.bottom-btn-bar .btn.btn-primary:disabled {
+    opacity: 1;
+    background-color: #7ba4cd;
+    border: 2px solid #1f4063;
+}
+
+.ctrl-buttons-panel .btn.btn-danger,
+.bottom-btn-bar .btn.btn-danger,
+.ctrl-buttons-panel .btn.btn-danger:hover,
+.bottom-btn-bar .btn.btn-danger:hover,
+.ctrl-buttons-panel .btn.btn-danger:focus,
+.bottom-btn-bar .btn.btn-danger:focus {
+    background-color: #c13f63;
+    border: none;
+    color: white;
+}
+
+.merge-result.btn.btn-success,
+.merge-result.btn.btn-success:hover,
+.merge-result.btn.btn-success:focus {
+    background-color: #32aca1;
+    border: none;
 }
