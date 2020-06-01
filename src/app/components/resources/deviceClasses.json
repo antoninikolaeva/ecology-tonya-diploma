@@ -161,13 +161,8 @@
                     {
                         "id": "http://tonya-diploma.com/device/grate/crusher",
                         "label": { "values": [ { "value": "Решетка дробилка", "language": "ru" } ] },
-                        "count": 2,
+                        "count": 1,
                         "children": [
-                            {
-                                "id": "http://tonya-diploma.com/device/grate/rd200",
-                                "label": {  "values": [  { "value": "РД-200", "language": "ru" } ] },
-                                "children": []
-                            },
                             {
                                 "id": "http://tonya-diploma.com/device/grate/rd600",
                                 "label": {  "values": [  { "value": "РД-600", "language": "ru" } ] },
@@ -297,7 +292,7 @@
                     },
                     {
                         "id": "http://tonya-diploma.com/device/sump/vertical",
-                        "label": {  "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+                        "label": {  "values": [ { "value": "Вертикальные с впуском через центральную трубу", "language": "ru" } ] },
                         "count": 1,
                         "children": [
                             {

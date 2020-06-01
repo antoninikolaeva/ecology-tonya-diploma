@@ -83,7 +83,8 @@ export class StartPage extends React.Component<{}, {}> {
 				</div>
 				<div className='quote-image'>
 					<div className='intro-box-quote'>
-						<Container fluid>
+						{/* Quote, maybe will return */}
+						{/* <Container fluid>
 							<Row>
 								<Col md={{ span: 12 }}>
 									<div className='quote-symbol'></div>
@@ -91,7 +92,7 @@ export class StartPage extends React.Component<{}, {}> {
 									<div className='quote-author'>Уистен Хью Оден</div>
 								</Col>
 							</Row>
-						</Container>
+						</Container> */}
 					</div>
 				</div>
 				<div id='app-occurs'>
@@ -130,7 +131,8 @@ export class StartPage extends React.Component<{}, {}> {
 						</Row>
 					</Container>
 				</div>
-				<Container fluid>
+				{/* social net, for future */}
+				{/* <Container fluid>
 					<Row>
 					<Col md={{ span: 12 }}>
 						<div className='social-icons'>
@@ -148,7 +150,7 @@ export class StartPage extends React.Component<{}, {}> {
 						</div>
 					</Col>
 					</Row>
-				</Container>
+				</Container> */}
 				<div className='footer'>
 					<span className='footer-text'>Выполнено</span>
 					<a href='https://vk.com/antoninikolaeva' className='vk-link'> Антониной Николаевой</a>
@@ -159,17 +161,23 @@ export class StartPage extends React.Component<{}, {}> {
 }
 
 const ABOUT_APP = `Современный мир постоянно модернизируется и автоматизируется.
-	Подбор и строительство очистных сооружений - сложный, долговременный и кропотливый процесс.
+	Подбор и строительство очистных сооружений — сложный, долговременный и кропотливый процесс.
 	Данное приложение создано для упрощения математических расчетов инженеров
 	в процессе проектирования механических очистных сооружений.`;
 
-const USE_MODERN_TECHNOLOGY = `Современные IT-технологии .............`;
-const LESS_TIME_SPARE = `Не нужно выполнять расчеты 'вручную' - компьютер сделает все за Вас.`;
-const VISUALIZATION = `Работать с приятным интерфейсом комфортно, подсказки помогут соориентироваться в
-	расчете.`;
+const USE_MODERN_TECHNOLOGY = `В текущих реалиях люди ценят скорость и доступность работы
+	с различными инструментами в любом месте и в любое время.
+	Веб-приложение – это быстро, просто и удобно; как правило, для работы
+	с ним не нужны сторонние специфические программы, для начала работы
+	достаточно доступа в интернет и браузера, нет необходимости задумываться
+	о настройках установки и конфигурации программы.`;
+const LESS_TIME_SPARE = `Не нужно выполнять расчеты "вручную" - программа сделает это за Вас.`;
+const VISUALIZATION = `Работать с приятным интерфейсом комфортно, подсказки помогут сориентироваться в
+	расчете`;
 
-const SINGLE_COUNTING = `Вы можете рассчитать какой-то один конкретный аппарат.`;
+const SINGLE_COUNTING = `Вы можете рассчитать один конкретный аппарат`;
 const SYSTEM_COUNTING = `Если Вам необходимо рассчитать систему очистных соооружений, Вы можете выбрать
-	необходимые позиции и произвести расчет.`;
-const LAW_EQUALS = `Если Ваши 'желания' не будут соответствовать действующему СНИПу, мы подскажем Вам об
-	этом.`;
+	необходимые позиции и произвести расчет`;
+const LAW_EQUALS = `Если Ваши "желания" не будут соответствовать действующему СНИПу:
+	"СП 33.13330.2012 Канализация. Наружные сети и сооружения", приложение Вам об
+	этом скажет.`;

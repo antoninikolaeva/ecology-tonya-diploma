@@ -55,9 +55,9 @@
 }
 .intro-text {
   font-family: 'Lora', serif;
-  font-size: 32px;
+  font-size: 2rem;
   font-style: italic;
-  padding-bottom: 40px;
+  padding-bottom: 2.4rem;
 }
 .intro-counting-btn {
   font-style: italic;
@@ -91,7 +91,7 @@
 }
 .page-titles::after {
   content: '';
-  background-color: #62aa94;
+  background-color: #7eb7bd;
   position: absolute;
 }
 .page-titles {
@@ -106,15 +106,15 @@
   min-height: 6rem;
 }
 .page-titles::after {
-  height: 5px;
-  width: 40px;
-  top: 81px;
-  left: calc(50% - 20px);
+  height: 0.33rem;
+  width: 2.4rem;
+  top: 5rem;
+  left: calc(50% - 1.33rem);
 }
 
 .page-text {
   text-align: center;
-  font-size: 16px;
+  font-size: 1rem;
   font-style: italic;
   color: #818181;
 }
@@ -223,9 +223,10 @@
 .footer {
   width: 100%;
   margin: 0;
+  margin-top: 1.5rem;
   background-color: #202020;
   text-align: center;
-  padding: 60px 0;
+  padding: 2rem 0;
   color: white;
 }
 .footer-text {

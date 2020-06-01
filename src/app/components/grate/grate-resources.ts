@@ -126,10 +126,6 @@ export namespace GrateSource {
 
 	export const grateCrushers: GrateCrusher[] = [
 		{
-			mark: 'РД-200', maxPerformance: 60, iri: 'http://tonya-diploma.com/device/grate/rd200',
-			squareHeliumHole: 0.019, diameterOfDrum: 0.18, speedWater: {min: 1, max: 1.2},
-		},
-		{
 			mark: 'РД-600', maxPerformance: 2000, iri: 'http://tonya-diploma.com/device/grate/rd600',
 			squareHeliumHole: 0.455, diameterOfDrum: 0.635, speedWater: {min: 1, max: 1.2},
 		},

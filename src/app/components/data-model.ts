@@ -45,6 +45,9 @@ export interface AverageResultData {
 	averageCoefficient: {value: number; label: string};
 	averageVolume: {value: number; label: string};
 	sectionSquare: {value: number; label: string};
+	averageDeep: {value: number; label: string};
+	amountOfSection: {value: number; label: string};
+	sectionWidth: {value: number; label: string};
 	bubbling: BubblingMechanism;
 	multichannelLength: MultichannelLengthMechanism;
 	multichannelWidth: MultichannelWidthMechanism;
@@ -136,6 +139,7 @@ export class GeneralDataModel {
 			deviceType: undefined,
 			amountOfSandTrapSection: {value: undefined, label: undefined},
 			horizontalForward: {
+				fullSandTrapHeight: {value: undefined, label: undefined},
 				widthOfSandTrap: {value: undefined, label: undefined},
 				lengthOfSandTrap: {value: undefined, label: undefined},
 				sandTrapDeep: {value: undefined, label: undefined},
@@ -143,24 +147,31 @@ export class GeneralDataModel {
 				deepSandTrapSection: {value: undefined, label: undefined},
 			},
 			horizontalCircle: {
+				dailySedimentVolume: {value: undefined, label: undefined},
+				fullSandTrapHeight: {value: undefined, label: undefined},
 				lengthOfSandTrap: {value: undefined, label: undefined},
 				middleDiameter: {value: undefined, label: undefined},
 				outputDiameter: {value: undefined, label: undefined},
 				bunkerHeightConusPart: {value: undefined, label: undefined},
 				volumeOfSandTrapSection: {value: undefined, label: undefined},
+				widthCircleGutter: {value: undefined, label: undefined},
 			},
 			tangentialOrVertical: {
+				dailySedimentVolume: {value: undefined, label: undefined},
+				fullSandTrapHeight: {value: undefined, label: undefined},
 				diameterOfEachCompartment: {value: undefined, label: undefined},
 				deepOfTheBunker: {value: undefined, label: undefined},
 				heightOfTheBunker: {value: undefined, label: undefined},
 				periodBetweenSedimentOutput: {value: undefined, label: undefined},
 			},
 			aerated: {
+				dailySedimentVolume: {value: undefined, label: undefined},
 				widthOfSandTrap: {value: undefined, label: undefined},
 				lengthOfSandTrap: {value: undefined, label: undefined},
-				fullSandTrapHeight: {value: undefined, label: undefined},
 				countingDeepOfSandTrap: {value: undefined, label: undefined},
 				deepOfSandTrap: {value: undefined, label: undefined},
+				volumeOfSandTrapSection: {value: undefined, label: undefined},
+				deepSandTrapSection: {value: undefined, label: undefined},
 				hydroMechanicWaterFlow: {value: undefined, label: undefined},
 				outputPipePressure: {value: undefined, label: undefined},
 				generalAirFlow: {value: undefined, label: undefined},
@@ -204,9 +215,12 @@ export class GeneralDataModel {
 			complete: false,
 			deviceType: undefined,
 			averageMechanismType: undefined,
-			averageCoefficient: undefined,
-			averageVolume: undefined,
-			sectionSquare: undefined,
+			averageCoefficient: {value: undefined, label: undefined},
+			averageVolume: {value: undefined, label: undefined},
+			sectionSquare: {value: undefined, label: undefined},
+			averageDeep: {value: undefined, label: undefined},
+			amountOfSection: {value: undefined, label: undefined},
+			sectionWidth: {value: undefined, label: undefined},
 			bubbling: {
 				averageLength: {value: undefined, label: undefined},
 				commonAirFlow: {value: undefined, label: undefined},
@@ -219,6 +233,7 @@ export class GeneralDataModel {
 				averageLength: {value: undefined, label: undefined},
 				channelWidthCircle: {value: undefined, label: undefined},
 				channelWidthPrizma: {value: undefined, label: undefined},
+				amountOfSectionChannel: {value: undefined, label: undefined},
 			},
 			multichannelWidth: {
 				averageLength: {value: undefined, label: undefined},
@@ -227,6 +242,7 @@ export class GeneralDataModel {
 				squareSideForEachChannel: {value: undefined, label: undefined},
 				waterFlowOfEachChannel: {value: undefined, label: undefined},
 				widthOfEachChannel: {value: undefined, label: undefined},
+				amountOfSectionChannel: {value: undefined, label: undefined},
 			}
 		};
 		this.oilTrapResult = {
@@ -298,6 +314,7 @@ export class GeneralDataModel {
 				diameterHydrocyclone: {value: undefined, label: undefined},
 				hydraulicPressure: {value: undefined, label: undefined},
 				performance: {value: undefined, label: undefined},
+				diameterCentralHole: {value: undefined, label: undefined},
 			},
 			hPressure: {
 				amountOfAdditionalHydrocyclones: {value: undefined, label: undefined},
@@ -408,6 +425,7 @@ interface GrateCrusher {
 }
 
 interface HorizontalForwardSandTrap {
+	fullSandTrapHeight: {value: number; label: string};
 	widthOfSandTrap: {value: number; label: string};
 	lengthOfSandTrap: {value: number; label: string};
 	sandTrapDeep: {value: number; label: string};
@@ -416,14 +434,19 @@ interface HorizontalForwardSandTrap {
 }
 
 interface HorizontalCircleSandTrap {
+	dailySedimentVolume: {value: number; label: string};
+	fullSandTrapHeight: {value: number; label: string};
 	lengthOfSandTrap: {value: number; label: string};
 	middleDiameter: {value: number; label: string};
 	outputDiameter: {value: number; label: string};
 	bunkerHeightConusPart: {value: number; label: string};
 	volumeOfSandTrapSection: {value: number; label: string};
+	widthCircleGutter: {value: number; label: string};
 }
 
 interface TangentialAndVerticalSandTrap {
+	dailySedimentVolume: {value: number; label: string};
+	fullSandTrapHeight: {value: number; label: string};
 	diameterOfEachCompartment: {value: number; label: string};
 	deepOfTheBunker: {value: number; label: string};
 	heightOfTheBunker: {value: number; label: string};
@@ -431,11 +454,13 @@ interface TangentialAndVerticalSandTrap {
 }
 
 interface AeratedSandTrap {
+	dailySedimentVolume: {value: number; label: string};
 	widthOfSandTrap: {value: number; label: string};
 	lengthOfSandTrap: {value: number; label: string};
-	fullSandTrapHeight: {value: number; label: string};
 	countingDeepOfSandTrap: {value: number; label: string};
 	deepOfSandTrap: {value: number; label: string};
+	volumeOfSandTrapSection: {value: number; label: string};
+	deepSandTrapSection: {value: number; label: string};
 	hydroMechanicWaterFlow: {value: number; label: string};
 	outputPipePressure: {value: number; label: string};
 	generalAirFlow: {value: number; label: string};
@@ -524,6 +549,7 @@ interface HydrocycloneOpened {
 	amountOfHydrocyclones: {value: number; label: string};
 	diameterHydrocyclone: {value: number; label: string};
 	currentHydrocyclone: CentrifugeSource.OpenHydrocycloneConfig;
+	diameterCentralHole: {value: number; label: string};
 }
 
 interface HydrocyclonePressure {
@@ -552,6 +578,7 @@ interface MultichannelLengthMechanism {
 	channelWidthPrizma: {value: number; label: string};
 	averageDiameter: {value: number; label: string};
 	channelWidthCircle: {value: number; label: string};
+	amountOfSectionChannel: {value: number; label: string};
 }
 
 interface MultichannelWidthMechanism {
@@ -561,4 +588,5 @@ interface MultichannelWidthMechanism {
 	waterFlowOfEachChannel: {value: string; label: string};
 	squareBottomForEachChannel: {value: string; label: string};
 	squareSideForEachChannel: {value: string; label: string};
+	amountOfSectionChannel: {value: number; label: string};
 }

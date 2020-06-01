@@ -39,6 +39,7 @@ export interface SandTrapState {
 	middleVolumeWasteWater: number;
 	isValidateError: boolean;
 	isResult: boolean;
+	showModal: boolean;
 }
 
 export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapState> {
@@ -99,7 +100,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		this.props.type === SandTrapTypes.tangential ?
 		SandTrapSource.AmountOfBlockedSand.horizontalAndTangential :
 		SandTrapSource.AmountOfBlockedSand.aerated;
-	
+	private widthCircleGutter: number;
 	private sandTrapResult: SandTrapResultData;
 
 	constructor(props: SandTrapProps) {
@@ -125,6 +126,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			middleVolumeWasteWater: undefined,
 			isValidateError: false,
 			isResult: false,
+			showModal: false,
 		};
 	}
 
@@ -159,6 +161,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			middleVolumeWasteWater: undefined,
 			isValidateError: false,
 			isResult: false,
+			showModal: false,
 		});
 	}
 
@@ -189,7 +192,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				type === SandTrapTypes.horizontalCircle ||
 				type === SandTrapTypes.aerated)
 				? <InputTemplate title={`Скорость течения воды, м/c,
-					диапазон[${SandTrapSource.minSpeedWaterFlow} - ${SandTrapSource.maxSpeedWaterFlow}]`}
+					диапазон [${SandTrapSource.minSpeedWaterFlow} - ${SandTrapSource.maxSpeedWaterFlow}]`}
 					placeholder={'Введите скорость течения воды...'}
 					range={{ minValue: SandTrapSource.minSpeedWaterFlow, maxValue: SandTrapSource.maxSpeedWaterFlow }}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -198,14 +201,14 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				: null}
 
 			{type === SandTrapTypes.aerated
-				? <SelectTemplate title={'α'} itemList={this.alphaList}
+				? <SelectTemplate title={'Соотношение ширины и глубины песколовки'} itemList={this.alphaList}
 					onSelect={(value) => { this.setState({ alpha: value as number }); }}
 					onSelectRef={(optionList) => { this.alphaRef = optionList; }} />
 				: null}
 
 			{(type === SandTrapTypes.tangential || type === SandTrapTypes.vertical)
-				? <InputTemplate title={`Нагрузка на песколовку по воде при максимальном притоке, м³/(м²*ч),
-					диапазон[${type === SandTrapTypes.tangential
+				? <InputTemplate title={`Нагрузка на песколовку по воде при максимальном притоке, м³/(м²·ч),
+					диапазон [${type === SandTrapTypes.tangential
 						? SandTrapSource.sandTrapPressureMinTangential
 						: SandTrapSource.sandTrapPressureMinVertical} - ${SandTrapSource.sandTrapPressureMax}]`}
 					placeholder={'Введите нагрузка на песколовку...'}
@@ -219,13 +222,13 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 					onInput={(value) => { this.setState({ sandTrapPressure: value }); }} />
 				: null}
 			{(type === SandTrapTypes.tangential && this.diameterOfEachCompartment > SandTrapSource.maxDiameterOfTangential)
-				? <ErrorAlert errorMessage={`Диаметр песколовки: ${this.diameterOfEachCompartment} м,
+				? <ErrorAlert errorMessage={`Диаметр песколовки: ${this.diameterOfEachCompartment.toFixed(2)} м,
 					должна быть не более ${SandTrapSource.maxDiameterOfTangential} метров`} />
 				: null}
 
 			{type === SandTrapTypes.vertical
 				? <InputTemplate title={`Продолжительность пребывания воды в песколовке, c,
-					диапазон[${SandTrapSource.timeWaterInTrapMin} - ${SandTrapSource.timeWaterInTrapMax}]`}
+					диапазон [${SandTrapSource.timeWaterInTrapMin} - ${SandTrapSource.timeWaterInTrapMax}]`}
 					placeholder={'Введите продолжительность пребывания воды...'}
 					range={{ minValue: SandTrapSource.timeWaterInTrapMin, maxValue: SandTrapSource.timeWaterInTrapMax }}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
@@ -235,7 +238,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 
 			{(type === SandTrapTypes.horizontalCircle) &&
 				(this.waterFlowPeriodMaxPressure < SandTrapSource.minWaterFlowPeriod)
-				? <ErrorAlert errorMessage={`Продолжительность протока: ${this.waterFlowPeriod},
+				? <ErrorAlert errorMessage={`Продолжительность протока: ${this.waterFlowPeriod.toFixed(2)},
 					должна быть не менее ${SandTrapSource.minWaterFlowPeriod}`} />
 				: null}
 
@@ -269,19 +272,19 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			{(type === SandTrapTypes.horizontalForward) &&
 				(this.minSpeedFlow > SandTrapSource.minSpeedFlowLimit && this.minSpeedFlow < SandTrapSource.maxSpeedFlowLimit) &&
 				(this.maxSpeedFlow > SandTrapSource.minSpeedFlowLimit && this.maxSpeedFlow < SandTrapSource.maxSpeedFlowLimit)
-				? <ErrorAlert errorMessage={`Минимальная: ${this.minSpeedFlow} и максимальная: ${this.maxSpeedFlow}\n
+				? <ErrorAlert errorMessage={`Минимальная: ${this.minSpeedFlow} и максимальная: ${this.maxSpeedFlow.toFixed(2)}\n
 					скорости должны удовлетворять следующему диапазону:
 					[${SandTrapSource.minSpeedFlowLimit} < Vmin(Vmax) < ${SandTrapSource.maxSpeedFlowLimit}]`} />
 				: null}
 
 			{(type === SandTrapTypes.horizontalForward) &&
 				(this.waterFlowPeriod < SandTrapSource.minWaterFlowPeriod)
-				? <ErrorAlert errorMessage={`Продолжительность протекания сточных вод: ${this.waterFlowPeriod},\n
+				? <ErrorAlert errorMessage={`Продолжительность протекания сточных вод: ${this.waterFlowPeriod.toFixed(2)},\n
 					должна быть не менее ${SandTrapSource.minWaterFlowPeriod}`} />
 				: null}
 
-			<InputTemplate title={`Среднее значение БПК5, мг(О2)/л`}
-				placeholder={'Введите среднее значение БПК5...'}
+			<InputTemplate title={`Среднее значение БПК₅, мг(О₂)/л`}
+				placeholder={`Введите среднее значение БПК₅...`}
 				onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 				range={{ minValue: 0, maxValue: Infinity }}
 				onInputRef={(input) => { this.middleValueBPK5Ref = input; }}
@@ -293,7 +296,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				onInputRef={(input) => { this.middleVolumeWasteWaterRef = input; }}
 				onInput={(value) => { this.setState({ middleVolumeWasteWater: value }); }} />
 
-			{(type === SandTrapTypes.horizontalForward || type === SandTrapTypes.horizontalCircle)
+			{(type === SandTrapTypes.horizontalForward || type === SandTrapTypes.horizontalCircle || type === SandTrapTypes.aerated)
 				? <InputTemplate title={`Интервал времени между выгрузками осадка из песколовки, сут,
 					диапазон [${SandTrapSource.minPeriodRemoveSediment} - ${SandTrapSource.maxPeriodRemoveSediment}]`}
 					placeholder={'Введите интервал времени...'}
@@ -312,9 +315,9 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 						range={{ minValue: SandTrapSource.sandLayerHeightMin, maxValue: SandTrapSource.sandLayerHeightMax }}
 						onInputRef={(input) => { this.sandLayerHeightRef = input; }}
 						onInput={(value) => { this.setState({ sandLayerHeight: value }); }} />
-					<InputTemplate title={`Интесивность аэрации, м³/(м²/ч),
+					<InputTemplate title={`Интенсивность аэрации, м³/(м²·ч),
 						диапазон [${SandTrapSource.aeratedIntensiveMin} - ${SandTrapSource.aeratedIntensiveMax}]`}
-						placeholder={'Введите интесивность аэрации...'}
+						placeholder={'Введите интенсивность аэрации...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						range={{ minValue: SandTrapSource.aeratedIntensiveMin, maxValue: SandTrapSource.aeratedIntensiveMax }}
 						onInputRef={(input) => { this.aeratedIntensiveRef = input; }}
@@ -407,12 +410,16 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			deviceType: type,
 			amountOfSandTrapSection: {value: this.amountOfSandTrapSection, label: 'Количество отделений песколовки, шт'},
 			horizontalForward: {
+				fullSandTrapHeight: {
+					value: this.fullSandTrapHeight ? Number(this.fullSandTrapHeight.toFixed(3)) : undefined,
+					label: 'Полная строительная высота песколовки, м'
+				},
 				widthOfSandTrap: {
-					value: this.widthOfSandTrap ? Number(this.widthOfSandTrap.toFixed(3)) : undefined,
+					value: this.widthOfSandTrap ? Number(this.widthOfSandTrap.toFixed(2)) : undefined,
 					label: 'Ширина одного отделения песколовки, м'
 				},
 				lengthOfSandTrap: {
-					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(3)) : undefined,
+					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(2)) : undefined,
 					label: 'Длина песколовки, м'
 				},
 				sandTrapDeep: {
@@ -429,59 +436,87 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				},
 			},
 			horizontalCircle: {
+				dailySedimentVolume: {
+					value: this.dailyVolumeOfSediment ? Number(this.dailyVolumeOfSediment.toFixed(2)) : undefined,
+					label: 'Суточный объем осадка, м³/сут'
+				},
+				fullSandTrapHeight: {
+					value: this.fullSandTrapHeight ? Number(this.fullSandTrapHeight.toFixed(2)) : undefined,
+					label: 'Полная строительная высота песколовки, м'
+				},
 				lengthOfSandTrap: {
-					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(3)) : undefined,
+					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(2)) : undefined,
 					label: 'Длина песколовки, м'
 				},
 				middleDiameter: {
-					value: this.middleDiameter ? Number(this.middleDiameter.toFixed(3)) : undefined,
+					value: this.middleDiameter ? Number(this.middleDiameter.toFixed(2)) : undefined,
 					label: 'Средний диаметр, м'
 				},
 				outputDiameter: {
-					value: this.outputDiameter ? Number(this.outputDiameter.toFixed(3)) : undefined,
+					value: this.outputDiameter ? Number(this.outputDiameter.toFixed(2)) : undefined,
 					label: 'Наружный диаметр, м'
 				},
 				bunkerHeightConusPart: {
-					value: this.bunkerHeightConusPart ? Number(this.bunkerHeightConusPart.toFixed(3)) : undefined,
+					value: this.bunkerHeightConusPart ? Number(this.bunkerHeightConusPart.toFixed(2)) : undefined,
 					label: 'Высота конической части бункера, м'
+				},
+				volumeOfSandTrapSection: {
+					value: this.volumeOfSandTrapSection ? Number(this.volumeOfSandTrapSection.toFixed(2)) : undefined,
+					label: 'Объем бункера одного отделения песколовки, м³'
+				},
+				widthCircleGutter: {
+					value: this.widthCircleGutter ? Number(this.widthCircleGutter.toFixed(2)) : undefined,
+					label: 'Ширина кольцевого желоба песколовки, м'
+				},
+			},
+			tangentialOrVertical: {
+				dailySedimentVolume: {
+					value: this.dailyVolumeOfSediment ? Number(this.dailyVolumeOfSediment.toFixed(2)) : undefined,
+					label: 'Суточный объем осадка, м³/сут'
+				},
+				fullSandTrapHeight: {
+					value: this.fullSandTrapHeight ? Number(this.fullSandTrapHeight.toFixed(2)) : undefined,
+					label: 'Полная строительная высота песколовки, м'
+				},
+				diameterOfEachCompartment: {value: this.diameterOfEachCompartment, label: 'Диаметр каждого отделения, м'},
+				deepOfTheBunker: {
+					value: this.deepOfTheBunker ? Number(this.deepOfTheBunker.toFixed(2)) : undefined,
+					label: 'Глубина бункера, м'
+				},
+				heightOfTheBunker: {
+					value: this.heightOfTheBunker ? Number(this.heightOfTheBunker.toFixed(2)) : undefined,
+					label: 'Высота бункера (конусной части), м'
+				},
+				periodBetweenSedimentOutput: {value: this.periodBetweenSedimentOutput, label: 'Период между выгрузками осадка из песколовок, сут'},
+			},
+			aerated: {
+				dailySedimentVolume: {
+					value: this.dailyVolumeOfSediment ? Number(this.dailyVolumeOfSediment.toFixed(2)) : undefined,
+					label: 'Суточный объем осадка, м³/сут'
+				},
+				widthOfSandTrap: {
+					value: this.widthOfSandTrap ? Number(this.widthOfSandTrap.toFixed(2)) : undefined,
+					label: 'Ширина одного отделения песколовки, м'
+				},
+				lengthOfSandTrap: {
+					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(2)) : undefined,
+					label: 'Длина песколовки, м'
+				},
+				countingDeepOfSandTrap: {
+					value: this.deepOfSandTrap ? Number((this.deepOfSandTrap / 2).toFixed(2)) : undefined,
+					label: 'Расчетная глубина песколовки, м'
+				},
+				deepOfSandTrap: {
+					value: this.deepOfSandTrap ? Number(this.deepOfSandTrap.toFixed(2)) : undefined,
+					label: 'Глубина песколовки, м'
 				},
 				volumeOfSandTrapSection: {
 					value: this.volumeOfSandTrapSection ? Number(this.volumeOfSandTrapSection.toFixed(3)) : undefined,
 					label: 'Объем бункера одного отделения песколовки, м³'
 				},
-			},
-			tangentialOrVertical: {
-				diameterOfEachCompartment: {value: this.diameterOfEachCompartment, label: 'Диаметр каждого отделения, м'},
-				deepOfTheBunker: {
-					value: this.deepOfTheBunker ? Number(this.deepOfTheBunker.toFixed(3)) : undefined,
-					label: 'Глубина бункера, м'
-				},
-				heightOfTheBunker: {
-					value: this.heightOfTheBunker ? Number(this.heightOfTheBunker.toFixed(3)) : undefined,
-					label: 'Высота бункера, м'
-				},
-				periodBetweenSedimentOutput: {value: this.periodBetweenSedimentOutput, label: 'Период между выгрузками осадка из песколовок, сут'},
-			},
-			aerated: {
-				widthOfSandTrap: {
-					value: this.widthOfSandTrap ? Number(this.widthOfSandTrap.toFixed(3)) : undefined,
-					label: 'Ширина одного отделения песколовки, м'
-				},
-				lengthOfSandTrap: {
-					value: this.lengthOfSandTrap ? Number(this.lengthOfSandTrap.toFixed(3)) : undefined,
-					label: 'Длина песколовки, м'
-				},
-				fullSandTrapHeight: {
-					value: this.fullSandTrapHeight ? Number(this.fullSandTrapHeight.toFixed(3)) : undefined,
-					label: 'Полная строительная высота песколовки, м'
-				},
-				countingDeepOfSandTrap: {
-					value: this.deepOfSandTrap ? Number((this.deepOfSandTrap / 2).toFixed(3)) : undefined,
-					label: 'Расчетная глубина песколовки, м'
-				},
-				deepOfSandTrap: {
-					value: this.deepOfSandTrap ? Number(this.deepOfSandTrap.toFixed(3)) : undefined,
-					label: 'Глубина песколовки, м'
+				deepSandTrapSection: {
+					value: this.deepSandTrapSection ? Number(this.deepSandTrapSection.toFixed(3)) : undefined,
+					label: 'Глубина бункера песколовки, м'
 				},
 				hydroMechanicWaterFlow: {
 					value: this.hydroMechanicWaterFlow ? Number(this.hydroMechanicWaterFlow.toFixed(3)) : undefined,
@@ -492,7 +527,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 					label: 'Напор в начале смывного трубопровода, м'
 				},
 				generalAirFlow: {
-					value: this.generalAirFlow ? Number(this.generalAirFlow.toFixed(3)) : undefined,
+					value: this.generalAirFlow ? Number(this.generalAirFlow.toFixed(2)) : undefined,
 					label: 'Общий расход воздуха для аэрирования, м³/ч'
 				},
 			}
@@ -611,8 +646,9 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			// formula (horizontal circle) D =  D0 + Bж;
 			const onlySecondMaxFlow = SandTrapSource.circleGutter.map(item => item.secondFlow);
 			const defineMaxFlow = selectValueFromDiapasonOfFilteredArray(onlySecondMaxFlow, secondMaxFlow, 'greater');
-			const widthCircleGutter = SandTrapSource.circleGutter.find(gutter => gutter.secondFlow === defineMaxFlow);
-			this.outputDiameter = this.middleDiameter + widthCircleGutter.width;
+			const circleGutter = SandTrapSource.circleGutter.find(gutter => gutter.secondFlow === defineMaxFlow);
+			this.widthCircleGutter = circleGutter.width;
+			this.outputDiameter = this.middleDiameter + this.widthCircleGutter;
 			// formula (horizontal circle) hk = 12W / pi(D02 + d2(0.4) + D0d);
 			this.bunkerHeightConusPart = 12 * this.volumeOfSandTrapSection / (Math.PI *
 				(Math.pow(this.middleDiameter, 2) + Math.pow(SandTrapSource.diameterLowBaseOfBunker, 2) +
@@ -659,8 +695,17 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		this.props.onResultMode(true);
 	}
 
+	private openModal = () => {
+		this.setState({showModal: true});
+	}
+
+	private closeModal = () => {
+		this.setState({showModal: false});
+	}
+
 	render() {
 		const { type } = this.props;
+		const { showModal } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -676,6 +721,9 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
+						this.openModal,
+						this.closeModal,
+						showModal
 					)}
 				</div>
 				<div className={'device-container'}>
@@ -729,36 +777,42 @@ export function renderSandTrapResult(
 							<TableRow value={horizontalForward.sandTrapDeep.value} label={horizontalForward.sandTrapDeep.label} />
 							<TableRow value={horizontalForward.volumeOfSandTrapSection.value} label={horizontalForward.volumeOfSandTrapSection.label} />
 							<TableRow value={horizontalForward.deepSandTrapSection.value} label={horizontalForward.deepSandTrapSection.label} />
+							<TableRow value={horizontalForward.fullSandTrapHeight.value} label={horizontalForward.fullSandTrapHeight.label} />
 						</>
 						: null}
 					{sandTrapResult.deviceType === SandTrapTypes.horizontalCircle
 						? <>
+							<TableRow value={horizontalCircle.dailySedimentVolume.value} label={horizontalCircle.dailySedimentVolume.label} />
 							<TableRow value={horizontalCircle.lengthOfSandTrap.value} label={horizontalCircle.lengthOfSandTrap.label} />
+							<TableRow value={horizontalCircle.widthCircleGutter.value} label={horizontalCircle.widthCircleGutter.label} />
 							<TableRow value={horizontalCircle.middleDiameter.value} label={horizontalCircle.middleDiameter.label} />
 							<TableRow value={horizontalCircle.outputDiameter.value} label={horizontalCircle.outputDiameter.label} />
+							<TableRow value={horizontalCircle.fullSandTrapHeight.value} label={horizontalCircle.fullSandTrapHeight.label} />
 							<TableRow value={horizontalCircle.bunkerHeightConusPart.value} label={horizontalCircle.bunkerHeightConusPart.label} />
 							<TableRow value={horizontalCircle.volumeOfSandTrapSection.value} label={horizontalCircle.volumeOfSandTrapSection.label} />
 						</>
 						: null}
 					{sandTrapResult.deviceType === SandTrapTypes.vertical || sandTrapResult.deviceType === SandTrapTypes.tangential
 						? <>
-							<TableRow
-								value={tangentialOrVertical.diameterOfEachCompartment.value}
+							<TableRow value={tangentialOrVertical.dailySedimentVolume.value} label={horizontalCircle.dailySedimentVolume.label} />
+							<TableRow value={tangentialOrVertical.diameterOfEachCompartment.value}
 								label={tangentialOrVertical.diameterOfEachCompartment.label} />
 							<TableRow value={tangentialOrVertical.deepOfTheBunker.value} label={tangentialOrVertical.deepOfTheBunker.label} />
+							<TableRow value={tangentialOrVertical.fullSandTrapHeight.value} label={tangentialOrVertical.fullSandTrapHeight.label} />
 							<TableRow value={tangentialOrVertical.heightOfTheBunker.value} label={tangentialOrVertical.heightOfTheBunker.label} />
-							<TableRow
-								value={tangentialOrVertical.periodBetweenSedimentOutput.value}
+							<TableRow value={tangentialOrVertical.periodBetweenSedimentOutput.value}
 								label={tangentialOrVertical.periodBetweenSedimentOutput.label} />
 						</>
 						: null}
 					{sandTrapResult.deviceType === SandTrapTypes.aerated
 						? <>
+							<TableRow value={aerated.dailySedimentVolume.value} label={aerated.dailySedimentVolume.label} />
 							<TableRow value={aerated.widthOfSandTrap.value} label={aerated.widthOfSandTrap.label} />
 							<TableRow value={aerated.lengthOfSandTrap.value} label={aerated.lengthOfSandTrap.label} />
-							<TableRow value={aerated.fullSandTrapHeight.value} label={aerated.fullSandTrapHeight.label} />
 							<TableRow value={aerated.countingDeepOfSandTrap.value} label={aerated.countingDeepOfSandTrap.label} />
 							<TableRow value={aerated.deepOfSandTrap.value} label={aerated.deepOfSandTrap.label} />
+							<TableRow value={aerated.volumeOfSandTrapSection.value} label={aerated.volumeOfSandTrapSection.label} />
+							<TableRow value={aerated.deepSandTrapSection.value} label={aerated.deepSandTrapSection.label} />
 							<TableRow value={aerated.hydroMechanicWaterFlow.value} label={aerated.hydroMechanicWaterFlow.label} />
 							<TableRow value={aerated.outputPipePressure.value} label={aerated.outputPipePressure.label} />
 							<TableRow value={aerated.generalAirFlow.value} label={aerated.generalAirFlow.label} />

@@ -315,11 +315,6 @@
   },
 
   {
-    "sourceId": "http://tonya-diploma.com/device/grate/rd200",
-    "linkTypeId": "http://tonya-diploma.com/device/instanceOf",
-    "targetId": "http://tonya-diploma.com/device/grate/crusher"
-  },
-  {
     "sourceId": "http://tonya-diploma.com/device/grate/rd600",
     "linkTypeId": "http://tonya-diploma.com/device/instanceOf",
     "targetId": "http://tonya-diploma.com/device/grate/crusher"

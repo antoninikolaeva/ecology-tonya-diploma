@@ -55,7 +55,7 @@ export namespace SumpSource {
 	}
 	export const minWorkingThreadSpeedGeneralPipe = 0.03;
 	export enum WidthSectionCoefficient {
-		min = 2,
+		min = 1,
 		max = 5,
 	}
 	export const minAmountOfSection = 2;

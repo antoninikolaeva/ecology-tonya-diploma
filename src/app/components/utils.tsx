@@ -22,7 +22,7 @@ export function checkValueToNumber(value: string, range?: RangeOfNumber): number
 	if (!value) {
 		return undefined;
 	}
-	const valueWithLetters = value.match(/[a-zA-Z]/g);
+	const valueWithLetters = value.match(/[a-zA-Zа-яА-Я]/gm);
 	if (valueWithLetters) {
 		return errorNumber;
 	}
@@ -86,7 +86,7 @@ export function labelTemplate(title: string, value: string | number): JSX.Elemen
 }
 
 export function resetSelectToDefault(itemListRef: HTMLOptionElement[], itemList: ItemList[]) {
-	if (itemListRef && itemListRef.length !== 0) {
+	if (itemListRef && itemList && itemListRef.length !== 0 && itemList.length !== 0) {
 		itemListRef[0].selected = true;
 		itemListRef[0].disabled = true;
 		itemListRef[0].value = itemList[0].label;
@@ -156,13 +156,12 @@ export class SelectTemplate extends React.Component<SelectTemplateProps, {}> {
 
 /** Component to input data like a number */
 interface InputTemplateProps {
-	title: string;
+	title: string | JSX.Element;
 	placeholder: string;
 	onErrorExist(isError: boolean): void;
 	range?: RangeOfNumber;
 	onInputRef?(input: HTMLInputElement): void;
 	onInput?(value: number): void;
-
 }
 
 interface InputTemplateState {

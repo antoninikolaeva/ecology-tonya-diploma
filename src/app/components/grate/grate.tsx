@@ -10,7 +10,7 @@ import {
 	TableRow
 } from '../utils';
 import { GrateSource } from './grate-resources';
-import { Table } from 'react-bootstrap';
+import { Table, Modal, Button } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
 import { dataModel, GrateResultData } from '../data-model';
 
@@ -37,6 +37,7 @@ export interface GrateState {
 	markOfGrateCrusher: string;
 	isValidateError: boolean;
 	isResult: boolean;
+	showModal: boolean;
 }
 
 export class GrateComponent extends React.Component<GrateProps, GrateState> {
@@ -117,6 +118,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
 			isResult: false,
+			showModal: false,
 		};
 	}
 
@@ -148,6 +150,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
 			isResult: false,
+			showModal: false,
 		});
 	}
 
@@ -162,7 +165,6 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 
 	private renderInputArea = () => {
 		const { type, dailyWaterFlow } = this.props;
-		const {  } = this.state;
 		return <div>
 			{type === GrateTypes.hand
 			? <>
@@ -198,7 +200,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					range={{ minValue: 1, maxValue: Infinity }}
 					onInputRef={(input) => { this.amountOfGratesRef = input; }}
 					onInput={(value) => { this.setState({ amountOfGrates: value }); }} />
-				<InputTemplate title={`Угол наклона решетки к горизонту, диапазон [${GrateSource.InclineAngle.min} - ${GrateSource.InclineAngle.max}]`}
+				<InputTemplate title={`Угол наклона решетки к горизонту, град,
+					диапазон [${GrateSource.InclineAngle.min} - ${GrateSource.InclineAngle.max}]`}
 					placeholder={'Введите угол наклона решетки...'}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					range={{ minValue: GrateSource.InclineAngle.min, maxValue: GrateSource.InclineAngle.max }}
@@ -210,7 +213,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 				{this.realWaterSpeedInSection < GrateSource.CheckSpeedInSection.min ||
 				this.realWaterSpeedInSection > GrateSource.CheckSpeedInSection.max
 				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
-					${this.realWaterSpeedInSection} м/с, должна быть в пределах от ${GrateSource.CheckSpeedInSection.min} до
+					${this.realWaterSpeedInSection.toFixed(2)} м/с, должна быть в пределах от ${GrateSource.CheckSpeedInSection.min} до
 					${GrateSource.CheckSpeedInSection.max}`} />
 				: null}
 			</>
@@ -230,8 +233,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			: null}
 			{type === GrateTypes.mechanic || type === GrateTypes.hand
 			? <>
-				<InputTemplate title={`Среднее значение БПК5, мг(О2)/л`}
-					placeholder={'Введите среднее значение БПК5...'}
+				<InputTemplate title={`Среднее значение БПК₅, мг(О₂)/л`}
+					placeholder={`Введите среднее значение БПК₅...`}
 					onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 					range={{ minValue: 0, maxValue: Infinity }}
 					onInputRef={(input) => { this.middleValueBPK5Ref = input; }}
@@ -252,7 +255,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 				{(this.currentGrateCrusher && (this.realWaterSpeedInSection < this.currentGrateCrusher.speedWater.min ||
 				this.realWaterSpeedInSection > this.currentGrateCrusher.speedWater.max))
 				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
-					${this.realWaterSpeedInSection} м/с, должна быть в пределах от ${this.currentGrateCrusher.speedWater.min} до
+					${this.realWaterSpeedInSection.toFixed(3)} м/с, должна быть в пределах от ${this.currentGrateCrusher.speedWater.min} до
 					${this.currentGrateCrusher.speedWater.max}`} />
 				: null}
 			</>
@@ -316,7 +319,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					value: this.lengthOfExtendPartOfChannel ? Number(this.lengthOfExtendPartOfChannel.toFixed(3)) : undefined,
 					label: 'Длина расширенной части канала, м'},
 				sizeOfLedge: {
-					value: this.sizeOfLedge ? Number(this.sizeOfLedge.toFixed(3)) : undefined,
+					value: this.sizeOfLedge ? Number(this.sizeOfLedge.toFixed(2)) : undefined,
 					label: 'Величина уступа в месте установки решетки, м'},
 				volumeOfWaste: {
 					value: this.volumeOfWaste ? Number(this.volumeOfWaste.toFixed(2)) : undefined,
@@ -371,7 +374,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			this.generalGrateWidth = rodThickness * (this.amountOfSection - 1) + widthSection * this.amountOfSection;
 			// formula 3 B1 = Bp / N, n1 = n / N
 			this.countingWidthOfGrate = this.generalGrateWidth / Math.ceil(amountOfGrates);
-			this.countingAmountOfSection = this.amountOfSection / Math.ceil(amountOfGrates);
+			this.countingAmountOfSection = Math.ceil(this.amountOfSection / Math.ceil(amountOfGrates));
 			// formula 4 vp = qmax / (hk * n1 * b * N)
 			this.realWaterSpeedInSection = secondMaxFlow / (hk * this.countingAmountOfSection * widthSection *  Math.ceil(amountOfGrates));
 			this.amountAdditionalGrates = this.selectAdditionalFacilities(Math.ceil(amountOfGrates));
@@ -402,7 +405,7 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		}
 
 		if (type === GrateTypes.crusher) {
-			this.currentGrateCrusher = GrateSource.grateCrushers.find(grate => markOfGrateCrusher === grate.mark);
+			this.currentGrateCrusher = GrateSource.grateCrushers[0];
 			this.amountOfGrateCrusher = Math.ceil(secondMaxFlow / (this.currentGrateCrusher.maxPerformance / 3600));
 			this.amountAdditionalGrates = this.selectAdditionalFacilities(this.amountOfGrateCrusher);
 			// formula 14 v = qmax / (F * N)
@@ -464,8 +467,17 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		this.props.onResultMode(true);
 	}
 
+	private openModal = () => {
+		this.setState({showModal: true});
+	}
+
+	private closeModal = () => {
+		this.setState({showModal: false});
+	}
+
 	render() {
 		const { type } = this.props;
+		const { showModal } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -477,6 +489,9 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
+						this.openModal,
+						this.closeModal,
+						showModal
 					)}
 				</div>
 				<div className={'device-container'}>
@@ -500,18 +515,9 @@ export function selectValueFromDiapasonOfFilteredArray(
 ): number {
 	for (let index = 0; index < array.length; index++) {
 		if (valueToCompare >= array[index] && valueToCompare <= array[index + 1]) {
-			if (((array[index + 1] + array[index]) / 2) > valueToCompare) {
-				if (direction === 'greater') {
-					return array[index + 1];
-				} else {
-					return array[index];
-				}
-			} else if (valueToCompare >= array[index]) {
-				if (index === array.length - 1) {
-					return array[index];
-				}
-				continue;
-			} else if (valueToCompare <= array[index]) {
+			if (direction === 'greater') {
+				return array[index + 1];
+			} else {
 				return array[index];
 			}
 		}
@@ -612,18 +618,38 @@ export function resetData(clearPage: () => void) {
 export function renderToolbar(
 	returnToScheme: () => void,
 	goToResult: () => void,
+	openModal: () => void,
+	closeModal: () => void,
+	show: boolean,
 ) {
-	return <div className={'device-count-toolbar'}>
-		<button className={'btn btn-primary space-between-text-image'} title={'Изменить расчетную схему'}
-			onClick={returnToScheme}>
-			<span className='space-between-text-image'>Изменить расчетную схему</span>
-			<i className={'fas fa-reply'}></i>
-		</button>
-		<button className={'merge-result btn btn-success'}
-			onClick={goToResult}
-			title={'Cводная схема очиcтных сооружений'}>
-			<span className='space-between-text-image'>Cводная схема очиcтных сооружений</span>
-			<i className={'fas fa-trophy'}></i>
-		</button>
-	</div>;
+	return (
+		<div className={'device-count-toolbar'}>
+			<Button className={'btn btn-primary space-between-text-image'} title={'Изменить расчетную схему'}
+				onClick={openModal}>
+				<span className='space-between-text-image'>Изменить расчетную схему</span>
+				<i className={'fas fa-reply'}></i>
+			</Button>
+			<Button className={'merge-result btn btn-success'}
+				onClick={goToResult}
+				title={'Cводная схема очиcтных сооружений'}>
+				<span className='space-between-text-image'>Cводная схема очиcтных сооружений</span>
+				<i className={'fas fa-trophy'}></i>
+			</Button>
+
+			<Modal show={show}>
+				<Modal.Header>
+					<Modal.Title>Подтвержение</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>Введенные данные сооружений не сохранятся, изменить схему?</Modal.Body>
+				<Modal.Footer>
+					<Button variant='secondary' onClick={closeModal}>
+						Отменить
+					</Button>
+					<Button variant='primary' onClick={returnToScheme}>
+						Изменить схему
+					</Button>
+				</Modal.Footer>
+			</Modal>
+		</div>
+	);
 }

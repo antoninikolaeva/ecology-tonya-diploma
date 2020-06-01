@@ -20,9 +20,9 @@ import { CentrifugeComponent } from './centrifuge/centrifuge';
 import { dataModel } from './data-model';
 
 import { Link } from 'react-router-dom';
+import { GrateSource } from './grate/grate-resources';
 
 interface State {
-	deviceWatcher: number;
 	secondMaxFlow: number;
 	dailyWaterFlow: number;
 	countMode: boolean;
@@ -48,7 +48,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 		super(props, context);
 
 		this.state = {
-			deviceWatcher: 0,
 			secondMaxFlow: undefined,
 			dailyWaterFlow: undefined,
 			countMode: false,
@@ -56,10 +55,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 			isValidateError: false,
 			resultMode: false,
 		};
-	}
-
-	componentWillUnmount() {
-		this.setState({ deviceWatcher: 0 });
 	}
 
 	componentDidUpdate(prevProps: {}, prevState: State) {
@@ -105,7 +100,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			<Row className={'justify-content-md-center general-container'}>
 				<Col xs lg='12'>
 					<h4 className={'general-title'}>
-						Выберите очистные сооружения для расчетный схемы
+						Выберите сооружения для расчета
 					</h4>
 					{list}
 				</Col>
@@ -117,7 +112,8 @@ export class GeneralComponent extends React.Component<{}, State> {
 		const { dailyWaterFlow, secondMaxFlow } = this.state;
 		const minValueOfDailyWaterFlow = Math.min(...device.listOfTypes.map(type => type.minDailyWaterFlow));
 		const maxValueOfDailyWaterFlow = Math.max(...device.listOfTypes.map(type => type.maxDailyWaterFlow));
-		const errorOfMinWaterFlow = new Error('Суточный расход воды слишком мал/велик, и использование данного оборудования нецелесообразно');
+		const errorOfMinWaterFlow = new Error(`Суточный расход воды слишком мал/велик,
+			и использование данного оборудования нецелесообразно`);
 		return (
 			<div>
 				{(device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
@@ -137,6 +133,16 @@ export class GeneralComponent extends React.Component<{}, State> {
 									return null;
 								}
 							}
+							if (device.key === KindOfDevices.grate) {
+								if (type.key === GrateTypes.crusher) {
+									const grateCrusher = GrateSource.grateCrushers[0];
+									const amountOfGrateCrusher = Math.ceil(secondMaxFlow / (grateCrusher.maxPerformance / 3600));
+									const realWaterSpeedInSection = secondMaxFlow / (grateCrusher.squareHeliumHole * amountOfGrateCrusher);
+									if (realWaterSpeedInSection < grateCrusher.speedWater.min || realWaterSpeedInSection > grateCrusher.speedWater.max) {
+										return null;
+									}
+								}
+							}
 							return <label className={'radio'} key={`${device.key}-${type.key}-${index}`}>{type.name}
 								<input ref={checkbox => type.ref = checkbox} type={'checkbox'}
 									onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
@@ -151,7 +157,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	private selectType = (event: React.ChangeEvent<HTMLInputElement>, device: Device, type: DeviceType) => {
-		let { deviceWatcher } = this.state;
 		const clearTypesExceptCurrent = (listOfTypes: DeviceType[]) => {
 			listOfTypes.forEach(typeOfDevice => {
 				if (typeOfDevice.ref && typeOfDevice.ref.checked && typeOfDevice.key !== type.key) {
@@ -163,12 +168,11 @@ export class GeneralComponent extends React.Component<{}, State> {
 			clearTypesExceptCurrent(device.listOfTypes);
 			device.selected = true;
 			device.selectedType = { iri: type.iri, key: type.key, name: type.name };
-			this.updateDiagram();
 		} else {
 			device.selected = false;
 			device.selectedType = { iri: undefined, key: undefined, name: '' };
 		}
-		this.setState({ deviceWatcher: deviceWatcher++ });
+		this.updateDiagram();
 	}
 
 	private renderBaseInput = () => {
@@ -176,6 +180,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			<Row className={'justify-content-md-center general-container'} style={{ flexDirection: 'row' }}>
 				<Col xs lg='6'>
 					<InputTemplate title={'Максимальный секундный расход сточной воды, м³/с'}
+						range={{ minValue: 0, maxValue: Infinity }}
 						placeholder={'Введите максимальный секундный расход...'}
 						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
 						onInputRef={(input) => { this.maxSecondFlowRef = input; }}
@@ -414,7 +419,6 @@ export class GeneralComponent extends React.Component<{}, State> {
 			countMode: false,
 			dailyWaterFlow: undefined,
 			secondMaxFlow: undefined,
-			deviceWatcher: 0,
 			isValidateError: false,
 		});
 	}
@@ -517,10 +521,10 @@ export class GeneralComponent extends React.Component<{}, State> {
 			<Navbar bg='primary' variant='dark' className='title-navbar'>
 				<div className='intro-navbar-counting'>
 					<Link to={'/'} className='link-to-start'>
-						<div onClick={this.onStartPage} className='base-image' title='Вернуться на главную страницу'></div>
+						<div onClick={this.onStartPage} className='base-image' title='Главная страница'></div>
 					</Link>
-					<Navbar.Brand className='app-title' onClick={this.onStartPage}>
-						Подбор оборудования механической очистки сточных вод
+					<Navbar.Brand className='app-title' title='Выбор очистных сооружений для расчета'>
+						Подбор сооружений механической очистки сточных вод
 					</Navbar.Brand>
 				</div>
 			</Navbar>

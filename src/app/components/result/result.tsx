@@ -440,16 +440,12 @@ export class GeneralResult extends React.Component<{}, {}> {
 		};
 		return (
 			<div>
-				<Container>
-					<Row className={'justify-content-md-center general-container'}>
-						<Col xs lg='12'>
-							<h4 className={'general-title'}>Схема очистных сооружений</h4>
-						</Col>
-					</Row>
-				</Container>
-				<div className={'ontodia-container'}>
+				<div className='title-container'>
+					<div className='count-title'>Схема очистных сооружений</div>
+				</div>
+				<div className='ontodia-container'>
 					<Workspace
-						key={'result-page-ontodia'}
+						key='result-page-ontodia'
 						ref={workspaceProps ? workspaceProps.ref : undefined}
 						leftPanelInitiallyOpen={false}
 						rightPanelInitiallyOpen={false}

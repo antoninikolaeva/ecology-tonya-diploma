@@ -270,15 +270,6 @@
         "label": { "values": [ { "value": "Расчетная решетка", "language": "ru" } ] },
         "properties": {}
     },
-    "http://tonya-diploma.com/device/grate/rd200": {
-        "id": "http://tonya-diploma.com/device/grate/rd200",
-        "types": [ "http://tonya-diploma.com/type/GrateCrusher" ],
-        "image": "",
-        "label": { "values": [ { "value": "РД-200", "language": "ru" } ] },
-        "properties": {
-            "http://tonya-diploma.com/device/grate/rd600/Производительность": { "type": "string", "values": [ { "value": 60 } ] }
-        }
-    },
     "http://tonya-diploma.com/device/grate/rd600": {
         "id": "http://tonya-diploma.com/device/grate/rd600",
         "types": [ "http://tonya-diploma.com/type/GrateCrusher" ],
@@ -446,7 +437,7 @@
         "id": "http://tonya-diploma.com/device/sump/vertical",
         "types": [ "http://tonya-diploma.com/type/Device" ],
         "image": "",
-        "label": { "values": [ { "value": "Вертикальные", "language": "ru" } ] },
+        "label": { "values": [ { "value": "Вертикальные с впуском через центральную трубу", "language": "ru" } ] },
         "properties": {}
     },
     "http://tonya-diploma.com/device/sump/vertical/counting": {
