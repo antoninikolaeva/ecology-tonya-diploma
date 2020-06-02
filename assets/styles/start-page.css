@@ -103,7 +103,7 @@
   font-size: 1.3rem;
   margin-top: 2rem;
   margin-bottom: 1rem;
-  min-height: 6rem;
+  min-height: 4rem;
 }
 .page-titles::after {
   height: 0.33rem;
@@ -230,12 +230,12 @@
   color: white;
 }
 .footer-text {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: white;
   margin-right: 1rem;
 }
 .vk-link {
-  font-size: 1.5rem;
+  font-size: 1.1rem;
   color: white;
 }
 .vk-link:hover {

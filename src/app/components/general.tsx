@@ -23,6 +23,7 @@ import { Link } from 'react-router-dom';
 import { GrateSource } from './grate/grate-resources';
 
 interface State {
+	isOpenScheme: boolean;
 	secondMaxFlow: number;
 	dailyWaterFlow: number;
 	countMode: boolean;
@@ -48,6 +49,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		super(props, context);
 
 		this.state = {
+			isOpenScheme: false,
 			secondMaxFlow: undefined,
 			dailyWaterFlow: undefined,
 			countMode: false,
@@ -58,11 +60,11 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	componentDidUpdate(prevProps: {}, prevState: State) {
-		const { deviceDiagram } = this.state;
+		const { deviceDiagram, isOpenScheme } = this.state;
 		const isNewData = !prevState.deviceDiagram && deviceDiagram;
 		const isUpdatedData = deviceDiagram && prevState.deviceDiagram &&
 			(prevState.deviceDiagram.layoutData.elements !== deviceDiagram.layoutData.elements);
-		if (isNewData || isUpdatedData) {
+		if (isOpenScheme && (isNewData || isUpdatedData)) {
 			this.workspace.getModel().importLayout({
 				diagram: this.state.deviceDiagram,
 				dataProvider: new DemoDataProvider(
@@ -210,6 +212,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 	}
 
 	private renderOntodia() {
+		const {isOpenScheme} = this.state;
 		const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
 			ref: this.onWorkspaceMounted,
 		};
@@ -217,21 +220,30 @@ export class GeneralComponent extends React.Component<{}, State> {
 			<Container>
 				<Row className={'justify-content-md-center general-container'}>
 					<Col xs lg='12'>
-						<h4 className={'general-title'}>Схема очистных сооружений</h4>
+						<button className={'btn btn-primary general-title'} style={{cursor: 'pointer'}}
+						onClick={() => {
+							this.setState({isOpenScheme: !isOpenScheme});
+						}}>
+							Схема очистных сооружений
+							{!isOpenScheme ? <span className={'fa fa-chevron-down'} style={{paddingLeft: '1rem'}}></span> : null}
+							{isOpenScheme ? <span className={'fa fa-chevron-up'} style={{paddingLeft: '1rem'}}></span> : null}
+						</button>
 					</Col>
 				</Row>
 			</Container>
-			<div className={'ontodia-container'}>
-				<Workspace
-					key={'general-page-ontodia'}
-					ref={workspaceProps ? workspaceProps.ref : undefined}
-					leftPanelInitiallyOpen={false}
-					rightPanelInitiallyOpen={false}
-					hidePanels={true}
-					hideScrollBars={true}
-					hideTutorial={true}
-				></Workspace>
-			</div>
+			{isOpenScheme
+				? <div className={'ontodia-container'}>
+					<Workspace
+						key={'general-page-ontodia'}
+						ref={workspaceProps ? workspaceProps.ref : undefined}
+						leftPanelInitiallyOpen={false}
+						rightPanelInitiallyOpen={false}
+						hidePanels={true}
+						hideScrollBars={true}
+						hideTutorial={true}
+					></Workspace>
+				</div>
+				: null}
 		</div>;
 	}
 
@@ -420,6 +432,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 			dailyWaterFlow: undefined,
 			secondMaxFlow: undefined,
 			isValidateError: false,
+			isOpenScheme: false,
 		});
 	}
 
