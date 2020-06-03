@@ -13,7 +13,7 @@ import { SandTrapSource } from './sandTrap-resources';
 import { Table } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
 import { SandTrapResultData, dataModel } from '../data-model';
-import { selectValueFromDiapasonOfFilteredArray, renderCheckingButton, renderToolbar } from '../grate/grate';
+import { selectValueFromDiapasonOfFilteredArray, renderCheckingButton, renderToolbar, renderBaseData } from '../grate/grate';
 
 export interface SandTrapProps {
 	secondMaxFlow: number;
@@ -39,7 +39,8 @@ export interface SandTrapState {
 	middleVolumeWasteWater: number;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapState> {
@@ -126,7 +127,8 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			middleVolumeWasteWater: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -161,17 +163,9 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 			middleVolumeWasteWater: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	// Horizontal forward water move compartment
@@ -221,7 +215,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 					onInputRef={(input) => { this.sandTrapPressureRef = input; }}
 					onInput={(value) => { this.setState({ sandTrapPressure: value }); }} />
 				: null}
-			{(type === SandTrapTypes.tangential && this.diameterOfEachCompartment > SandTrapSource.maxDiameterOfTangential)
+			{(type === SandTrapTypes.tangential && this.diameterOfEachCompartment >= SandTrapSource.maxDiameterOfTangential)
 				? <ErrorAlert errorMessage={`Диаметр песколовки: ${this.diameterOfEachCompartment.toFixed(2)} м,
 					должна быть не более ${SandTrapSource.maxDiameterOfTangential} метров`} />
 				: null}
@@ -237,7 +231,7 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				: null}
 
 			{(type === SandTrapTypes.horizontalCircle) &&
-				(this.waterFlowPeriodMaxPressure < SandTrapSource.minWaterFlowPeriod)
+				(this.waterFlowPeriodMaxPressure <= SandTrapSource.minWaterFlowPeriod)
 				? <ErrorAlert errorMessage={`Продолжительность протока: ${this.waterFlowPeriod.toFixed(2)},
 					должна быть не менее ${SandTrapSource.minWaterFlowPeriod}`} />
 				: null}
@@ -270,15 +264,15 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 				: null}
 
 			{(type === SandTrapTypes.horizontalForward) &&
-				(this.minSpeedFlow > SandTrapSource.minSpeedFlowLimit && this.minSpeedFlow < SandTrapSource.maxSpeedFlowLimit) &&
-				(this.maxSpeedFlow > SandTrapSource.minSpeedFlowLimit && this.maxSpeedFlow < SandTrapSource.maxSpeedFlowLimit)
+				(this.minSpeedFlow >= SandTrapSource.minSpeedFlowLimit && this.minSpeedFlow <= SandTrapSource.maxSpeedFlowLimit) &&
+				(this.maxSpeedFlow >= SandTrapSource.minSpeedFlowLimit && this.maxSpeedFlow <= SandTrapSource.maxSpeedFlowLimit)
 				? <ErrorAlert errorMessage={`Минимальная: ${this.minSpeedFlow} и максимальная: ${this.maxSpeedFlow.toFixed(2)}\n
 					скорости должны удовлетворять следующему диапазону:
 					[${SandTrapSource.minSpeedFlowLimit} < Vmin(Vmax) < ${SandTrapSource.maxSpeedFlowLimit}]`} />
 				: null}
 
 			{(type === SandTrapTypes.horizontalForward) &&
-				(this.waterFlowPeriod < SandTrapSource.minWaterFlowPeriod)
+				(this.waterFlowPeriod <= SandTrapSource.minWaterFlowPeriod)
 				? <ErrorAlert errorMessage={`Продолжительность протекания сточных вод: ${this.waterFlowPeriod.toFixed(2)},\n
 					должна быть не менее ${SandTrapSource.minWaterFlowPeriod}`} />
 				: null}
@@ -695,17 +689,25 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -721,14 +723,17 @@ export class SandTrapComponent extends React.Component<SandTrapProps, SandTrapSt
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>

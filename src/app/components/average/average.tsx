@@ -5,7 +5,7 @@ import { Table } from 'react-bootstrap';
 import { dataModel, AverageResultData } from '../data-model';
 import { AverageSource } from './average-resource';
 import { ErrorAlert } from '../error/error';
-import { renderToolbar, renderCheckingButton } from '../grate/grate';
+import { renderToolbar, renderCheckingButton, renderBaseData } from '../grate/grate';
 
 export interface AverageProps {
 	secondMaxFlow: number;
@@ -35,7 +35,8 @@ interface AverageState {
 	formOfAverage: AverageSource.FormOfAverage;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class AverageComponent extends React.Component<AverageProps, AverageState> {
@@ -114,7 +115,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			formOfAverage: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -156,17 +158,9 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 			formOfAverage: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	private renderInputArea = () => {
@@ -286,7 +280,7 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 
 				{averageMechanism === AverageSource.AverageMechanismType.bubbling
 					? <>
-						{this.speedOfWaterFlow > AverageSource.checkSpeed
+						{this.speedOfWaterFlow >= AverageSource.checkSpeed
 							? <ErrorAlert errorMessage={`Значение скорости продольного движения воды: ${this.speedOfWaterFlow.toFixed(5)} м/с,
 									должно быть не более ${AverageSource.checkSpeed} м/с.
 									Для урегулирования значения скрости поменяйте количество секций или глубину усреднителя.`} />
@@ -383,8 +377,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 							onInputRef={(input) => { this.amountOfSectionChannelRef = input; }}
 							onInput={(value) => { this.setState({ amountOfSectionChannel: value }); }} />
 
-						{(this.channelWidthPrizma < AverageSource.ChannelWidth.min || this.channelWidthPrizma > AverageSource.ChannelWidth.max) ||
-							(this.channelWidthCircle < AverageSource.ChannelWidth.min || this.channelWidthCircle > AverageSource.ChannelWidth.max)
+						{(this.channelWidthPrizma <= AverageSource.ChannelWidth.min || this.channelWidthPrizma >= AverageSource.ChannelWidth.max) ||
+							(this.channelWidthCircle <= AverageSource.ChannelWidth.min || this.channelWidthCircle >= AverageSource.ChannelWidth.max)
 							? <ErrorAlert errorMessage={`Ширина канала: ${this.channelWidthPrizma} м - прямоугольный усреднитель и
 									${this.channelWidthCircle.toFixed(2)} м - круговой усреднитель,
 									должна быть в пределах от ${AverageSource.ChannelWidth.min} до ${AverageSource.ChannelWidth.max} м.`} />
@@ -426,8 +420,8 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 
 	private widthOfEachChannelCheck = (): { index: number; value: number } => {
 		for (let i = 1; i < this.widthOfEachChannel.length + 1; i++) {
-			if (this.widthOfEachChannel[i] < AverageSource.SectionChannelWidth.min ||
-				this.widthOfEachChannel[i] > AverageSource.SectionChannelWidth.max) {
+			if (this.widthOfEachChannel[i] <= AverageSource.SectionChannelWidth.min ||
+				this.widthOfEachChannel[i] >= AverageSource.SectionChannelWidth.max) {
 				return { index: i, value: this.widthOfEachChannel[i] };
 			}
 		}
@@ -616,17 +610,25 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -636,14 +638,17 @@ export class AverageComponent extends React.Component<AverageProps, AverageState
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>

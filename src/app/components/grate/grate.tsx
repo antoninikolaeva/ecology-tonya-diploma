@@ -37,7 +37,8 @@ export interface GrateState {
 	markOfGrateCrusher: string;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class GrateComponent extends React.Component<GrateProps, GrateState> {
@@ -118,7 +119,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -150,17 +152,9 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 			markOfGrateCrusher: NULLSTR,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Максимальный секундный расход сточных вод, м³/с', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	private renderInputArea = () => {
@@ -210,8 +204,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 				<SelectTemplate title={'Форма стержней'} itemList={this.formOfRodList}
 					onSelect={(value) => {this.setState({formOfRod: value as number}); }}
 					onSelectRef={(optionList) => { this.formOfRodListRef = optionList; }} />
-				{this.realWaterSpeedInSection < GrateSource.CheckSpeedInSection.min ||
-				this.realWaterSpeedInSection > GrateSource.CheckSpeedInSection.max
+				{this.realWaterSpeedInSection <= GrateSource.CheckSpeedInSection.min ||
+				this.realWaterSpeedInSection >= GrateSource.CheckSpeedInSection.max
 				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
 					${this.realWaterSpeedInSection.toFixed(2)} м/с, должна быть в пределах от ${GrateSource.CheckSpeedInSection.min} до
 					${GrateSource.CheckSpeedInSection.max}`} />
@@ -252,8 +246,8 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 				<SelectTemplate title={'Марка решетки'} itemList={this.grateCrusherList}
 					onSelect={(value) => {this.setState({markOfGrateCrusher: value as string}); }}
 					onSelectRef={(optionList) => { this.grateCrusherListRef = optionList; }} />
-				{(this.currentGrateCrusher && (this.realWaterSpeedInSection < this.currentGrateCrusher.speedWater.min ||
-				this.realWaterSpeedInSection > this.currentGrateCrusher.speedWater.max))
+				{(this.currentGrateCrusher && (this.realWaterSpeedInSection <= this.currentGrateCrusher.speedWater.min ||
+				this.realWaterSpeedInSection >= this.currentGrateCrusher.speedWater.max))
 				? <ErrorAlert errorMessage={`Действительная скорость движения воды в прозорах решетки:
 					${this.realWaterSpeedInSection.toFixed(3)} м/с, должна быть в пределах от ${this.currentGrateCrusher.speedWater.min} до
 					${this.currentGrateCrusher.speedWater.max}`} />
@@ -467,17 +461,25 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -489,14 +491,17 @@ export class GrateComponent extends React.Component<GrateProps, GrateState> {
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>
@@ -618,31 +623,34 @@ export function resetData(clearPage: () => void) {
 export function renderToolbar(
 	returnToScheme: () => void,
 	goToResult: () => void,
-	openModal: () => void,
-	closeModal: () => void,
-	show: boolean,
+	openChangeScheme: () => void,
+	closeChangeScheme: () => void,
+	openShowResult: () => void,
+	closeShowResult: () => void,
+	showChangeScheme: boolean,
+	showOpenResult: boolean,
 ) {
 	return (
 		<div className={'device-count-toolbar'}>
 			<Button className={'btn btn-primary space-between-text-image'} title={'Изменить расчетную схему'}
-				onClick={openModal}>
+				onClick={openChangeScheme}>
 				<span className='space-between-text-image'>Изменить расчетную схему</span>
 				<i className={'fas fa-reply'}></i>
 			</Button>
 			<Button className={'merge-result btn btn-success'}
-				onClick={goToResult}
+				onClick={openShowResult}
 				title={'Cводная схема очиcтных сооружений'}>
 				<span className='space-between-text-image'>Cводная схема очиcтных сооружений</span>
 				<i className={'fas fa-trophy'}></i>
 			</Button>
 
-			<Modal show={show}>
+			<Modal show={showChangeScheme}>
 				<Modal.Header>
 					<Modal.Title>Подтвержение</Modal.Title>
 				</Modal.Header>
 				<Modal.Body>Введенные данные сооружений не сохранятся, изменить схему?</Modal.Body>
 				<Modal.Footer>
-					<Button variant='secondary' onClick={closeModal}>
+					<Button variant='secondary' onClick={closeChangeScheme}>
 						Отменить
 					</Button>
 					<Button variant='primary' onClick={returnToScheme}>
@@ -650,6 +658,29 @@ export function renderToolbar(
 					</Button>
 				</Modal.Footer>
 			</Modal>
+
+			<Modal show={showOpenResult}>
+				<Modal.Header>
+					<Modal.Title>Подтвержение</Modal.Title>
+				</Modal.Header>
+				<Modal.Body>Вы уверены, что произведены все расчеты?</Modal.Body>
+				<Modal.Footer>
+					<Button variant='secondary' onClick={closeShowResult}>
+						Отменить
+					</Button>
+					<Button variant='primary' onClick={goToResult}>
+						Перейти к результатам
+					</Button>
+				</Modal.Footer>
+			</Modal>
 		</div>
 	);
+}
+
+export function renderBaseData(secondMaxFlow: number, dailyWaterFlow: number) {
+	return <div>
+		<div className={'input-data-title'}>Входные данные</div>
+		{labelTemplate('Максимальный секундный расход сточных вод, м³/с', secondMaxFlow)}
+		{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
+	</div>;
 }

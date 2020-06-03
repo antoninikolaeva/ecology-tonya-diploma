@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Navbar, Form, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-bootstrap';
+import { Navbar, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-bootstrap';
 import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement, LinkTypeIri } from 'ontodia';
 
 import { InputTemplate, NULLSTR } from './utils';
@@ -119,7 +119,7 @@ export class GeneralComponent extends React.Component<{}, State> {
 		return (
 			<div>
 				{(device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump)
-					&& dailyWaterFlow && (dailyWaterFlow < minValueOfDailyWaterFlow || dailyWaterFlow > maxValueOfDailyWaterFlow)
+					&& dailyWaterFlow && (dailyWaterFlow <= minValueOfDailyWaterFlow || dailyWaterFlow >= maxValueOfDailyWaterFlow)
 					? <ErrorAlert errorValue={errorOfMinWaterFlow} />
 					: <div>
 						{device.listOfTypes.map((type, index) => {

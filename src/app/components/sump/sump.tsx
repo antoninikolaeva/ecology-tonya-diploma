@@ -7,7 +7,7 @@ import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';
 import { GrateSource } from '../grate/grate-resources';
 import { SumpResultData, dataModel } from '../data-model';
-import { renderCheckingButton, renderToolbar } from '../grate/grate';
+import { renderCheckingButton, renderToolbar, renderBaseData } from '../grate/grate';
 
 export interface SumpProps {
 	secondMaxFlow: number;
@@ -29,7 +29,8 @@ interface SumpState {
 	typeOfClean: string;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class SumpComponent extends React.Component<SumpProps, SumpState> {
@@ -93,7 +94,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			typeOfClean: NULLSTR,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -120,17 +122,9 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 			alpha: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	private renderInputArea = () => {
@@ -198,8 +192,8 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					: null}
 
 				{type === SumpTypes.horizontal &&
-				this.checkWorkingThreadSpeed < SumpSource.WorkingThreadSpeed.min ||
-				this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.middle
+				this.checkWorkingThreadSpeed <= SumpSource.WorkingThreadSpeed.min ||
+				this.checkWorkingThreadSpeed >= SumpSource.WorkingThreadSpeed.middle
 					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed.toFixed(2)},
 					должна быть в пределах диапазона ${SumpSource.WorkingThreadSpeed.min} - ${SumpSource.WorkingThreadSpeed.middle}.
 					Для урегулирования скорости измените рабочую глубину отстойника.`} />
@@ -250,7 +244,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 						onInput={(value) => { this.setState({ workingThreadSpeed: value }); }} />
 					: null}
 
-				{type === SumpTypes.radial && this.checkWorkingThreadSpeed > SumpSource.WorkingThreadSpeed.middle
+				{type === SumpTypes.radial && this.checkWorkingThreadSpeed >= SumpSource.WorkingThreadSpeed.middle
 					? <ErrorAlert errorMessage={`Проверка скорости рабочего потока : ${this.checkWorkingThreadSpeed.toFixed(2)},
 					должна быть меньше табличной скорости потока : ${SumpSource.WorkingThreadSpeed.middle}.
 					Для урегулирования скорости измените количество отделений отстойников.`} />
@@ -264,7 +258,7 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					onInputRef={(input) => { this.sedimentWetRef = input; }}
 					onInput={(value) => { this.setState({ sedimentWet: value }); }} />
 
-				{this.amountOfSection < SumpSource.minAmountOfSection
+				{this.amountOfSection <= SumpSource.minAmountOfSection
 					? <ErrorAlert errorMessage={`Количество отделений отстойника: ${this.amountOfSection.toFixed(2)},
 					должно быть не менее ${SumpSource.minAmountOfSection}`} />
 					: null}
@@ -308,9 +302,9 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 							onSelectRef={(optionList) => { this.typeOfCleanListRef = optionList; }} />
 						{typeOfClean &&
 						((typeOfClean === SumpSource.PeriodBetweenClean.hydrostatic &&
-							this.sedimentCleanPeriod > SumpSource.PeriodBetweenCleanValues.hydrostatic) ||
+							this.sedimentCleanPeriod >= SumpSource.PeriodBetweenCleanValues.hydrostatic) ||
 							(typeOfClean === SumpSource.PeriodBetweenClean.mechanic &&
-								this.sedimentCleanPeriod > SumpSource.PeriodBetweenCleanValues.mechanic))
+								this.sedimentCleanPeriod >= SumpSource.PeriodBetweenCleanValues.mechanic))
 							? <ErrorAlert errorMessage={`Период между выгрузками осадка : ${this.sedimentCleanPeriod.toFixed(2)},
 									должнен быть не более ${typeOfClean === SumpSource.PeriodBetweenClean.hydrostatic
 										? SumpSource.PeriodBetweenCleanValues.hydrostatic
@@ -570,17 +564,25 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -594,14 +596,17 @@ export class SumpComponent extends React.Component<SumpProps, SumpState> {
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>

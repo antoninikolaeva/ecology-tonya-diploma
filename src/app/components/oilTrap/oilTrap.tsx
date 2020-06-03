@@ -6,7 +6,7 @@ import { dataModel, OilTrapResultData } from '../data-model';
 import { OilTrapSource } from './oilTrap-resource';
 import { selectValueFromDiapason } from '../sump/sump';
 import { ErrorAlert } from '../error/error';
-import { renderCheckingButton, renderToolbar } from '../grate/grate';
+import { renderCheckingButton, renderToolbar, renderBaseData } from '../grate/grate';
 
 export interface OilTrapProps {
 	secondMaxFlow: number;
@@ -30,7 +30,8 @@ interface OilTrapState {
 	mechanicImpurity: number;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState> {
@@ -80,7 +81,8 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			mechanicImpurity: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -109,7 +111,8 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			sedimentType: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
 	}
 
@@ -153,15 +156,6 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 			}
 		};
 		dataModel.setOilTrapResult(this.oilTrapResult);
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	private renderInputArea = () => {
@@ -219,7 +213,7 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					</>
 					: null}
 
-				{this.layPeriod < this.periodUpOilParticle
+				{this.layPeriod <= this.periodUpOilParticle
 					? <ErrorAlert errorMessage={`Продолжительность отстаивания: ${this.layPeriod.toFixed(2)},
 						должна быть не менее продолжительности всплывания нефтяных частиц: ${this.periodUpOilParticle}.
 						Для урегулирования можно изменить глубину слоя или скорость движения воды.`} />
@@ -356,17 +350,25 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -376,14 +378,17 @@ export class OilTrapComponent extends React.Component<OilTrapProps, OilTrapState
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>

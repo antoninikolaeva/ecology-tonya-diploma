@@ -7,7 +7,7 @@ import { Table } from 'react-bootstrap';
 import { dataModel, FilterResultData } from '../data-model';
 import { FilterSource } from './filter-resource';
 import { ErrorAlert } from '../error/error';
-import { renderCheckingButton, renderToolbar } from '../grate/grate';
+import { renderCheckingButton, renderToolbar, renderBaseData } from '../grate/grate';
 
 export interface FilterProps {
 	secondMaxFlow: number;
@@ -35,7 +35,8 @@ interface FilterState {
 	workStationPeriod: number;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class FilterComponent extends React.Component<FilterProps, FilterState> {
@@ -119,7 +120,8 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			workStationPeriod: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -160,7 +162,8 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 			workStationPeriod: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
 		this.isGrainy = false;
 		this.isSwimPressure = false;
@@ -251,15 +254,6 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		dataModel.setFilterResult(this.filterResult);
 	}
 
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
-	}
-
 	private renderInputArea = () => {
 		const { baseSubstanceConcentrate, baseBPKConcentrate, filteringSpeed } = this.state;
 		const baseBPKConcentrateTitle = <span>Начальная концентрация БПК<sub>полн</sub> в сточной воде, мг/л</span>;
@@ -343,12 +337,12 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							onInputRef={(input) => { this.coefficientDrumNetsCleanRef = input; }}
 							onInput={(value) => { this.setState({ coefficientDrumNetsClean: value }); }} />
 
-						{this.amountOfFilterSection < FilterSource.minAmountFilterSection
+						{this.amountOfFilterSection <= FilterSource.minAmountFilterSection
 							? <ErrorAlert errorMessage={`Общее количество секций фильтров : ${this.amountOfFilterSection},
 							должно быть не меньше : ${FilterSource.minAmountFilterSection}.`} />
 							: null}
 
-						{this.currentGrainyType && this.forcedWaterSpeed > this.currentGrainyType.speedForced.max
+						{this.currentGrainyType && this.forcedWaterSpeed >= this.currentGrainyType.speedForced.max
 							? <ErrorAlert errorMessage={`Скорость фильтрования при форсированном режиме работы: ${this.forcedWaterSpeed.toFixed(3)},
 							должно быть меньше : ${this.currentGrainyType.speedForced.max}, иначе необходимо изменить количество рабочих фильтров.`} />
 							: null}
@@ -369,7 +363,7 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 							onInputRef={(input) => { this.filteringSpeedRef = input; }}
 							onInput={(value) => { this.setState({ filteringSpeed: value }); }} />
 
-						{this.forcedWaterSpeed > (filteringSpeed * FilterSource.performanceForcedSpeed)
+						{this.forcedWaterSpeed >= (filteringSpeed * FilterSource.performanceForcedSpeed)
 							? <ErrorAlert errorMessage={`Скорость фильтрования при форсированном режиме работы: ${this.forcedWaterSpeed.toFixed(2)},
 							должно быть меньше : ${filteringSpeed * FilterSource.performanceForcedSpeed},
 							иначе необходимо изменить количество рабочих фильтров.`} />
@@ -763,17 +757,25 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -781,14 +783,17 @@ export class FilterComponent extends React.Component<FilterProps, FilterState> {
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>

@@ -4,7 +4,7 @@ import { labelTemplate, resetSelectToDefault, NULLSTR, ItemList, SelectTemplate,
 import { Table } from 'react-bootstrap';
 import { dataModel, CentrifugeResultData } from '../data-model';
 import { CentrifugeSource } from './centrifuge-resource';
-import { renderToolbar, renderCheckingButton } from '../grate/grate';
+import { renderToolbar, renderCheckingButton, renderBaseData } from '../grate/grate';
 
 export interface CentrifugeProps {
 	secondMaxFlow: number;
@@ -24,7 +24,8 @@ interface CentrifugeState {
 	coefficientCentrifugeVolume: number;
 	isValidateError: boolean;
 	isResult: boolean;
-	showModal: boolean;
+	showChangeScheme: boolean;
+	showOpenResult: boolean;
 }
 
 export class CentrifugeComponent extends React.Component<CentrifugeProps, CentrifugeState> {
@@ -71,7 +72,8 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			coefficientCentrifugeVolume: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		};
 	}
 
@@ -95,7 +97,8 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			coefficientCentrifugeVolume: undefined,
 			isValidateError: false,
 			isResult: false,
-			showModal: false,
+			showChangeScheme: false,
+			showOpenResult: false,
 		});
 	}
 
@@ -144,15 +147,6 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 			}
 		};
 		dataModel.setCentrifugeResult(this.centrifugeResult);
-	}
-
-	private renderBaseData = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.props;
-		return <div>
-			<div className={'input-data-title'}>Входные данные</div>
-			{labelTemplate('Секундный максимальный расход', secondMaxFlow)}
-			{labelTemplate('Суточный расход сточных вод, м³/сут', dailyWaterFlow)}
-		</div>;
 	}
 
 	private renderInputArea = () => {
@@ -435,17 +429,25 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 		this.props.onResultMode(true);
 	}
 
-	private openModal = () => {
-		this.setState({showModal: true});
+	private openChangeScheme = () => {
+		this.setState({showChangeScheme: true});
 	}
 
-	private closeModal = () => {
-		this.setState({showModal: false});
+	private closeChangeScheme = () => {
+		this.setState({showChangeScheme: false});
+	}
+
+	private openShowResult = () => {
+		this.setState({showOpenResult: true});
+	}
+
+	private closeShowResult = () => {
+		this.setState({showOpenResult: false});
 	}
 
 	render() {
-		const { type } = this.props;
-		const { showModal } = this.state;
+		const { type, secondMaxFlow, dailyWaterFlow } = this.props;
+		const { showChangeScheme, showOpenResult } = this.state;
 		return (
 			<>
 				<div className={'title-container'}>
@@ -459,14 +461,17 @@ export class CentrifugeComponent extends React.Component<CentrifugeProps, Centri
 					{renderToolbar(
 						this.returnToScheme,
 						this.goToResult,
-						this.openModal,
-						this.closeModal,
-						showModal
+						this.openChangeScheme,
+						this.closeChangeScheme,
+						this.openShowResult,
+						this.closeShowResult,
+						showChangeScheme,
+						showOpenResult,
 					)}
 				</div>
 				<div className={'device-container'}>
 					<div className={'device-input'}>
-						{this.renderBaseData()}
+						{renderBaseData(secondMaxFlow, dailyWaterFlow)}
 						{this.renderInputArea()}
 					</div>
 					<div className={'device-result'}>
