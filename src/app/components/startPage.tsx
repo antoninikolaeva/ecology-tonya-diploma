@@ -83,16 +83,6 @@ export class StartPage extends React.Component<{}, {}> {
 				</div>
 				<div className='quote-image'>
 					<div className='intro-box-quote'>
-						{/* Quote, maybe will return */}
-						{/* <Container fluid>
-							<Row>
-								<Col md={{ span: 12 }}>
-									<div className='quote-symbol'></div>
-									<div className='quote-text'>Тысячи людей живут без любви, но никто — без воды.</div>
-									<div className='quote-author'>Уистен Хью Оден</div>
-								</Col>
-							</Row>
-						</Container> */}
 					</div>
 				</div>
 				<div id='app-occurs'>
@@ -131,26 +121,6 @@ export class StartPage extends React.Component<{}, {}> {
 						</Row>
 					</Container>
 				</div>
-				{/* social net, for future */}
-				{/* <Container fluid>
-					<Row>
-					<Col md={{ span: 12 }}>
-						<div className='social-icons'>
-							<ul>
-								<a href='https://www.facebook.com/antoninikolaeva'>
-									<i className='fab fa-facebook-square social-icon'></i>
-								</a>
-								<a href='https://twitter.com/antoninikolaeva'>
-									<i className='fab fa-twitter-square social-icon'></i>
-								</a>
-								<a href='http://instagram.com/antoninikolaeva'>
-									<i className='fab fa-instagram-square social-icon'></i>
-								</a>
-							</ul>
-						</div>
-					</Col>
-					</Row>
-				</Container> */}
 				<div className='footer'>
 					<span className='footer-text'>Выполнено</span>
 					<a href='https://vk.com/antoninikolaeva' className='vk-link'> Антониной Николаевой</a>

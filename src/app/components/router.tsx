@@ -1,26 +1,23 @@
 import * as React from 'react';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 import { BrowserRouter as Router, Route, Link } from 'react-router-dom';
 import { GeneralComponent } from './general';
 import { StartPage } from './startPage';
 
-interface State {
-}
+import { rootReducer } from './store/reducers';
 
-export class RouterComponent extends React.Component<{}, State> {
+const store = createStore(rootReducer);
 
-	constructor(props: {}) {
-		super(props);
-		this.state = {
-		};
-	}
-
-
+export class RouterComponent extends React.Component<{}, {}> {
 	render() {
 		const {} = this.state;
 		return (
 			<Router>
 				<Route exact path={'/'} component={StartPage} />
-				<Route path={'/counting'} component={GeneralComponent} />
+				<Provider store={store}>
+					<Route path={'/counting'} component={GeneralComponent} />
+				</Provider>
 			</Router>
 		);
 	}
