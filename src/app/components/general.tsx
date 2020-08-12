@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { Navbar, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-bootstrap';
-import { Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement, LinkTypeIri } from 'ontodia';
-
+import {
+	Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement, LinkTypeIri
+} from 'ontodia';
 import { InputTemplate, NULLSTR } from './utils';
 import { ErrorAlert } from './error/error';
 import {
@@ -21,18 +22,19 @@ import { dataModel } from './data-model';
 
 import { Link } from 'react-router-dom';
 import { GrateSource } from './grate/grate-resources';
+import { GeneralProps } from './generalContainer';
 
-interface State {
-	isOpenScheme: boolean;
-	secondMaxFlow: number;
-	dailyWaterFlow: number;
-	countMode: boolean;
-	deviceDiagram: SerializedDiagram;
-	isValidateError: boolean;
-	resultMode: boolean;
-}
+// interface State {
+// 	isOpenScheme: boolean;
+// 	secondMaxFlow: number;
+// 	dailyWaterFlow: number;
+// 	countMode: boolean;
+// 	deviceDiagram: SerializedDiagram;
+// 	isValidateError: boolean;
+// 	resultMode: boolean;
+// }
 
-export class GeneralComponent extends React.Component<{}, State> {
+export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	private maxSecondFlowRef: HTMLInputElement = undefined;
 	private dailyWaterFlowRef: HTMLInputElement = undefined;
 	private workspace: Workspace;

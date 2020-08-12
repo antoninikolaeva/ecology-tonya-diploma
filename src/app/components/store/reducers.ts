@@ -1,4 +1,4 @@
 import { combineReducers } from 'redux';
-import { blogState } from './general-component/reducer';
+import { generalStateReducer } from './general-component/reducer';
 
-export const rootReducer = combineReducers({blogState: blogState});
+export const rootReducer = combineReducers({generalState: generalStateReducer});
