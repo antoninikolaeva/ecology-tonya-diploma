@@ -7,7 +7,8 @@ import {
 	IS_OPEN_SCHEME,
 	IS_VALIDATE_ERROR,
 	RESULT_MODE,
-} from './constants';
+	GeneralActionTypes,
+} from './actions';
 
 export interface GeneralState {
 	isOpenScheme: boolean;
@@ -17,11 +18,6 @@ export interface GeneralState {
 	deviceDiagram: SerializedDiagram;
 	isValidateError: boolean;
 	resultMode: boolean;
-}
-
-export interface ActionType {
-	type: string;
-	payload?: any;
 }
 
 const initialState: GeneralState = {
@@ -34,7 +30,7 @@ const initialState: GeneralState = {
 	resultMode: false,
 };
 
-export function generalStateReducer(state: GeneralState = initialState, action: ActionType) {
+export function generalStateReducer(state: GeneralState = initialState, action: GeneralActionTypes) {
 	switch (action.type) {
 		case CHANGE_SECOND_MAX_FLOW:
 			return { ...state, secondMaxFlow: action.payload };

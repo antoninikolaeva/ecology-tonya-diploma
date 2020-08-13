@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { connect } from 'react-redux';
+import { connect, ConnectedProps } from 'react-redux';
 import { GeneralComponent } from './general';
-import { GeneralState, ActionType } from './store/general-component/reducer';
+import { GeneralState } from './store/general-component/reducer';
 import {
 	changeDailyWaterFlow,
 	changeSecondMaxFlow,
@@ -12,20 +12,34 @@ import {
 	setResultMode,
 } from './store/general-component/actions';
 
-interface GeneralDispatchBehavior {
-	changeDailyWaterFlow(): ActionType;
-	changeSecondMaxFlow(): ActionType;
-	setCountMode(): ActionType;
-	setDeviceDiagram(): ActionType;
-	setIsOpenScheme(): ActionType;
-	setIsValidateError(): ActionType;
-	setResultMode(): ActionType;
-}
+const mapStateToProps = (state: GeneralState) => {
+	return {
+		secondMaxFlow: state.secondMaxFlow,
+		dailyWaterFlow: state.dailyWaterFlow,
+		countMode: state.countMode,
+		deviceDiagram: state.deviceDiagram,
+		isOpenScheme: state.isOpenScheme,
+		isValidateError: state.isValidateError,
+		resultMode: state.resultMode,
+	};
+};
 
-export type GeneralProps = GeneralState & GeneralDispatchBehavior;
+const mapDispatchToProps = {
+	changeDailyWaterFlow,
+	changeSecondMaxFlow,
+	setCountMode,
+	setDeviceDiagram,
+	setIsOpenScheme,
+	setIsValidateError,
+	setResultMode,
+};
 
-class GeneralContainer extends React.Component<GeneralProps, {}> {
-	constructor(props: GeneralProps) {
+const connector = connect(mapStateToProps, mapDispatchToProps);
+
+export type PropsFromGeneral = ConnectedProps<typeof connector>;
+
+class GeneralContainer extends React.Component<PropsFromGeneral, {}> {
+	constructor(props: PropsFromGeneral) {
 		super(props);
 	}
 
@@ -64,26 +78,4 @@ class GeneralContainer extends React.Component<GeneralProps, {}> {
 	}
 }
 
-const mapStateToProps = (state: GeneralState) => {
-	return {
-		secondMaxFlow: state.secondMaxFlow,
-		dailyWaterFlow: state.dailyWaterFlow,
-		countMode: state.countMode,
-		deviceDiagram: state.deviceDiagram,
-		isOpenScheme: state.isOpenScheme,
-		isValidateError: state.isValidateError,
-		resultMode: state.resultMode,
-	};
-};
-
-const mapDispatchToProps = {
-	changeDailyWaterFlow,
-	changeSecondMaxFlow,
-	setCountMode,
-	setDeviceDiagram,
-	setIsOpenScheme,
-	setIsValidateError,
-	setResultMode,
-};
-
-export const generalContainer = connect(mapStateToProps, mapDispatchToProps)(GeneralContainer);
+export const generalContainer = connector(GeneralContainer);

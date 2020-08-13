@@ -22,7 +22,7 @@ import { dataModel } from './data-model';
 
 import { Link } from 'react-router-dom';
 import { GrateSource } from './grate/grate-resources';
-import { GeneralProps } from './generalContainer';
+import { PropsFromGeneral } from './generalContainer';
 
 // interface State {
 // 	isOpenScheme: boolean;
@@ -34,7 +34,7 @@ import { GeneralProps } from './generalContainer';
 // 	resultMode: boolean;
 // }
 
-export class GeneralComponent extends React.Component<GeneralProps, {}> {
+export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 	private maxSecondFlowRef: HTMLInputElement = undefined;
 	private dailyWaterFlowRef: HTMLInputElement = undefined;
 	private workspace: Workspace;
@@ -47,28 +47,28 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	private filter: Device = listOfDevices[5];
 	private centrifuge: Device = listOfDevices[6];
 
-	constructor(props: any, context: any) {
-		super(props, context);
+	constructor(props: PropsFromGeneral) {
+		super(props);
 
-		this.state = {
-			isOpenScheme: false,
-			secondMaxFlow: undefined,
-			dailyWaterFlow: undefined,
-			countMode: false,
-			deviceDiagram: undefined,
-			isValidateError: false,
-			resultMode: false,
-		};
+		// this.state = {
+		// 	isOpenScheme: false,
+		// 	secondMaxFlow: undefined,
+		// 	dailyWaterFlow: undefined,
+		// 	countMode: false,
+		// 	deviceDiagram: undefined,
+		// 	isValidateError: false,
+		// 	resultMode: false,
+		// };
 	}
 
-	componentDidUpdate(prevProps: {}, prevState: State) {
-		const { deviceDiagram, isOpenScheme } = this.state;
-		const isNewData = !prevState.deviceDiagram && deviceDiagram;
-		const isUpdatedData = deviceDiagram && prevState.deviceDiagram &&
-			(prevState.deviceDiagram.layoutData.elements !== deviceDiagram.layoutData.elements);
+	componentDidUpdate(prevProps: PropsFromGeneral) {
+		const { deviceDiagram, isOpenScheme } = this.props;
+		const isNewData = !prevProps.deviceDiagram && deviceDiagram;
+		const isUpdatedData = deviceDiagram && prevProps.deviceDiagram &&
+			(prevProps.deviceDiagram.layoutData.elements !== deviceDiagram.layoutData.elements);
 		if (isOpenScheme && (isNewData || isUpdatedData)) {
 			this.workspace.getModel().importLayout({
-				diagram: this.state.deviceDiagram,
+				diagram: deviceDiagram,
 				dataProvider: new DemoDataProvider(
 					CLASSES as any,
 					LINK_TYPES as any,
@@ -113,7 +113,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private typeList = (device: Device) => {
-		const { dailyWaterFlow, secondMaxFlow } = this.state;
+		const { dailyWaterFlow, secondMaxFlow } = this.props;
 		const minValueOfDailyWaterFlow = Math.min(...device.listOfTypes.map(type => type.minDailyWaterFlow));
 		const maxValueOfDailyWaterFlow = Math.max(...device.listOfTypes.map(type => type.maxDailyWaterFlow));
 		const errorOfMinWaterFlow = new Error(`Суточный расход воды слишком мал/велик,
@@ -214,7 +214,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderOntodia() {
-		const {isOpenScheme} = this.state;
+		const {isOpenScheme} = this.props;
 		const workspaceProps: WorkspaceProps & React.ClassAttributes<Workspace> = {
 			ref: this.onWorkspaceMounted,
 		};
@@ -250,7 +250,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderCountCtrlButtons() {
-		const { isValidateError } = this.state;
+		const { isValidateError } = this.props;
 		return <Container>
 			<Row className={'justify-content-md-center general-container'}>
 				<Col xs lg='12'>
@@ -306,7 +306,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderGrateComponent = (grate: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <GrateComponent secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
 			type={
@@ -319,7 +319,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderSandTrapComponent = (sandTrap: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <SandTrapComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -335,7 +335,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderSumpComponent = (sump: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <SumpComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -350,7 +350,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderAverageComponent = (average: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <AverageComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -365,7 +365,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderOilTrapComponent = (oilTrap: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <OilTrapComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -380,7 +380,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderFilterComponent = (filter: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <FilterComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -391,7 +391,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private renderCentrifugeComponent = (centrifuge: Device) => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		return <CentrifugeComponent
 			secondMaxFlow={secondMaxFlow}
 			dailyWaterFlow={dailyWaterFlow}
@@ -410,12 +410,14 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	private startCounting = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-		const { isValidateError } = this.state;
+		const { isValidateError } = this.props;
 		if (isValidateError || !this.isDataExisted()) {
 			return;
 		}
 		this.workspace = undefined;
-		this.setState({ countMode: true, resultMode: false, deviceDiagram: undefined });
+		this.props.setCountMode(true);
+		this.props.setResultMode(false);
+		this.props.setDeviceDiagram(undefined);
 	}
 
 	private clearPage = () => {
@@ -429,32 +431,31 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 				if (type.ref) { type.ref.checked = false; }
 			});
 		});
-		this.setState({
-			countMode: false,
-			dailyWaterFlow: undefined,
-			secondMaxFlow: undefined,
-			isValidateError: false,
-			isOpenScheme: false,
-		});
+		this.props.setCountMode(false);
+		this.props.changeDailyWaterFlow(undefined);
+		this.props.changeSecondMaxFlow(undefined);
+		this.props.setIsValidateError(false);
+		this.props.setIsOpenScheme(false);
 	}
 
 	private onCountMode = (countMode: boolean) => {
 		this.clearPage();
-		this.setState({ countMode });
+		this.props.setCountMode(countMode);
 	}
 
 	private onResultMode = (resultMode: boolean) => {
-		this.setState({ resultMode });
+		this.props.setResultMode(resultMode);
 	}
 
 	private onStartPage = () => {
 		this.clearPage();
 		dataModel.resetResultData();
-		this.setState({ resultMode: false, countMode: false });
+		this.props.setCountMode(false);
+		this.props.setResultMode(false);
 	}
 
 	private isDataExisted = () => {
-		const { secondMaxFlow, dailyWaterFlow } = this.state;
+		const { secondMaxFlow, dailyWaterFlow } = this.props;
 		const listOfSelectedDevice = listOfDevices.filter(device => device.selected);
 		const listOfSelectedDeviceTypes = listOfDevices.filter(device =>
 			device.selected && device.selectedType && device.selectedType.key);
@@ -511,7 +512,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 				links: links,
 			}
 		};
-		this.setState({ deviceDiagram: testDiagram });
+		this.props.setDeviceDiagram(testDiagram);
 	}
 
 	private onWorkspaceMounted = (workspace: Workspace) => {
@@ -519,7 +520,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 
 		this.workspace = workspace;
 		this.workspace.getModel().importLayout({
-			diagram: this.state.deviceDiagram,
+			diagram: this.props.deviceDiagram,
 			dataProvider: new DemoDataProvider(
 				CLASSES as any,
 				LINK_TYPES as any,
@@ -531,7 +532,7 @@ export class GeneralComponent extends React.Component<GeneralProps, {}> {
 	}
 
 	render() {
-		const { countMode, resultMode } = this.state;
+		const { countMode, resultMode } = this.props;
 		return <div>
 			<Navbar bg='primary' variant='dark' className='title-navbar'>
 				<div className='intro-navbar-counting'>

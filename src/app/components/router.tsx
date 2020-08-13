@@ -6,17 +6,17 @@ import { GeneralComponent } from './general';
 import { StartPage } from './startPage';
 
 import { rootReducer } from './store/reducers';
+import { generalContainer } from './generalContainer';
 
 const store = createStore(rootReducer);
 
 export class RouterComponent extends React.Component<{}, {}> {
 	render() {
-		const {} = this.state;
 		return (
 			<Router>
 				<Route exact path={'/'} component={StartPage} />
 				<Provider store={store}>
-					<Route path={'/counting'} component={GeneralComponent} />
+					<Route path={'/counting'} component={generalContainer} />
 				</Provider>
 			</Router>
 		);
