@@ -11,6 +11,7 @@ import {
 	setIsValidateError,
 	setResultMode,
 } from './store/general-component/actions';
+import { bindActionCreators, Dispatch, AnyAction } from 'redux';
 
 const mapStateToProps = (state: GeneralState) => {
 	return {
@@ -24,14 +25,16 @@ const mapStateToProps = (state: GeneralState) => {
 	};
 };
 
-const mapDispatchToProps = {
-	changeDailyWaterFlow,
-	changeSecondMaxFlow,
-	setCountMode,
-	setDeviceDiagram,
-	setIsOpenScheme,
-	setIsValidateError,
-	setResultMode,
+const mapDispatchToProps = (dispatch: Dispatch<AnyAction>) => {
+	return {
+		changeDailyWaterFlow: bindActionCreators(changeDailyWaterFlow, dispatch),
+		changeSecondMaxFlow: bindActionCreators(changeSecondMaxFlow, dispatch),
+		setCountMode: bindActionCreators(setCountMode, dispatch),
+		setDeviceDiagram: bindActionCreators(setDeviceDiagram, dispatch),
+		setIsOpenScheme: bindActionCreators(setIsOpenScheme, dispatch),
+		setIsValidateError: bindActionCreators(setIsValidateError, dispatch),
+		setResultMode: bindActionCreators(setResultMode, dispatch),
+	};
 };
 
 const connector = connect(mapStateToProps, mapDispatchToProps);
@@ -43,38 +46,26 @@ class GeneralContainer extends React.Component<PropsFromGeneral, {}> {
 		super(props);
 	}
 
+	componentWillReceiveProps(nextProps: any, nextContext: any) {
+		console.log(nextProps);
+	}
+
 	render() {
-		const {
-			secondMaxFlow,
-			dailyWaterFlow,
-			countMode,
-			deviceDiagram,
-			isOpenScheme,
-			isValidateError,
-			resultMode,
-			changeDailyWaterFlow,
-			changeSecondMaxFlow,
-			setCountMode,
-			setDeviceDiagram,
-			setIsOpenScheme,
-			setIsValidateError,
-			setResultMode,
-		} = this.props;
 		return <GeneralComponent
-			secondMaxFlow={secondMaxFlow}
-			dailyWaterFlow={dailyWaterFlow}
-			countMode={countMode}
-			deviceDiagram={deviceDiagram}
-			isOpenScheme={isOpenScheme}
-			isValidateError={isValidateError}
-			resultMode={resultMode}
-			changeDailyWaterFlow={changeDailyWaterFlow}
-			changeSecondMaxFlow={changeSecondMaxFlow}
-			setCountMode={setCountMode}
-			setDeviceDiagram={setDeviceDiagram}
-			setIsOpenScheme={setIsOpenScheme}
-			setIsValidateError={setIsValidateError}
-			setResultMode={setResultMode} />;
+			secondMaxFlow={this.props.secondMaxFlow}
+			dailyWaterFlow={this.props.dailyWaterFlow}
+			countMode={this.props.countMode}
+			deviceDiagram={this.props.deviceDiagram}
+			isOpenScheme={this.props.isOpenScheme}
+			isValidateError={this.props.isValidateError}
+			resultMode={this.props.resultMode}
+			changeDailyWaterFlow={this.props.changeDailyWaterFlow}
+			changeSecondMaxFlow={this.props.changeSecondMaxFlow}
+			setCountMode={this.props.setCountMode}
+			setDeviceDiagram={this.props.setDeviceDiagram}
+			setIsOpenScheme={this.props.setIsOpenScheme}
+			setIsValidateError={this.props.setIsValidateError}
+			setResultMode={this.props.setResultMode} />;
 	}
 }
 

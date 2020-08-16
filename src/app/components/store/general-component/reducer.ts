@@ -46,6 +46,7 @@ export function generalStateReducer(state: GeneralState = initialState, action: 
 			return { ...state, isValidateError: action.payload };
 		case DEVICE_DIAGRAM:
 			return { ...state, deviceDiagram: action.payload };
+		default:
+			return state;
 	}
-	return state;
 }

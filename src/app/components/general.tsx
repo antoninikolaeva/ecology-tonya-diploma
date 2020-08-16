@@ -61,6 +61,16 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 		// };
 	}
 
+	componentWillReceiveProps(nextProps: any, nextContext: any) {
+		console.log(nextProps);
+	}
+
+	shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
+		console.log(nextProps);
+		console.log(nextState);
+		return true;
+	}
+
 	componentDidUpdate(prevProps: PropsFromGeneral) {
 		const { deviceDiagram, isOpenScheme } = this.props;
 		const isNewData = !prevProps.deviceDiagram && deviceDiagram;
@@ -186,17 +196,17 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 					<InputTemplate title={'Максимальный секундный расход сточной воды, м³/с'}
 						range={{ minValue: 0, maxValue: Infinity }}
 						placeholder={'Введите максимальный секундный расход...'}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						onInputRef={(input) => { this.maxSecondFlowRef = input; }}
-						onInput={(value) => { this.setState({ secondMaxFlow: value }); }} />
+						onErrorExist={isError => this.props.setIsValidateError(isError)}
+						onInputRef={input => {this.maxSecondFlowRef = input; }}
+						onInput={value => this.props.changeSecondMaxFlow(value)} />
 				</Col>
 				<Col xs lg='6'>
 					<InputTemplate title={`Суточный расход воды, м³/сут`}
 						placeholder={'Введите суточный расход воды...'}
 						range={{ minValue: 0, maxValue: Infinity }}
-						onErrorExist={(isError) => { this.setState({ isValidateError: isError }); }}
-						onInputRef={(input) => { this.dailyWaterFlowRef = input; }}
-						onInput={(value) => {
+						onErrorExist={isError => this.props.setIsValidateError(isError)}
+						onInputRef={input => { this.dailyWaterFlowRef = input; }}
+						onInput={value => {
 							listOfDevices.forEach(device => {
 								if (device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) {
 									device.selectedType = undefined;
@@ -206,7 +216,7 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 									});
 								}
 							});
-							this.setState({ dailyWaterFlow: value });
+							this.props.changeDailyWaterFlow(value);
 						}} />
 				</Col>
 			</Row>
@@ -223,9 +233,7 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 				<Row className={'justify-content-md-center general-container'}>
 					<Col xs lg='12'>
 						<button className={'btn btn-primary general-title'} style={{cursor: 'pointer'}}
-						onClick={() => {
-							this.setState({isOpenScheme: !isOpenScheme});
-						}}>
+						onClick={() => this.props.setIsOpenScheme(!this.props.isOpenScheme)}>
 							Схема очистных сооружений
 							{!isOpenScheme ? <span className={'fa fa-chevron-down'} style={{paddingLeft: '1rem'}}></span> : null}
 							{isOpenScheme ? <span className={'fa fa-chevron-up'} style={{paddingLeft: '1rem'}}></span> : null}
