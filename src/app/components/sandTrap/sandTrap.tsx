@@ -1,14 +1,9 @@
 import * as React from 'react';
 import { SandTrapTypes, KindOfDevices } from '../general-resources';
-import {
-	InputTemplate,
-	labelTemplate,
-	SelectTemplate,
-	ItemList,
-	NULLSTR,
-	resetSelectToDefault,
-	TableRow
-} from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { SandTrapSource } from './sandTrap-resources';
 import { Table } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';

@@ -1,7 +1,10 @@
 import * as React from 'react';
 
 import { SumpTypes, KindOfDevices } from '../general-resources';
-import { labelTemplate, InputTemplate, NULLSTR, SelectTemplate, ItemList, resetSelectToDefault, TableRow } from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { Table } from 'react-bootstrap';
 import { SumpSource } from './sump-resources';
 import { ErrorAlert } from '../error/error';

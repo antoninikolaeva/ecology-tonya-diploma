@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { OilTrapTypes, KindOfDevices } from '../general-resources';
-import { labelTemplate, NULLSTR, InputTemplate, resetSelectToDefault, ItemList, SelectTemplate, TableRow } from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { Table } from 'react-bootstrap';
 import { dataModel, OilTrapResultData } from '../data-model';
 import { OilTrapSource } from './oilTrap-resource';

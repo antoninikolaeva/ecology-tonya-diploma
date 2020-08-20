@@ -1,18 +1,13 @@
 import * as React from 'react';
 import { GrateTypes, KindOfDevices } from '../general-resources';
-import {
-	InputTemplate,
-	labelTemplate,
-	SelectTemplate,
-	ItemList,
-	NULLSTR,
-	resetSelectToDefault,
-	TableRow
-} from '../utils';
 import { GrateSource } from './grate-resources';
 import { Table, Modal, Button } from 'react-bootstrap';
 import { ErrorAlert } from '../error/error';
 import { dataModel, GrateResultData } from '../data-model';
+import { resetSelectToDefault, ItemList, NULLSTR, labelTemplate } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 
 export interface GrateProps {
 	secondMaxFlow: number;

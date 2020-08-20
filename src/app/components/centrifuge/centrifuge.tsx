@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { CentrifugeTypes, KindOfDevices } from '../general-resources';
-import { labelTemplate, resetSelectToDefault, NULLSTR, ItemList, SelectTemplate, InputTemplate, TableRow } from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { Table } from 'react-bootstrap';
 import { dataModel, CentrifugeResultData } from '../data-model';
 import { CentrifugeSource } from './centrifuge-resource';

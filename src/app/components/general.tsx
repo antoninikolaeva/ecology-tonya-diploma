@@ -3,7 +3,8 @@ import { Navbar, Tabs, Tab, Row, Col, Container, Accordion, Card } from 'react-b
 import {
 	Workspace, WorkspaceProps, DemoDataProvider, SerializedDiagram, LayoutLink, LayoutElement, LinkTypeIri
 } from 'ontodia';
-import { InputTemplate, NULLSTR } from './utils';
+import { InputTemplate } from './utils/input-template';
+import { NULLSTR } from './utils/utils';
 import { ErrorAlert } from './error/error';
 import {
 	listOfDevices, Device, KindOfDevices, DeviceType, GrateTypes, SandTrapTypes,
@@ -24,16 +25,6 @@ import { Link } from 'react-router-dom';
 import { GrateSource } from './grate/grate-resources';
 import { PropsFromGeneral } from './generalContainer';
 
-// interface State {
-// 	isOpenScheme: boolean;
-// 	secondMaxFlow: number;
-// 	dailyWaterFlow: number;
-// 	countMode: boolean;
-// 	deviceDiagram: SerializedDiagram;
-// 	isValidateError: boolean;
-// 	resultMode: boolean;
-// }
-
 export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 	private maxSecondFlowRef: HTMLInputElement = undefined;
 	private dailyWaterFlowRef: HTMLInputElement = undefined;
@@ -49,26 +40,6 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 
 	constructor(props: PropsFromGeneral) {
 		super(props);
-
-		// this.state = {
-		// 	isOpenScheme: false,
-		// 	secondMaxFlow: undefined,
-		// 	dailyWaterFlow: undefined,
-		// 	countMode: false,
-		// 	deviceDiagram: undefined,
-		// 	isValidateError: false,
-		// 	resultMode: false,
-		// };
-	}
-
-	componentWillReceiveProps(nextProps: any, nextContext: any) {
-		console.log(nextProps);
-	}
-
-	shouldComponentUpdate(nextProps: any, nextState: any, nextContext: any) {
-		console.log(nextProps);
-		console.log(nextState);
-		return true;
 	}
 
 	componentDidUpdate(prevProps: PropsFromGeneral) {
@@ -196,17 +167,17 @@ export class GeneralComponent extends React.Component<PropsFromGeneral, {}> {
 					<InputTemplate title={'Максимальный секундный расход сточной воды, м³/с'}
 						range={{ minValue: 0, maxValue: Infinity }}
 						placeholder={'Введите максимальный секундный расход...'}
-						onErrorExist={isError => this.props.setIsValidateError(isError)}
-						onInputRef={input => {this.maxSecondFlowRef = input; }}
-						onInput={value => this.props.changeSecondMaxFlow(value)} />
+						onErrorExist={(isError: boolean) => this.props.setIsValidateError(isError)}
+						onInputRef={(input: HTMLInputElement) => {this.maxSecondFlowRef = input; }}
+						onInput={(value: number) => this.props.changeSecondMaxFlow(value)} />
 				</Col>
 				<Col xs lg='6'>
 					<InputTemplate title={`Суточный расход воды, м³/сут`}
 						placeholder={'Введите суточный расход воды...'}
 						range={{ minValue: 0, maxValue: Infinity }}
-						onErrorExist={isError => this.props.setIsValidateError(isError)}
-						onInputRef={input => { this.dailyWaterFlowRef = input; }}
-						onInput={value => {
+						onErrorExist={(isError: boolean) => this.props.setIsValidateError(isError)}
+						onInputRef={(input: HTMLInputElement) => { this.dailyWaterFlowRef = input; }}
+						onInput={(value: number) => {
 							listOfDevices.forEach(device => {
 								if (device.key === KindOfDevices.sandTrap || device.key === KindOfDevices.sump) {
 									device.selectedType = undefined;

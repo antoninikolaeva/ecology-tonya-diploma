@@ -13,15 +13,19 @@ import {
 } from './store/general-component/actions';
 import { bindActionCreators, Dispatch, AnyAction } from 'redux';
 
-const mapStateToProps = (state: GeneralState) => {
+interface GeneralProps {
+	generalState: GeneralState;
+}
+
+const mapStateToProps = (props: GeneralProps) => {
 	return {
-		secondMaxFlow: state.secondMaxFlow,
-		dailyWaterFlow: state.dailyWaterFlow,
-		countMode: state.countMode,
-		deviceDiagram: state.deviceDiagram,
-		isOpenScheme: state.isOpenScheme,
-		isValidateError: state.isValidateError,
-		resultMode: state.resultMode,
+		secondMaxFlow: props.generalState.secondMaxFlow,
+		dailyWaterFlow: props.generalState.dailyWaterFlow,
+		countMode: props.generalState.countMode,
+		deviceDiagram: props.generalState.deviceDiagram,
+		isOpenScheme: props.generalState.isOpenScheme,
+		isValidateError: props.generalState.isValidateError,
+		resultMode: props.generalState.resultMode,
 	};
 };
 
@@ -44,10 +48,6 @@ export type PropsFromGeneral = ConnectedProps<typeof connector>;
 class GeneralContainer extends React.Component<PropsFromGeneral, {}> {
 	constructor(props: PropsFromGeneral) {
 		super(props);
-	}
-
-	componentWillReceiveProps(nextProps: any, nextContext: any) {
-		console.log(nextProps);
 	}
 
 	render() {

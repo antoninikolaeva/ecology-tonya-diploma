@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { FilterTypes, KindOfDevices } from '../general-resources';
-import {
-	labelTemplate, NULLSTR, InputTemplate, ItemList, SelectTemplate, resetSelectToDefault, TableRow
-} from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { Table } from 'react-bootstrap';
 import { dataModel, FilterResultData } from '../data-model';
 import { FilterSource } from './filter-resource';

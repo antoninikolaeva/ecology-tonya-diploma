@@ -1,6 +1,9 @@
 import * as React from 'react';
 import { AverageTypes, KindOfDevices } from '../general-resources';
-import { labelTemplate, NULLSTR, InputTemplate, ItemList, resetSelectToDefault, SelectTemplate, TableRow } from '../utils';
+import { resetSelectToDefault, ItemList, NULLSTR } from '../utils/utils';
+import { InputTemplate } from '../utils/input-template';
+import { SelectTemplate } from '../utils/select-template';
+import { TableRow } from '../utils/table-row';
 import { Table } from 'react-bootstrap';
 import { dataModel, AverageResultData } from '../data-model';
 import { AverageSource } from './average-resource';
